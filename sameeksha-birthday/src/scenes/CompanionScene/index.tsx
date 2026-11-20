@@ -192,22 +192,22 @@ const CompanionScene: React.FC = () => {
   const dialogues = content.companion.dialogues;
   const isLast = dialogueIdx >= dialogues.length - 1;
 
-  // Speak dialogue on mount & on dialogue change
+  // Set speech callback on mount
   useEffect(() => {
     robotSpeaker.setSpeakingCallback((speaking) => {
       setIsSpeaking(speaking);
     });
 
-    // Small delay so page transition completes
+    // Speak initial dialogue after a short delay
     const timer = setTimeout(() => {
       robotSpeaker.speak(dialogues[dialogueIdx]);
-    }, 400);
+    }, 500);
 
     return () => {
       clearTimeout(timer);
       robotSpeaker.stop();
     };
-  }, [dialogueIdx, dialogues]);
+  }, []);
 
   const handleNextDialogue = () => {
     soundManager.playTwinkle();
@@ -215,7 +215,10 @@ const CompanionScene: React.FC = () => {
     setTimeout(() => setBouncing(false), 600);
 
     if (!isLast) {
-      setDialogueIdx((prev) => prev + 1);
+      const nextIdx = dialogueIdx + 1;
+      setDialogueIdx(nextIdx);
+      // Trigger speak directly in user click event to bypass browser autoplay restrictions
+      robotSpeaker.speak(dialogues[nextIdx]);
     }
   };
 

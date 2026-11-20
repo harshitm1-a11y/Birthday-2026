@@ -4,10 +4,12 @@ import { useExperienceStore } from '../../state/experienceStore';
 import { content } from '../../content/siteContent';
 import HiddenHeart from '../../components/HiddenHeart';
 import { soundManager } from '../../utils/audio';
+import { getAssetUrl } from '../../utils/assets';
 
 const MemoriesScene: React.FC = () => {
   const nextScene = useExperienceStore((s) => s.nextScene);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<'cylinder' | 'grid'>('cylinder');
   const [isPaused, setIsPaused] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -23,11 +25,11 @@ const MemoriesScene: React.FC = () => {
     const updateRadius = () => {
       const w = window.innerWidth;
       if (w < 480) {
-        setRadius(320);
+        setRadius(300);
       } else if (w < 768) {
-        setRadius(400);
+        setRadius(380);
       } else {
-        setRadius(500);
+        setRadius(460);
       }
     };
     updateRadius();
@@ -39,16 +41,14 @@ const MemoriesScene: React.FC = () => {
   const isDraggingRef = useRef(false);
   const startXRef = useRef(0);
   const startRotationRef = useRef(0);
-  const velXRef = useRef(0);
-  const lastXRef = useRef(0);
   const rafRef = useRef<number>(0);
 
   const animate = useCallback(() => {
-    if (!isPaused && !isDraggingRef.current) {
-      setRotation((prev) => (prev + 0.12 * direction) % 360);
+    if (!isPaused && !isDraggingRef.current && viewMode === 'cylinder') {
+      setRotation((prev) => (prev + 0.14 * direction) % 360);
     }
     rafRef.current = requestAnimationFrame(animate);
-  }, [isPaused, direction]);
+  }, [isPaused, direction, viewMode]);
 
   useEffect(() => {
     rafRef.current = requestAnimationFrame(animate);
@@ -59,16 +59,12 @@ const MemoriesScene: React.FC = () => {
   const handlePointerDown = (e: React.PointerEvent) => {
     isDraggingRef.current = true;
     startXRef.current = e.clientX;
-    lastXRef.current = e.clientX;
     startRotationRef.current = rotation;
-    velXRef.current = 0;
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDraggingRef.current) return;
     const deltaX = e.clientX - startXRef.current;
-    velXRef.current = e.clientX - lastXRef.current;
-    lastXRef.current = e.clientX;
     setRotation(startRotationRef.current + deltaX * 0.28);
   };
 
@@ -100,6 +96,16 @@ const MemoriesScene: React.FC = () => {
     setSelectedIdx(idx);
   };
 
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>, originalSrc: string) => {
+    const target = e.currentTarget;
+    if (!target.dataset.retried) {
+      target.dataset.retried = 'true';
+      // Fallback 1: Try relative path without leading slash
+      const relative = originalSrc.startsWith('/') ? '.' + originalSrc : originalSrc;
+      target.src = relative;
+    }
+  };
+
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
       {/* Background ambient gradient */}
@@ -107,7 +113,7 @@ const MemoriesScene: React.FC = () => {
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'radial-gradient(circle at center, rgba(45, 27, 105, 0.4) 0%, rgba(10, 10, 26, 0.95) 75%)',
+          background: 'radial-gradient(circle at center, rgba(45, 27, 105, 0.45) 0%, rgba(10, 10, 26, 0.95) 75%)',
           pointerEvents: 'none',
         }}
       />
@@ -117,7 +123,7 @@ const MemoriesScene: React.FC = () => {
         className="scene-overlay"
         style={{
           justifyContent: 'flex-start',
-          paddingTop: '3.8rem',
+          paddingTop: '3.6rem',
           paddingBottom: '5.2rem',
           overflowY: 'auto',
           pointerEvents: 'auto',
@@ -128,9 +134,9 @@ const MemoriesScene: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          style={{ maxWidth: '980px', width: '100%' }}
+          style={{ maxWidth: '1000px', width: '100%' }}
         >
-          <h2 className="scene-heading" style={{ marginBottom: '0.3rem', fontSize: 'clamp(1.8rem, 5vw, 2.8rem)' }}>
+          <h2 className="scene-heading" style={{ marginBottom: '0.2rem', fontSize: 'clamp(1.8rem, 5vw, 2.7rem)' }}>
             {content.memories.heading}
           </h2>
           <p className="scene-subtext" style={{ marginBottom: '0.8rem', fontSize: 'clamp(0.9rem, 2.5vw, 1.15rem)' }}>
@@ -143,78 +149,142 @@ const MemoriesScene: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '0.8rem',
-              marginBottom: '0.5rem',
+              gap: '0.6rem',
+              marginBottom: '0.8rem',
               flexWrap: 'wrap',
             }}
           >
+            {/* View Mode Toggle */}
             <button
               className="magic-button magic-button-secondary magic-button-small"
-              onClick={() => setIsPaused((p) => !p)}
-              style={{ fontSize: '0.8rem', padding: '0.35rem 0.9rem' }}
+              onClick={() => setViewMode((m) => (m === 'cylinder' ? 'grid' : 'cylinder'))}
+              style={{
+                fontSize: '0.82rem',
+                padding: '0.35rem 0.9rem',
+                border: '1.5px solid rgba(251, 191, 36, 0.6)',
+                background: 'rgba(251, 191, 36, 0.15)',
+              }}
             >
-              <span>{isPaused ? '▶️ Resume Spin' : '⏸️ Pause Spin'}</span>
+              <span>{viewMode === 'cylinder' ? '🖼️ Switch to Grid Album' : '🎡 Switch to 3D Cylinder'}</span>
             </button>
 
-            <button
-              className="magic-button magic-button-secondary magic-button-small"
-              onClick={() => setDirection((d) => -d)}
-              style={{ fontSize: '0.8rem', padding: '0.35rem 0.9rem' }}
-            >
-              <span>🔄 Reverse</span>
-            </button>
+            {viewMode === 'cylinder' && (
+              <>
+                <button
+                  className="magic-button magic-button-secondary magic-button-small"
+                  onClick={() => setIsPaused((p) => !p)}
+                  style={{ fontSize: '0.8rem', padding: '0.35rem 0.8rem' }}
+                >
+                  <span>{isPaused ? '▶️ Resume Spin' : '⏸️ Pause Spin'}</span>
+                </button>
 
-            <span style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.6)' }}>
-              ✨ 49 Memories in 3D Cylinder • Drag left/right to spin!
+                <button
+                  className="magic-button magic-button-secondary magic-button-small"
+                  onClick={() => setDirection((d) => -d)}
+                  style={{ fontSize: '0.8rem', padding: '0.35rem 0.8rem' }}
+                >
+                  <span>🔄 Reverse</span>
+                </button>
+              </>
+            )}
+
+            <span style={{ fontSize: '0.8rem', color: '#fbcfe8' }}>
+              ✨ 49 Memories Loaded • Tap any photo to open!
             </span>
           </div>
 
-          {/* 3D Cylindrical Carousel Viewport */}
-          <div
-            className="cylinder-stage"
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerCancel={handlePointerUp}
-          >
+          {/* View Mode 1: 3D Cylindrical Carousel */}
+          {viewMode === 'cylinder' ? (
             <div
-              className="cylinder-carousel"
-              style={{
-                transform: `rotateY(${rotation}deg) rotateX(-4deg)`,
-              }}
+              className="cylinder-stage"
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
             >
-              {photos.map((item, idx) => {
-                const tier = idx % 2 === 0 ? 0 : 1; // 0 = upper row, 1 = lower row
-                const itemInTier = Math.floor(idx / 2);
-                const angle = (itemInTier / halfCount) * 360;
-                const yOffset = tier === 0 ? -75 : 75;
+              <div
+                className="cylinder-carousel"
+                style={{
+                  transform: `rotateY(${rotation}deg) rotateX(-3deg)`,
+                }}
+              >
+                {photos.map((item, idx) => {
+                  const tier = idx % 2 === 0 ? 0 : 1; // 0 = upper row, 1 = lower row
+                  const itemInTier = Math.floor(idx / 2);
+                  const angle = (itemInTier / halfCount) * 360;
+                  const yOffset = tier === 0 ? -70 : 70;
+                  const resolvedSrc = getAssetUrl(item.src);
 
+                  return (
+                    <div
+                      key={idx}
+                      className="cylinder-card"
+                      style={{
+                        transform: `rotateY(${angle}deg) translateZ(${radius}px) translateY(${yOffset}px)`,
+                      }}
+                      onClick={(e) => handleCardClick(idx, e)}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Open memory ${idx + 1}`}
+                    >
+                      <img
+                        src={resolvedSrc}
+                        alt={`Sameeksha memory ${idx + 1}`}
+                        loading="lazy"
+                        draggable={false}
+                        onError={(e) => handleImageError(e, item.src)}
+                      />
+                      <div className="cylinder-card-caption">
+                        {item.caption || `#${idx + 1}`}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            /* View Mode 2: Responsive Photo Grid Album */
+            <div className="gallery-grid" style={{ maxHeight: '55vh', margin: '0.5rem auto' }}>
+              {photos.map((item, idx) => {
+                const resolvedSrc = getAssetUrl(item.src);
                 return (
-                  <div
+                  <motion.div
                     key={idx}
-                    className="cylinder-card"
-                    style={{
-                      transform: `rotateY(${angle}deg) translateZ(${radius}px) translateY(${yOffset}px)`,
-                    }}
+                    className="gallery-item"
                     onClick={(e) => handleCardClick(idx, e)}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`Open memory ${idx + 1}`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.96 }}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3, delay: Math.min(idx * 0.02, 0.4) }}
                   >
                     <img
-                      src={item.src}
-                      alt={`Memory ${idx + 1}`}
-                      loading="eager"
-                      draggable={false}
+                      src={resolvedSrc}
+                      alt={`Sameeksha photo ${idx + 1}`}
+                      loading="lazy"
+                      onError={(e) => handleImageError(e, item.src)}
                     />
-                    <div className="cylinder-card-caption">
+                    <div
+                      style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        insetInline: 0,
+                        padding: '0.2rem 0.4rem',
+                        background: 'linear-gradient(transparent, rgba(10, 10, 26, 0.9))',
+                        fontSize: '0.72rem',
+                        color: '#fff',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
                       {item.caption || `#${idx + 1}`}
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>
-          </div>
+          )}
 
           {/* Continue button */}
           <div style={{ marginTop: '1.2rem', textAlign: 'center' }}>
@@ -241,7 +311,7 @@ const MemoriesScene: React.FC = () => {
           >
             <motion.div
               className="gallery-modal-content"
-              initial={{ scale: 0.5, rotateY: 30, opacity: 0 }}
+              initial={{ scale: 0.5, rotateY: 25, opacity: 0 }}
               animate={{ scale: 1, rotateY: 0, opacity: 1 }}
               exit={{ scale: 0.5, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 280, damping: 22 }}
@@ -268,8 +338,9 @@ const MemoriesScene: React.FC = () => {
               </button>
 
               <img
-                src={photos[selectedIdx].src}
+                src={getAssetUrl(photos[selectedIdx].src)}
                 alt={`Sameeksha photo full view ${selectedIdx + 1}`}
+                onError={(e) => handleImageError(e, photos[selectedIdx].src)}
                 style={{
                   maxHeight: '70vh',
                   maxWidth: '85vw',

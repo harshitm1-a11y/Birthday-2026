@@ -1,0 +1,11 @@
+{
+  "name": "sameeksha-birthday-2026",
+  "version": "1.0.0",
+  "private": true,
+  "description": "3D Interactive Birthday Website for Sameeksha",
+  "scripts": {
+    "dev": "npm --prefix sameeksha-birthday run dev",
+    "build": "npm --prefix sameeksha-birthday run build",
+    "preview": "npm --prefix sameeksha-birthday run preview"
+  }
+}

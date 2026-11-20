@@ -1,13 +1,48 @@
-// Web Audio API ambient synthesizer for romantic/dreamy birthday music
-// Completely zero-dependency, works offline, starts only when opted-in
+// Audio manager for Bollywood theme song and Web Audio interactive effects
+import { getAssetUrl } from './assets';
 
 class SoundManager {
   private ctx: AudioContext | null = null;
-  private isPlaying = false;
-  private intervalId: any = null;
+  private audioElement: HTMLAudioElement | null = null;
+  private isAudioPlaying = false;
+  private synthIntervalId: any = null;
+  private isUsingSynth = false;
 
-  public init() {
-    if (!this.ctx) {
+  constructor() {
+    if (typeof window !== 'undefined') {
+      this.initAudioElement();
+    }
+  }
+
+  private initAudioElement() {
+    try {
+      if (!this.audioElement) {
+        const audioPath = getAssetUrl('/audio/bollywood-birthday.mp3');
+        this.audioElement = new Audio(audioPath);
+        this.audioElement.loop = true;
+        this.audioElement.volume = 0.5;
+        this.audioElement.preload = 'auto';
+
+        this.audioElement.addEventListener('error', (e) => {
+          console.warn('Bollywood audio file failed, falling back to ambient synth:', e);
+          this.isUsingSynth = true;
+        });
+
+        this.audioElement.addEventListener('ended', () => {
+          if (this.isAudioPlaying && this.audioElement) {
+            this.audioElement.currentTime = 0;
+            this.audioElement.play().catch(() => {});
+          }
+        });
+      }
+    } catch (e) {
+      console.warn('Could not initialize audio element:', e);
+      this.isUsingSynth = true;
+    }
+  }
+
+  public initCtx() {
+    if (!this.ctx && typeof window !== 'undefined') {
       const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
       if (AudioCtx) {
         this.ctx = new AudioCtx();
@@ -15,9 +50,53 @@ class SoundManager {
     }
   }
 
+  // Play/Pause the Bollywood Theme Song
+  public startAmbient() {
+    this.isAudioPlaying = true;
+    this.initAudioElement();
+
+    if (this.audioElement && !this.isUsingSynth) {
+      this.audioElement.play().catch((err) => {
+        console.warn('Audio play restricted or failed, using synth fallback:', err);
+        this.startSynthAmbient();
+      });
+    } else {
+      this.startSynthAmbient();
+    }
+  }
+
+  public stopAmbient() {
+    this.isAudioPlaying = false;
+    if (this.audioElement) {
+      this.audioElement.pause();
+    }
+    this.stopSynthAmbient();
+  }
+
+  public toggleAmbient(): boolean {
+    if (this.isAudioPlaying) {
+      this.stopAmbient();
+      return false;
+    } else {
+      this.startAmbient();
+      return true;
+    }
+  }
+
+  public isPlaying(): boolean {
+    return this.isAudioPlaying;
+  }
+
+  public setVolume(volume: number) {
+    if (this.audioElement) {
+      this.audioElement.volume = Math.max(0, Math.min(1, volume));
+    }
+  }
+
+  // Soft sparkle sound effect on button clicks / photo opens
   public playTwinkle() {
     try {
-      this.init();
+      this.initCtx();
       if (!this.ctx) return;
       if (this.ctx.state === 'suspended') {
         this.ctx.resume();
@@ -41,14 +120,14 @@ class SoundManager {
     }
   }
 
+  // Celebration chime when candles are blown
   public playCelebrationTune() {
     try {
-      this.init();
+      this.initCtx();
       if (!this.ctx) return;
       if (this.ctx.state === 'suspended') {
         this.ctx.resume();
       }
-      // Happy birthday melody notes in C
       const notes = [
         { f: 261.63, d: 0.3 }, // C4
         { f: 261.63, d: 0.3 }, // C4
@@ -81,16 +160,15 @@ class SoundManager {
     }
   }
 
-  public startAmbient() {
-    if (this.isPlaying) return;
-    this.isPlaying = true;
-    this.init();
+  // Fallback dreamy synth chords
+  private startSynthAmbient() {
+    if (this.synthIntervalId) return;
+    this.initCtx();
     if (!this.ctx) return;
     if (this.ctx.state === 'suspended') {
       this.ctx.resume();
     }
 
-    // Pentatonic scale dreamy progression: C4, D4, E4, G4, A4, C5, D5, E5, G5
     const chords = [
       [261.63, 329.63, 392.0, 523.25], // C maj
       [220.0, 261.63, 329.63, 440.0],  // A min
@@ -99,9 +177,8 @@ class SoundManager {
     ];
 
     let chordIdx = 0;
-
     const playChord = () => {
-      if (!this.isPlaying || !this.ctx) return;
+      if (!this.isAudioPlaying || !this.ctx) return;
       const currentChord = chords[chordIdx % chords.length];
       chordIdx++;
 
@@ -113,10 +190,9 @@ class SoundManager {
         osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
         osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
 
-        // Soft slow fade in and fade out
         const now = this.ctx.currentTime;
         gain.gain.setValueAtTime(0.001, now);
-        gain.gain.linearRampToValueAtTime(0.03, now + 1.2);
+        gain.gain.linearRampToValueAtTime(0.025, now + 1.2);
         gain.gain.linearRampToValueAtTime(0.001, now + 3.8);
 
         osc.connect(gain);
@@ -128,14 +204,13 @@ class SoundManager {
     };
 
     playChord();
-    this.intervalId = setInterval(playChord, 3500);
+    this.synthIntervalId = setInterval(playChord, 3500);
   }
 
-  public stopAmbient() {
-    this.isPlaying = false;
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
+  private stopSynthAmbient() {
+    if (this.synthIntervalId) {
+      clearInterval(this.synthIntervalId);
+      this.synthIntervalId = null;
     }
   }
 }
