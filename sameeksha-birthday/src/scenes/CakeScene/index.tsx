@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, Sparkles, Text } from '@react-three/drei';
+import { Float, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
 import { motion } from 'framer-motion';
 import { useExperienceStore } from '../../state/experienceStore';
@@ -70,7 +70,7 @@ function BirthdayCake({ blown }: { blown: boolean }) {
   });
 
   // Calculate 5 candle positions in a circle on top tier
-  const candlePositions = React.useMemo(() => {
+  const candlePositions = useMemo(() => {
     const positions: [number, number, number][] = [];
     const count = 5;
     const r = 0.65;
@@ -79,6 +79,29 @@ function BirthdayCake({ blown }: { blown: boolean }) {
       positions.push([Math.cos(angle) * r, 0.95, Math.sin(angle) * r]);
     }
     return positions;
+  }, []);
+
+  // Golden plaque texture generated on canvas - 100% offline, never suspends
+  const plaqueTexture = useMemo(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 128;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.fillStyle = '#4a044e';
+      ctx.fillRect(0, 0, 512, 128);
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 6;
+      ctx.strokeRect(6, 6, 500, 116);
+
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = 'bold 50px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('✨ SAMEEKSHA ✨', 256, 64);
+    }
+    const texture = new THREE.CanvasTexture(canvas);
+    return texture;
   }, []);
 
   return (
@@ -117,22 +140,10 @@ function BirthdayCake({ blown }: { blown: boolean }) {
         </mesh>
 
         {/* Golden Plaque in front */}
-        <group position={[0, 0.4, 1.92]}>
-          <mesh>
-            <boxGeometry args={[1.8, 0.45, 0.06]} />
-            <meshStandardMaterial color="#fbbf24" metalness={0.9} roughness={0.2} />
-          </mesh>
-          <Text
-            position={[0, 0, 0.04]}
-            fontSize={0.22}
-            color="#4a044e"
-            anchorX="center"
-            anchorY="middle"
-            font="https://fonts.gstatic.com/s/playfairdisplay/v30/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKdFvXDXbtM.woff"
-          >
-            SAMEEKSHA
-          </Text>
-        </group>
+        <mesh position={[0, 0.4, 1.92]}>
+          <boxGeometry args={[1.8, 0.45, 0.06]} />
+          <meshStandardMaterial map={plaqueTexture} roughness={0.3} metalness={0.3} />
+        </mesh>
 
         {/* 5 Candles */}
         {candlePositions.map((pos, idx) => (
@@ -161,13 +172,15 @@ const CakeScene: React.FC = () => {
     <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
       {/* 3D Canvas */}
       <div className="canvas-container">
-        <Canvas camera={{ position: [0, 1.2, 5.2], fov: 45 }}>
-          <ambientLight intensity={0.5} />
+        <Canvas camera={{ position: [0, 1.5, 5.2], fov: 45 }}>
+          <ambientLight intensity={0.7} />
           <directionalLight position={[5, 8, 5]} intensity={1.5} />
           <pointLight position={[-4, 2, 2]} intensity={0.8} color="#ff6b9d" />
           <Sparkles count={60} scale={6} size={2.5} speed={0.4} color="#fbbf24" />
 
-          <BirthdayCake blown={blown} />
+          <Suspense fallback={null}>
+            <BirthdayCake blown={blown} />
+          </Suspense>
         </Canvas>
       </div>
 
@@ -187,20 +200,18 @@ const CakeScene: React.FC = () => {
 
           <div style={{ marginTop: '1.2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
             {!blown ? (
-              <motion.button
+              <button
                 className="magic-button"
                 onClick={handleBlow}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
                 aria-label="Blow the birthday candles"
               >
                 <span>Blow the Candles 🎂 💨</span>
-              </motion.button>
+              </button>
             ) : (
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3, type: 'spring' }}
+                transition={{ delay: 0.2, type: 'spring' }}
                 style={{ textAlign: 'center' }}
               >
                 <div style={{ color: '#fbbf24', fontSize: '1.3rem', fontWeight: 600, marginBottom: '1rem' }}>

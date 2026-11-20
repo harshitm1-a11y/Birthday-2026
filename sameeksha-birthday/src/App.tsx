@@ -1,4 +1,4 @@
-import { useState, useCallback, lazy, Suspense } from 'react';
+import React, { useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   LoadingScreen,
@@ -9,30 +9,30 @@ import {
   SceneMenu,
 } from './components';
 import { useExperienceStore } from './state/experienceStore';
+
+import GalaxyScene from './scenes/GalaxyScene';
+import GiftScene from './scenes/GiftScene';
+import MemoriesScene from './scenes/MemoriesScene';
+import CompanionScene from './scenes/CompanionScene';
+import CakeScene from './scenes/CakeScene';
+import LetterScene from './scenes/LetterScene';
+import FinaleScene from './scenes/FinaleScene';
+
 import './styles/global.css';
 
-const GalaxyScene = lazy(() => import('./scenes/GalaxyScene'));
-const GiftScene = lazy(() => import('./scenes/GiftScene'));
-const MemoriesScene = lazy(() => import('./scenes/MemoriesScene'));
-const CompanionScene = lazy(() => import('./scenes/CompanionScene'));
-const CakeScene = lazy(() => import('./scenes/CakeScene'));
-const LetterScene = lazy(() => import('./scenes/LetterScene'));
-const FinaleScene = lazy(() => import('./scenes/FinaleScene'));
-
-const scenes = [GalaxyScene, GiftScene, MemoriesScene, CompanionScene, CakeScene, LetterScene, FinaleScene];
-
-function SceneFallback() {
-  return (
-    <div className="scene-overlay">
-      <div className="loading-text">✨ Loading scene...</div>
-    </div>
-  );
-}
+const scenes = [
+  GalaxyScene,
+  GiftScene,
+  MemoriesScene,
+  CompanionScene,
+  CakeScene,
+  LetterScene,
+  FinaleScene,
+];
 
 export default function App() {
-  const [loaded, setLoaded] = useState(false);
+  const [loaded, setLoaded] = React.useState(false);
   const currentScene = useExperienceStore((s) => s.currentScene);
-  const [entered, setEntered] = useState(false);
 
   const handleLoadComplete = useCallback(() => {
     setLoaded(true);
@@ -63,45 +63,36 @@ export default function App() {
       onKeyDown={handleKeyDown}
       tabIndex={0}
     >
-      {/* Background gradient that's always there */}
+      {/* Dynamic Background Gradient */}
       <div
         className="webgl-fallback"
         style={{
           background: `radial-gradient(ellipse at center, 
-            ${currentScene === 6 ? '#1a0a2e' : '#0d0d2b'} 0%, 
-            #0a0a1a 70%)`,
+            ${currentScene === 6 ? '#2a0845' : currentScene === 4 ? '#200b3b' : '#0d0d2b'} 0%, 
+            #0a0a1a 75%)`,
           transition: 'background 1s ease',
         }}
       />
 
-      {/* Current Scene */}
+      {/* Current Scene with smooth fade */}
       <AnimatePresence mode="wait">
         <motion.div
           key={currentScene}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
           style={{ position: 'fixed', inset: 0, zIndex: 5 }}
         >
-          <Suspense fallback={<SceneFallback />}>
-            <ActiveScene />
-          </Suspense>
+          <ActiveScene />
         </motion.div>
       </AnimatePresence>
 
-      {/* UI Overlays - always visible after entry */}
-      {(entered || currentScene > 0) && (
-        <>
-          <SceneMenu />
-          <HeartCounter />
-          <AudioToggle />
-          <SceneNavigation />
-        </>
-      )}
-
-      {/* Track that user has entered */}
-      {currentScene > 0 && !entered && (() => { setEntered(true); return null; })()}
+      {/* Global UI Overlays */}
+      <SceneMenu />
+      <HeartCounter />
+      <AudioToggle />
+      <SceneNavigation />
 
       {/* Secret message modal */}
       <SecretMessage />

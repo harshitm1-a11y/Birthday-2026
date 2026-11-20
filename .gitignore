@@ -4,3 +4,6 @@ prompt.txt
 **/dist/
 *.log
 .DS_Store
+screenshots/
+*.mjs
+sameeksha-birthday/*.mjs
