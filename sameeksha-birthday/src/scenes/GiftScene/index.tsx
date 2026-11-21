@@ -127,15 +127,17 @@ function TeddyBear3D({ isOpen }: { isOpen: boolean }) {
     if (isOpen) {
       teddyRef.current.position.y = THREE.MathUtils.lerp(teddyRef.current.position.y, 0.85, 0.06);
       teddyRef.current.position.x = THREE.MathUtils.lerp(teddyRef.current.position.x, -0.75, 0.06);
+      teddyRef.current.scale.setScalar(THREE.MathUtils.lerp(teddyRef.current.scale.x, 0.55, 0.08));
       teddyRef.current.rotation.y = Math.PI / 8 + Math.sin(t * 1.5) * 0.1;
       teddyRef.current.rotation.z = Math.sin(t * 1.8) * 0.04;
     } else {
       teddyRef.current.position.set(0, 0, 0);
+      teddyRef.current.scale.set(0, 0, 0);
     }
   });
 
   return (
-    <group ref={teddyRef} position={[0, 0, 0]} scale={[0.55, 0.55, 0.55]}>
+    <group ref={teddyRef} position={[0, -0.2, 0]} scale={[0.01, 0.01, 0.01]}>
       {/* Body */}
       <mesh position={[0, 0.35, 0]}>
         <sphereGeometry args={[0.38, 20, 20]} />
@@ -207,15 +209,17 @@ function RoseBouquet3D({ isOpen }: { isOpen: boolean }) {
     if (isOpen) {
       roseRef.current.position.y = THREE.MathUtils.lerp(roseRef.current.position.y, 0.85, 0.06);
       roseRef.current.position.x = THREE.MathUtils.lerp(roseRef.current.position.x, 0.75, 0.06);
+      roseRef.current.scale.setScalar(THREE.MathUtils.lerp(roseRef.current.scale.x, 0.55, 0.08));
       roseRef.current.rotation.y = -Math.PI / 8 - Math.sin(t * 1.5) * 0.1;
       roseRef.current.rotation.z = Math.cos(t * 1.6) * 0.05;
     } else {
       roseRef.current.position.set(0, 0, 0);
+      roseRef.current.scale.set(0, 0, 0);
     }
   });
 
   return (
-    <group ref={roseRef} position={[0, 0, 0]} scale={[0.55, 0.55, 0.55]}>
+    <group ref={roseRef} position={[0, -0.2, 0]} scale={[0.01, 0.01, 0.01]}>
       {/* Central Red Rose Bloom */}
       <group position={[0, 0.8, 0]}>
         {/* Rose core */}
@@ -314,11 +318,13 @@ function PhysicalGift({ isOpen }: { isOpen: boolean }) {
 
     if (isOpen) {
       giftRef.current.position.y = THREE.MathUtils.lerp(giftRef.current.position.y, 1.15, 0.06);
+      giftRef.current.scale.setScalar(THREE.MathUtils.lerp(giftRef.current.scale.x, 1.0, 0.08));
       giftRef.current.rotation.y = t * 0.75;
       giftRef.current.position.y += Math.sin(t * 2) * 0.003;
     } else {
       giftRef.current.position.y = 0.15;
       giftRef.current.rotation.y = 0;
+      giftRef.current.scale.set(0, 0, 0);
     }
 
     if (ringRef.current) {
@@ -328,7 +334,7 @@ function PhysicalGift({ isOpen }: { isOpen: boolean }) {
   });
 
   return (
-    <group ref={giftRef} position={[0, 0.15, 0]}>
+    <group ref={giftRef} position={[0, -0.2, 0]} scale={[0.01, 0.01, 0.01]}>
       {/* Rose Gold / Ruby Crystal Heart Pendant */}
       <mesh position={[0, 0.05, -0.07]}>
         <extrudeGeometry args={[heartShape, extrudeSettings]} />
@@ -460,10 +466,16 @@ const GiftScene: React.FC = () => {
 
           <Sparkles count={80} scale={5.5} size={2.4} speed={0.5} color="#fcd34d" />
           <GiftBox isOpen={localOpened} onOpen={handleOpen} />
-          <TeddyBear3D isOpen={localOpened} />
-          <RoseBouquet3D isOpen={localOpened} />
-          <PhysicalGift isOpen={localOpened} />
-          {localOpened && <GiftBurst />}
+
+          {/* GIFTS INSIDE ARE 100% CONCEALED until the user opens the box! */}
+          {localOpened && (
+            <>
+              <TeddyBear3D isOpen={localOpened} />
+              <RoseBouquet3D isOpen={localOpened} />
+              <PhysicalGift isOpen={localOpened} />
+              <GiftBurst />
+            </>
+          )}
 
           <OrbitControls
             enableRotate

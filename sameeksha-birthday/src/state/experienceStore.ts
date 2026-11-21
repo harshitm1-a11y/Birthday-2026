@@ -146,6 +146,8 @@ export interface ExperienceState {
   isCakeDelivered: boolean;
   isCakeShopOpen: boolean;
   isPlaylistOpen: boolean;
+  isCompanionCuttingCake: boolean;
+  cakeCutDone: boolean;
 
   setScene: (scene: number) => void;
   nextScene: () => void;
@@ -173,6 +175,8 @@ export interface ExperienceState {
   setCakeDelivered: (val: boolean) => void;
   setCakeShopOpen: (open: boolean) => void;
   setPlaylistOpen: (open: boolean) => void;
+  triggerCompanionCakeCut: () => void;
+  finishCompanionCakeCut: () => void;
 }
 
 const TOTAL_SCENES = 7;
@@ -201,11 +205,13 @@ export const useExperienceStore = create<ExperienceState>((set, get) => ({
   loadingProgress: 0,
 
   selectedCakeTheme: 'strawberry',
-  selectedCompanion: 'robo',
+  selectedCompanion: 'teddy', // Default is Teddy Bear as requested!
   companionCakesDropped: 0,
   isCakeDelivered: false,
   isCakeShopOpen: false,
   isPlaylistOpen: false,
+  isCompanionCuttingCake: false,
+  cakeCutDone: false,
 
   setScene: (scene) => {
     if (scene >= 0 && scene < TOTAL_SCENES) {
@@ -267,4 +273,6 @@ export const useExperienceStore = create<ExperienceState>((set, get) => ({
   setCakeDelivered: (val) => set({ isCakeDelivered: val }),
   setCakeShopOpen: (open) => set({ isCakeShopOpen: open }),
   setPlaylistOpen: (open) => set({ isPlaylistOpen: open }),
+  triggerCompanionCakeCut: () => set({ isCompanionCuttingCake: true }),
+  finishCompanionCakeCut: () => set({ isCompanionCuttingCake: false, cakeCutDone: true }),
 }));

@@ -14,247 +14,253 @@ interface CreamParticle {
   size: number;
 }
 
-// 1. Animated Realistic Robot Character
-const AnimatedRobot: React.FC<{ isMoving: boolean; isDropped?: boolean }> = ({ isMoving }) => (
-  <svg width="74" height="88" viewBox="0 0 74 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-    {/* Antenna with pulsing bulb */}
-    <line x1="37" y1="18" x2="37" y2="4" stroke="#94a3b8" strokeWidth="3" strokeLinecap="round" />
-    <circle cx="37" cy="4" r="4.5" fill="#38bdf8" className={isMoving ? 'animate-pulse' : ''}>
-      <animate attributeName="opacity" values="0.6;1;0.6" dur="1s" repeatCount="indefinite" />
-    </circle>
+// 1. Ultra-Realistic & Adorable Animated Teddy Bear (Main & Star Companion!)
+const RealisticTeddy: React.FC<{ isMoving: boolean; hasKnife?: boolean; isCutting?: boolean }> = ({
+  isMoving,
+  hasKnife,
+  isCutting,
+}) => (
+  <svg width="84" height="96" viewBox="0 0 84 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="teddyEarGrad" cx="30%" cy="30%" r="70%">
+        <stop offset="0%" stopColor="#d97706" />
+        <stop offset="70%" stopColor="#b45309" />
+        <stop offset="100%" stopColor="#78350f" />
+      </radialGradient>
+      <radialGradient id="teddyFurGrad" cx="35%" cy="30%" r="75%">
+        <stop offset="0%" stopColor="#f59e0b" />
+        <stop offset="50%" stopColor="#d97706" />
+        <stop offset="85%" stopColor="#b45309" />
+        <stop offset="100%" stopColor="#78350f" />
+      </radialGradient>
+      <radialGradient id="teddySnoutGrad" cx="40%" cy="35%" r="65%">
+        <stop offset="0%" stopColor="#fffbeb" />
+        <stop offset="80%" stopColor="#fef3c7" />
+        <stop offset="100%" stopColor="#fde68a" />
+      </radialGradient>
+      <filter id="teddyDropShadow" x="-10%" y="-10%" width="120%" height="130%">
+        <feDropShadow dx="0" dy="4" stdDeviation="3" floodOpacity="0.35" />
+      </filter>
+    </defs>
 
-    {/* Ears / Bolts */}
-    <rect x="10" y="26" width="5" height="10" rx="2" fill="#64748b" />
-    <rect x="59" y="26" width="5" height="10" rx="2" fill="#64748b" />
-
-    {/* Head */}
-    <rect x="14" y="16" width="46" height="30" rx="10" fill="#e2e8f0" stroke="#475569" strokeWidth="2.5" />
-    {/* Visor Screen */}
-    <rect x="20" y="22" width="34" height="18" rx="6" fill="#0f172a" />
-    {/* Visor Eyes (Cyan LED) */}
-    <circle cx="28" cy="31" r="3.5" fill="#38bdf8" />
-    <circle cx="46" cy="31" r="3.5" fill="#38bdf8" />
-
-    {/* Neck */}
-    <rect x="33" y="46" width="8" height="4" fill="#94a3b8" />
-
-    {/* Torso */}
-    <rect x="18" y="50" width="38" height="24" rx="8" fill="#cbd5e1" stroke="#475569" strokeWidth="2" />
-    {/* Heart Battery Gauge */}
-    <rect x="25" y="56" width="24" height="8" rx="4" fill="#334155" />
-    <rect x="27" y="58" width="16" height="4" rx="2" fill="#ec4899" />
-
-    {/* Animated Arms */}
-    <g style={{ transformOrigin: '16px 54px' }}>
-      <line x1="18" y1="54" x2="10" y2="68" stroke="#94a3b8" strokeWidth="4" strokeLinecap="round">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="-15 18 54; 20 18 54; -15 18 54" dur="0.35s" repeatCount="indefinite" />}
-      </line>
-      <circle cx="10" cy="68" r="3" fill="#64748b" />
-    </g>
-    <g style={{ transformOrigin: '56px 54px' }}>
-      <line x1="56" y1="54" x2="64" y2="68" stroke="#94a3b8" strokeWidth="4" strokeLinecap="round">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="20 56 54; -15 56 54; 20 56 54" dur="0.35s" repeatCount="indefinite" />}
-      </line>
-      <circle cx="64" cy="68" r="3" fill="#64748b" />
-    </g>
-
-    {/* Animated Walking Legs */}
-    <g style={{ transformOrigin: '28px 74px' }}>
-      <rect x="24" y="74" width="8" height="12" rx="4" fill="#64748b">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="-18 28 74; 18 28 74; -18 28 74" dur="0.35s" repeatCount="indefinite" />}
-      </rect>
-    </g>
-    <g style={{ transformOrigin: '46px 74px' }}>
-      <rect x="42" y="74" width="8" height="12" rx="4" fill="#64748b">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="18 46 74; -18 46 74; 18 46 74" dur="0.35s" repeatCount="indefinite" />}
-      </rect>
-    </g>
-  </svg>
-);
-
-// 2. Animated Realistic Teddy Bear Character
-const AnimatedTeddy: React.FC<{ isMoving: boolean; isDropped: boolean }> = ({ isMoving }) => (
-  <svg width="74" height="88" viewBox="0 0 74 88" fill="none" xmlns="http://www.w3.org/2000/svg">
     {/* Ears */}
-    <circle cx="18" cy="18" r="10" fill="#b45309" stroke="#78350f" strokeWidth="2" />
-    <circle cx="18" cy="18" r="5" fill="#fef3c7" />
-    <circle cx="56" cy="18" r="10" fill="#b45309" stroke="#78350f" strokeWidth="2" />
-    <circle cx="56" cy="18" r="5" fill="#fef3c7" />
+    <circle cx="20" cy="20" r="12" fill="url(#teddyEarGrad)" stroke="#78350f" strokeWidth="2" />
+    <circle cx="20" cy="20" r="6" fill="#fef3c7" opacity="0.9" />
+    <circle cx="64" cy="20" r="12" fill="url(#teddyEarGrad)" stroke="#78350f" strokeWidth="2" />
+    <circle cx="64" cy="20" r="6" fill="#fef3c7" opacity="0.9" />
 
     {/* Head */}
-    <circle cx="37" cy="30" r="22" fill="#d97706" stroke="#92400e" strokeWidth="2" />
+    <ellipse cx="42" cy="34" rx="25" ry="23" fill="url(#teddyFurGrad)" stroke="#92400e" strokeWidth="2" filter="url(#teddyDropShadow)" />
+
     {/* Snout */}
-    <ellipse cx="37" cy="36" rx="10" ry="8" fill="#fef3c7" />
-    {/* Nose & Smile */}
-    <polygon points="34,33 40,33 37,36" fill="#451a03" />
-    <path d="M34 38 Q37 41 40 38" stroke="#451a03" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-    {/* Eyes */}
-    <circle cx="28" cy="27" r="3" fill="#18181b" />
-    <circle cx="29" cy="26" r="1" fill="#ffffff" />
-    <circle cx="46" cy="27" r="3" fill="#18181b" />
-    <circle cx="47" cy="26" r="1" fill="#ffffff" />
+    <ellipse cx="42" cy="41" rx="12" ry="9" fill="url(#teddySnoutGrad)" stroke="#fde68a" strokeWidth="1" />
+    {/* Nose with Specular Highlight */}
+    <ellipse cx="42" cy="37" rx="4.5" ry="3.5" fill="#1c1917" />
+    <ellipse cx="40.5" cy="36" rx="1.2" ry="0.8" fill="#ffffff" />
+    {/* Stitched Smile */}
+    <path d="M38 42 Q42 46 46 42" stroke="#451a03" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+
+    {/* Expressive Glossy Eyes */}
+    <circle cx="31" cy="29" r="4" fill="#09090b" />
+    <circle cx="32" cy="27.5" r="1.5" fill="#ffffff" />
+    <circle cx="29.5" cy="30" r="0.8" fill="#ffffff" />
+    <circle cx="53" cy="29" r="4" fill="#09090b" />
+    <circle cx="54" cy="27.5" r="1.5" fill="#ffffff" />
+    <circle cx="51.5" cy="30" r="0.8" fill="#ffffff" />
 
     {/* Body */}
-    <ellipse cx="37" cy="60" rx="18" ry="16" fill="#d97706" stroke="#92400e" strokeWidth="2" />
-    <ellipse cx="37" cy="60" rx="11" ry="10" fill="#fef3c7" />
+    <ellipse cx="42" cy="67" rx="21" ry="19" fill="url(#teddyFurGrad)" stroke="#92400e" strokeWidth="2" />
+    {/* Belly Patch */}
+    <ellipse cx="42" cy="67" rx="13" ry="12" fill="url(#teddySnoutGrad)" opacity="0.9" />
 
-    {/* Red Ribbon Bow */}
-    <polygon points="30,48 44,48 37,52" fill="#ef4444" />
-    <polygon points="30,56 44,56 37,52" fill="#ef4444" />
-    <circle cx="37" cy="52" r="3" fill="#b91c1c" />
+    {/* Red Ribbon Bow Tie */}
+    <polygon points="34,53 50,53 42,57" fill="#ef4444" />
+    <polygon points="34,61 50,61 42,57" fill="#ef4444" />
+    <circle cx="42" cy="57" r="3.5" fill="#b91c1c" />
+    <circle cx="42" cy="57" r="1.5" fill="#fbbf24" />
 
-    {/* Paws */}
-    <ellipse cx="16" cy="55" rx="5" ry="7" fill="#b45309" />
-    <ellipse cx="58" cy="55" rx="5" ry="7" fill="#b45309" />
-
-    {/* Walking Feet */}
-    <g style={{ transformOrigin: '28px 74px' }}>
-      <ellipse cx="26" cy="78" rx="8" ry="6" fill="#b45309">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="-16 28 74; 16 28 74; -16 28 74" dur="0.32s" repeatCount="indefinite" />}
+    {/* Left Arm & Paw */}
+    <g style={{ transformOrigin: '21px 60px' }}>
+      <ellipse cx="20" cy="62" rx="7" ry="9" fill="url(#teddyFurGrad)" stroke="#92400e" strokeWidth="1.5">
+        {isMoving && <animateTransform attributeName="transform" type="rotate" values="-15 21 60; 15 21 60; -15 21 60" dur="0.32s" repeatCount="indefinite" />}
       </ellipse>
     </g>
-    <g style={{ transformOrigin: '46px 74px' }}>
-      <ellipse cx="48" cy="78" rx="8" ry="6" fill="#b45309">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="16 46 74; -16 46 74; 16 46 74" dur="0.32s" repeatCount="indefinite" />}
+
+    {/* Right Arm & Paw (Holds Chef Knife if in Cake Scene) */}
+    <g style={{ transformOrigin: '63px 60px' }}>
+      <ellipse cx="64" cy="62" rx="7" ry="9" fill="url(#teddyFurGrad)" stroke="#92400e" strokeWidth="1.5">
+        {isMoving && <animateTransform attributeName="transform" type="rotate" values="15 63 60; -15 63 60; 15 63 60" dur="0.32s" repeatCount="indefinite" />}
+        {isCutting && <animateTransform attributeName="transform" type="rotate" values="0 63 60; -45 63 60; 30 63 60; 0 63 60" dur="0.4s" repeatCount="3" />}
+      </ellipse>
+
+      {/* 3D Chef Knife in Paw */}
+      {hasKnife && (
+        <g transform="translate(62, 42) rotate(25)">
+          {/* Blade */}
+          <polygon points="0,0 6,-30 14,-32 14,0" fill="#f8fafc" stroke="#94a3b8" strokeWidth="1" />
+          <line x1="4" y1="-28" x2="12" y2="-2" stroke="#e2e8f0" strokeWidth="2" />
+          {/* Gold Guard */}
+          <rect x="-2" y="0" width="18" height="4" rx="2" fill="#fbbf24" stroke="#d97706" strokeWidth="0.8" />
+          {/* Wooden Handle */}
+          <rect x="2" y="4" width="10" height="18" rx="3" fill="#78350f" stroke="#451a03" strokeWidth="1" />
+        </g>
+      )}
+    </g>
+
+    {/* Walking Paws / Feet */}
+    <g style={{ transformOrigin: '30px 84px' }}>
+      <ellipse cx="30" cy="87" rx="9" ry="7" fill="url(#teddyEarGrad)" stroke="#78350f" strokeWidth="1.5">
+        {isMoving && <animateTransform attributeName="transform" type="rotate" values="-18 30 84; 18 30 84; -18 30 84" dur="0.32s" repeatCount="indefinite" />}
+      </ellipse>
+    </g>
+    <g style={{ transformOrigin: '54px 84px' }}>
+      <ellipse cx="54" cy="87" rx="9" ry="7" fill="url(#teddyEarGrad)" stroke="#78350f" strokeWidth="1.5">
+        {isMoving && <animateTransform attributeName="transform" type="rotate" values="18 54 84; -18 54 84; 18 54 84" dur="0.32s" repeatCount="indefinite" />}
       </ellipse>
     </g>
   </svg>
 );
 
-// 3. Animated Realistic Penguin Character
-const AnimatedPenguin: React.FC<{ isMoving: boolean; isDropped: boolean }> = ({ isMoving }) => (
-  <svg width="74" height="88" viewBox="0 0 74 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-    {/* Body / Tuxedo */}
-    <ellipse cx="37" cy="46" rx="22" ry="28" fill="#0f172a" stroke="#334155" strokeWidth="2" />
-    {/* White Belly */}
-    <ellipse cx="37" cy="48" rx="14" ry="22" fill="#ffffff" />
+// 2. Ultra-Realistic & Cute Animated Penguin (Mr. Waddles)
+const RealisticPenguin: React.FC<{ isMoving: boolean; hasKnife?: boolean; isCutting?: boolean }> = ({
+  isMoving,
+  hasKnife,
+  isCutting,
+}) => (
+  <svg width="84" height="96" viewBox="0 0 84 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="penguinBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#1e293b" />
+        <stop offset="50%" stopColor="#0f172a" />
+        <stop offset="100%" stopColor="#020617" />
+      </linearGradient>
+      <linearGradient id="penguinBellyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#ffffff" />
+        <stop offset="85%" stopColor="#f8fafc" />
+        <stop offset="100%" stopColor="#e2e8f0" />
+      </linearGradient>
+    </defs>
 
-    {/* Eyes */}
-    <circle cx="30" cy="30" r="3.5" fill="#0f172a" />
-    <circle cx="31" cy="29" r="1.2" fill="#ffffff" />
-    <circle cx="44" cy="30" r="3.5" fill="#0f172a" />
-    <circle cx="45" cy="29" r="1.2" fill="#ffffff" />
+    {/* Head & Body Tuxedo Shell */}
+    <ellipse cx="42" cy="50" rx="26" ry="32" fill="url(#penguinBodyGrad)" stroke="#334155" strokeWidth="2" />
 
-    {/* Orange Beak */}
-    <polygon points="33,36 41,36 37,42" fill="#f97316" />
+    {/* Snowy White Belly */}
+    <ellipse cx="42" cy="54" rx="17" ry="24" fill="url(#penguinBellyGrad)" />
 
-    {/* Red Chef Scarf */}
-    <path d="M26 42 Q37 46 48 42 L46 47 Q37 50 28 47 Z" fill="#ef4444" />
+    {/* Cute Pink Blush Cheeks */}
+    <circle cx="28" cy="36" r="4.5" fill="#fda4af" opacity="0.6" />
+    <circle cx="56" cy="36" r="4.5" fill="#fda4af" opacity="0.6" />
 
-    {/* Flippers */}
-    <g style={{ transformOrigin: '15px 44px' }}>
-      <ellipse cx="14" cy="50" rx="4" ry="12" fill="#0f172a" transform="rotate(-15 14 50)">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="-25 15 44; 10 15 44; -25 15 44" dur="0.32s" repeatCount="indefinite" />}
+    {/* Big Expressive Glossy Eyes */}
+    <ellipse cx="33" cy="31" rx="4.5" ry="5.5" fill="#09090b" />
+    <circle cx="34.5" cy="29" r="1.8" fill="#ffffff" />
+    <circle cx="31.5" cy="33" r="0.9" fill="#ffffff" />
+
+    <ellipse cx="51" cy="31" rx="4.5" ry="5.5" fill="#09090b" />
+    <circle cx="52.5" cy="29" r="1.8" fill="#ffffff" />
+    <circle cx="49.5" cy="33" r="0.9" fill="#ffffff" />
+
+    {/* 3D Curved Orange Beak */}
+    <path d="M36 38 Q42 36 48 38 L42 45 Z" fill="#f97316" stroke="#ea580c" strokeWidth="1" />
+    <ellipse cx="42" cy="39" rx="3" ry="1.2" fill="#fdba74" />
+
+    {/* Red Chef Bandana / Bow */}
+    <path d="M28 47 Q42 52 56 47 L54 53 Q42 57 30 53 Z" fill="#ef4444" />
+    <circle cx="42" cy="53" r="3" fill="#b91c1c" />
+
+    {/* Left Flipper Wing */}
+    <g style={{ transformOrigin: '16px 48px' }}>
+      <ellipse cx="14" cy="55" rx="5" ry="14" fill="url(#penguinBodyGrad)" transform="rotate(-18 14 55)">
+        {isMoving && <animateTransform attributeName="transform" type="rotate" values="-30 16 48; 15 16 48; -30 16 48" dur="0.32s" repeatCount="indefinite" />}
       </ellipse>
     </g>
-    <g style={{ transformOrigin: '59px 44px' }}>
-      <ellipse cx="60" cy="50" rx="4" ry="12" fill="#0f172a" transform="rotate(15 60 50)">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="10 59 44; -25 59 44; 10 59 44" dur="0.32s" repeatCount="indefinite" />}
+
+    {/* Right Flipper Wing (Can Hold Knife) */}
+    <g style={{ transformOrigin: '68px 48px' }}>
+      <ellipse cx="70" cy="55" rx="5" ry="14" fill="url(#penguinBodyGrad)" transform="rotate(18 70 55)">
+        {isMoving && <animateTransform attributeName="transform" type="rotate" values="15 68 48; -30 68 48; 15 68 48" dur="0.32s" repeatCount="indefinite" />}
+        {isCutting && <animateTransform attributeName="transform" type="rotate" values="0 68 48; -45 68 48; 30 68 48; 0 68 48" dur="0.4s" repeatCount="3" />}
       </ellipse>
+
+      {hasKnife && (
+        <g transform="translate(68, 38) rotate(30)">
+          <polygon points="0,0 6,-30 14,-32 14,0" fill="#f8fafc" stroke="#94a3b8" strokeWidth="1" />
+          <rect x="-2" y="0" width="18" height="4" rx="2" fill="#fbbf24" />
+          <rect x="2" y="4" width="10" height="18" rx="3" fill="#78350f" />
+        </g>
+      )}
     </g>
 
     {/* Waddling Orange Webbed Feet */}
-    <g style={{ transformOrigin: '28px 72px' }}>
-      <ellipse cx="26" cy="76" rx="9" ry="5" fill="#ea580c">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="-18 28 72; 18 28 72; -18 28 72" dur="0.32s" repeatCount="indefinite" />}
+    <g style={{ transformOrigin: '32px 80px' }}>
+      <ellipse cx="30" cy="85" rx="10" ry="6" fill="#f97316" stroke="#c2410c" strokeWidth="1.5">
+        {isMoving && <animateTransform attributeName="transform" type="rotate" values="-20 32 80; 20 32 80; -20 32 80" dur="0.32s" repeatCount="indefinite" />}
       </ellipse>
     </g>
-    <g style={{ transformOrigin: '46px 72px' }}>
-      <ellipse cx="48" cy="76" rx="9" ry="5" fill="#ea580c">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="18 46 72; -18 46 72; 18 46 72" dur="0.32s" repeatCount="indefinite" />}
+    <g style={{ transformOrigin: '52px 80px' }}>
+      <ellipse cx="54" cy="85" rx="10" ry="6" fill="#f97316" stroke="#c2410c" strokeWidth="1.5">
+        {isMoving && <animateTransform attributeName="transform" type="rotate" values="20 52 80; -20 52 80; 20 52 80" dur="0.32s" repeatCount="indefinite" />}
       </ellipse>
     </g>
   </svg>
 );
 
-// 4. Animated Realistic Kitty Character
-const AnimatedKitty: React.FC<{ isMoving: boolean; isDropped: boolean }> = ({ isMoving }) => (
-  <svg width="74" height="88" viewBox="0 0 74 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-    {/* Tail */}
-    <path d="M52 64 Q66 58 64 42" stroke="#ea580c" strokeWidth="5" strokeLinecap="round" fill="none">
-      {isMoving && <animate attributeName="d" values="M52 64 Q66 58 64 42; M52 64 Q68 64 62 48; M52 64 Q66 58 64 42" dur="0.5s" repeatCount="indefinite" />}
-    </path>
-
-    {/* Ears */}
-    <polygon points="18,30 24,10 32,24" fill="#ea580c" />
-    <polygon points="21,26 25,14 30,22" fill="#fda4af" />
-    <polygon points="56,30 50,10 42,24" fill="#ea580c" />
-    <polygon points="53,26 49,14 44,22" fill="#fda4af" />
+// 3. Realistic Animated Robot (Robo-Bunny)
+const RealisticRobot: React.FC<{ isMoving: boolean; hasKnife?: boolean; isCutting?: boolean }> = ({
+  isMoving,
+  hasKnife,
+  isCutting,
+}) => (
+  <svg width="84" height="96" viewBox="0 0 84 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {/* Pulsing LED Antenna */}
+    <line x1="42" y1="20" x2="42" y2="5" stroke="#94a3b8" strokeWidth="3.5" strokeLinecap="round" />
+    <circle cx="42" cy="5" r="5" fill="#38bdf8">
+      <animate attributeName="opacity" values="0.5;1;0.5" dur="1s" repeatCount="indefinite" />
+    </circle>
 
     {/* Head */}
-    <circle cx="37" cy="32" r="18" fill="#f97316" stroke="#c2410c" strokeWidth="2" />
-    {/* White muzzle */}
-    <ellipse cx="37" cy="38" rx="9" ry="6" fill="#ffffff" />
-    <polygon points="35,35 39,35 37,37" fill="#ec4899" />
-    {/* Whiskers */}
-    <line x1="20" y1="36" x2="30" y2="37" stroke="#475569" strokeWidth="1.2" />
-    <line x1="20" y1="40" x2="30" y2="39" stroke="#475569" strokeWidth="1.2" />
-    <line x1="44" y1="37" x2="54" y2="36" stroke="#475569" strokeWidth="1.2" />
-    <line x1="44" y1="39" x2="54" y2="40" stroke="#475569" strokeWidth="1.2" />
+    <rect x="18" y="18" width="48" height="32" rx="10" fill="#e2e8f0" stroke="#475569" strokeWidth="2.5" />
+    {/* Visor Screen */}
+    <rect x="24" y="24" width="36" height="20" rx="6" fill="#0f172a" />
+    {/* Glowing Eyes */}
+    <circle cx="33" cy="34" r="4" fill="#38bdf8" />
+    <circle cx="51" cy="34" r="4" fill="#38bdf8" />
 
-    {/* Green Emerald Eyes */}
-    <ellipse cx="29" cy="30" rx="3" ry="4" fill="#10b981" />
-    <ellipse cx="29" cy="30" rx="1" ry="3.5" fill="#064e3b" />
-    <ellipse cx="45" cy="30" rx="3" ry="4" fill="#10b981" />
-    <ellipse cx="45" cy="30" rx="1" ry="3.5" fill="#064e3b" />
-
-    {/* Body */}
-    <ellipse cx="37" cy="58" rx="16" ry="14" fill="#f97316" stroke="#c2410c" strokeWidth="2" />
-    <ellipse cx="37" cy="58" rx="9" ry="9" fill="#ffffff" />
-
-    {/* Walking Paws */}
-    <g style={{ transformOrigin: '28px 72px' }}>
-      <ellipse cx="27" cy="74" rx="6" ry="4" fill="#ffffff">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="-18 28 72; 18 28 72; -18 28 72" dur="0.32s" repeatCount="indefinite" />}
-      </ellipse>
-    </g>
-    <g style={{ transformOrigin: '46px 72px' }}>
-      <ellipse cx="47" cy="74" rx="6" ry="4" fill="#ffffff">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="18 46 72; -18 46 72; 18 46 72" dur="0.32s" repeatCount="indefinite" />}
-      </ellipse>
-    </g>
-  </svg>
-);
-
-// 5. Animated Realistic Astronaut Character
-const AnimatedAstro: React.FC<{ isMoving: boolean; isDropped: boolean }> = ({ isMoving }) => (
-  <svg width="74" height="88" viewBox="0 0 74 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-    {/* Oxygen Backpack */}
-    <rect x="18" y="34" width="38" height="30" rx="8" fill="#94a3b8" />
-
-    {/* Helmet */}
-    <circle cx="37" cy="26" r="20" fill="#f8fafc" stroke="#475569" strokeWidth="2.5" />
-    {/* Gold Visor with Star Glow Reflection */}
-    <ellipse cx="37" cy="26" rx="13" ry="10" fill="#f59e0b" stroke="#d97706" strokeWidth="1.5" />
-    <path d="M30 22 Q37 19 42 21" stroke="#fef3c7" strokeWidth="2" strokeLinecap="round" fill="none" />
-
-    {/* Spacesuit Body */}
-    <rect x="22" y="46" width="30" height="24" rx="8" fill="#f8fafc" stroke="#475569" strokeWidth="2" />
-    {/* Chest Mission Patch */}
-    <circle cx="28" cy="53" r="3.5" fill="#3b82f6" />
-    <rect x="36" y="52" width="10" height="3" rx="1" fill="#ef4444" />
+    {/* Torso */}
+    <rect x="22" y="54" width="40" height="26" rx="8" fill="#cbd5e1" stroke="#475569" strokeWidth="2" />
+    {/* Battery Indicator */}
+    <rect x="30" y="62" width="24" height="10" rx="4" fill="#334155" />
+    <rect x="32" y="64" width="18" height="6" rx="2" fill="#ec4899" />
 
     {/* Arms */}
-    <g style={{ transformOrigin: '20px 48px' }}>
-      <rect x="14" y="48" width="8" height="18" rx="4" fill="#e2e8f0">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="-15 20 48; 15 20 48; -15 20 48" dur="0.35s" repeatCount="indefinite" />}
-      </rect>
+    <g style={{ transformOrigin: '22px 58px' }}>
+      <line x1="22" y1="58" x2="12" y2="72" stroke="#94a3b8" strokeWidth="5" strokeLinecap="round">
+        {isMoving && <animateTransform attributeName="transform" type="rotate" values="-15 22 58; 20 22 58; -15 22 58" dur="0.35s" repeatCount="indefinite" />}
+      </line>
     </g>
-    <g style={{ transformOrigin: '54px 48px' }}>
-      <rect x="52" y="48" width="8" height="18" rx="4" fill="#e2e8f0">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="15 54 48; -15 54 48; 15 54 48" dur="0.35s" repeatCount="indefinite" />}
-      </rect>
+    <g style={{ transformOrigin: '62px 58px' }}>
+      <line x1="62" y1="58" x2="72" y2="72" stroke="#94a3b8" strokeWidth="5" strokeLinecap="round">
+        {isMoving && <animateTransform attributeName="transform" type="rotate" values="20 62 58; -15 62 58; 20 62 58" dur="0.35s" repeatCount="indefinite" />}
+        {isCutting && <animateTransform attributeName="transform" type="rotate" values="0 62 58; -45 62 58; 30 62 58; 0 62 58" dur="0.4s" repeatCount="3" />}
+      </line>
+      {hasKnife && (
+        <g transform="translate(68, 50) rotate(25)">
+          <polygon points="0,0 6,-30 14,-32 14,0" fill="#f8fafc" stroke="#94a3b8" strokeWidth="1" />
+          <rect x="-2" y="0" width="18" height="4" rx="2" fill="#fbbf24" />
+          <rect x="2" y="4" width="10" height="18" rx="3" fill="#78350f" />
+        </g>
+      )}
     </g>
 
-    {/* Walking Boots */}
-    <g style={{ transformOrigin: '28px 70px' }}>
-      <rect x="23" y="70" width="10" height="14" rx="4" fill="#64748b">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="-18 28 70; 18 28 70; -18 28 70" dur="0.35s" repeatCount="indefinite" />}
+    {/* Moving Track Feet */}
+    <g style={{ transformOrigin: '32px 80px' }}>
+      <rect x="26" y="80" width="12" height="14" rx="5" fill="#64748b">
+        {isMoving && <animateTransform attributeName="transform" type="rotate" values="-18 32 80; 18 32 80; -18 32 80" dur="0.35s" repeatCount="indefinite" />}
       </rect>
     </g>
-    <g style={{ transformOrigin: '46px 70px' }}>
-      <rect x="41" y="70" width="10" height="14" rx="4" fill="#64748b">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="18 46 70; -18 46 70; 18 46 70" dur="0.35s" repeatCount="indefinite" />}
+    <g style={{ transformOrigin: '52px 80px' }}>
+      <rect x="46" y="80" width="12" height="14" rx="5" fill="#64748b">
+        {isMoving && <animateTransform attributeName="transform" type="rotate" values="18 52 80; -18 52 80; 18 52 80" dur="0.35s" repeatCount="indefinite" />}
       </rect>
     </g>
   </svg>
@@ -266,12 +272,15 @@ export const RoamingCompanion: React.FC = () => {
   const setCompanion = useExperienceStore((s) => s.setCompanion);
   const dropCompanionCake = useExperienceStore((s) => s.dropCompanionCake);
   const cakesDropped = useExperienceStore((s) => s.companionCakesDropped);
-  const setCakeDelivered = useExperienceStore((s) => s.setCakeDelivered);
+  const isCompanionCuttingCake = useExperienceStore((s) => s.isCompanionCuttingCake);
+  const finishCompanionCakeCut = useExperienceStore((s) => s.finishCompanionCakeCut);
+  const cakeCutDone = useExperienceStore((s) => s.cakeCutDone);
 
-  const companion = COMPANIONS[selectedCompanionId] || COMPANIONS.robo;
+  const companion = COMPANIONS[selectedCompanionId] || COMPANIONS.teddy;
 
-  // Grounded position state (fixed at bottom 74px, moves naturally along X)
-  const [posX, setPosX] = useState(20);
+  // 2D Full-Screen position state (% of viewport)
+  const [posX, setPosX] = useState(25);
+  const [posY, setPosY] = useState(72);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [isMoving, setIsMoving] = useState(false);
   const [isDropped, setIsDropped] = useState(false);
@@ -281,48 +290,78 @@ export const RoamingCompanion: React.FC = () => {
   const [isChooserOpen, setIsChooserOpen] = useState(false);
   const [splatParticles, setSplatParticles] = useState<CreamParticle[]>([]);
 
-  const targetXRef = useRef<number>(20);
+  const targetXRef = useRef<number>(25);
+  const targetYRef = useRef<number>(72);
+  const lastMouseMoveRef = useRef<number>(Date.now());
 
-  // Natural Distance Cursor Following (Stays ~80px-120px away from cursor, never sits right under cursor)
+  // Full Screen 2D Cursor Following & Mobile Wandering Engine
   useEffect(() => {
     let rafId: number;
 
     const handlePointerMove = (e: MouseEvent | TouchEvent) => {
-      if (isDropped || isFetchingNewCake) return;
+      if (isDropped || isFetchingNewCake || isCompanionCuttingCake) return;
+      lastMouseMoveRef.current = Date.now();
 
       const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
+      const clientY = 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
 
       if (typeof window !== 'undefined') {
-        const rawPct = (clientX / window.innerWidth) * 100;
-        // Keep companion ~8-12% distance away from the pointer
-        const offsetPct = clientX > (window.innerWidth * posX) / 100 ? -9 : 9;
-        const clampedPct = Math.max(6, Math.min(88, rawPct + offsetPct));
-        targetXRef.current = clampedPct;
+        const rawPctX = (clientX / window.innerWidth) * 100;
+        const rawPctY = (clientY / window.innerHeight) * 100;
+
+        // Polite distance offset (~8-10% away so it never covers what user is clicking)
+        const offsetX = clientX > (window.innerWidth * posX) / 100 ? -9 : 9;
+        const clampedX = Math.max(6, Math.min(88, rawPctX + offsetX));
+        const clampedY = Math.max(16, Math.min(82, rawPctY + 4));
+
+        targetXRef.current = clampedX;
+        targetYRef.current = clampedY;
       }
     };
 
     window.addEventListener('mousemove', handlePointerMove);
     window.addEventListener('touchmove', handlePointerMove);
 
-    // Smooth easing follow loop
+    // Mobile / Idle Wandering Timer: Roams naturally across screen when untouched!
+    const idleInterval = setInterval(() => {
+      const now = Date.now();
+      if (now - lastMouseMoveRef.current > 3000 && !isCompanionCuttingCake && currentScene !== 4) {
+        // Pick friendly roaming coordinate on screen
+        targetXRef.current = 15 + Math.random() * 70;
+        targetYRef.current = 35 + Math.random() * 45;
+      }
+    }, 4500);
+
+    // Smooth physics loop
     const updatePosition = () => {
       if (!isDropped && !isFetchingNewCake) {
-        if (currentScene === 4) {
-          // In Cake scene (Scene 4), move proudly to bottom-center (50%) to present the cake
-          setPosX((prev) => (Math.abs(50 - prev) > 0.4 ? prev + (50 - prev) * 0.08 : 50));
+        if (isCompanionCuttingCake || currentScene === 4) {
+          // In Cake Scene cutting mode: Companion steps proudly to cake center
+          const targetCakeX = 50;
+          const targetCakeY = 68;
+          setPosX((prev) => (Math.abs(targetCakeX - prev) > 0.3 ? prev + (targetCakeX - prev) * 0.1 : targetCakeX));
+          setPosY((prev) => (Math.abs(targetCakeY - prev) > 0.3 ? prev + (targetCakeY - prev) * 0.1 : targetCakeY));
           setDirection(1);
           setIsMoving(false);
         } else {
           setPosX((prevX) => {
             const dx = targetXRef.current - prevX;
-            if (Math.abs(dx) > 0.3) {
+            if (Math.abs(dx) > 0.35) {
               setDirection(dx > 0 ? 1 : -1);
               setIsMoving(true);
-              return prevX + dx * 0.07; // Natural trailing walking pace
+              return prevX + dx * 0.07;
             } else {
               setIsMoving(false);
               return prevX;
             }
+          });
+
+          setPosY((prevY) => {
+            const dy = targetYRef.current - prevY;
+            if (Math.abs(dy) > 0.35) {
+              return prevY + dy * 0.07;
+            }
+            return prevY;
           });
         }
       }
@@ -334,25 +373,45 @@ export const RoamingCompanion: React.FC = () => {
     return () => {
       window.removeEventListener('mousemove', handlePointerMove);
       window.removeEventListener('touchmove', handlePointerMove);
+      clearInterval(idleInterval);
       cancelAnimationFrame(rafId);
     };
-  }, [isDropped, isFetchingNewCake, currentScene, posX]);
+  }, [isDropped, isFetchingNewCake, isCompanionCuttingCake, currentScene, posX, posY]);
 
-  // Cake Scene dialogue update
+  // Cake Scene companion knife cut trigger!
   useEffect(() => {
-    if (currentScene === 4) {
-      const text = 'Lo Sameeksha baby, aapka special birthday cake hazir hai! 🎂✨';
+    if (isCompanionCuttingCake && !cakeCutDone) {
+      soundManager.playTwinkle();
+      const cutAnnounce = `Hatto sabhi! ${companion.name} cake cut karne laga hai! 🔪🎂`;
+      setSpeechText(cutAnnounce);
+      setIsSpeechOpen(true);
+
+      // Companion swings the knife and cuts cake
+      setTimeout(() => {
+        soundManager.playCakeSliceSound();
+        soundManager.playPopperBurstSound();
+        finishCompanionCakeCut();
+        const successText = `Wah! Cake cut ho gaya! Happy Birthday Meri Jaan Sameeksha! 🎉🍰💖`;
+        setSpeechText(successText);
+        robotSpeaker.speak(successText);
+      }, 1200);
+    }
+  }, [isCompanionCuttingCake, cakeCutDone, finishCompanionCakeCut, companion.name]);
+
+  // Cake Scene entry dialogue
+  useEffect(() => {
+    if (currentScene === 4 && !cakeCutDone) {
+      const text = `Lo Sameeksha baby, knife mere pass hai! Cake par tap kijiye main cut karta hu! 🎂🔪`;
       setSpeechText(text);
       setIsSpeechOpen(true);
-      setCakeDelivered(true);
       robotSpeaker.speak(text);
     }
-  }, [currentScene, setCakeDelivered]);
+  }, [currentScene, cakeCutDone]);
 
   // Click on companion: DROP THE CAKE!
   const handleCompanionClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (isDropped || isFetchingNewCake) return;
+    if (isDropped || isFetchingNewCake || isCompanionCuttingCake) return;
 
     soundManager.playCakeSplatSound();
     dropCompanionCake();
@@ -362,7 +421,7 @@ export const RoamingCompanion: React.FC = () => {
     setIsSpeechOpen(true);
     robotSpeaker.speak(dropText);
 
-    // Splat cream particles
+    // Cream particles
     const colors = ['#f43f5e', '#fbbf24', '#fff1f2', '#fda4af', '#fef08a'];
     const newParticles: CreamParticle[] = Array.from({ length: 14 }).map((_, i) => ({
       id: Date.now() + i,
@@ -375,20 +434,18 @@ export const RoamingCompanion: React.FC = () => {
     }));
     setSplatParticles(newParticles);
 
-    // Mascot panics and runs off to fetch a new cake
     setTimeout(() => {
       setIsFetchingNewCake(true);
-      const rushText = 'Rukiye rukiye! Main abhi aapke liye naya fresh cake leke aata hu! 🏃💨';
+      const rushText = 'Rukiye! Main abhi aapke liye naya fresh cake leke aata hu! 🏃💨';
       setSpeechText(rushText);
       robotSpeaker.speak(rushText);
     }, 1400);
 
-    // Mascot returns with brand new cake
     setTimeout(() => {
       soundManager.playCakeDeliverySound();
       setIsDropped(false);
       setIsFetchingNewCake(false);
-      const returnText = 'Ta-da! Naya fresh cake hazir hai aapke liye! 🎂✨';
+      const returnText = 'Ta-da! Naya fresh cake hazir hai! 🎂✨';
       setSpeechText(returnText);
       robotSpeaker.speak(returnText);
       setSplatParticles([]);
@@ -400,31 +457,28 @@ export const RoamingCompanion: React.FC = () => {
   };
 
   const renderAnimatedMascot = () => {
+    const hasKnife = currentScene === 4 && !cakeCutDone;
     switch (selectedCompanionId) {
-      case 'teddy':
-        return <AnimatedTeddy isMoving={isMoving} isDropped={isDropped} />;
       case 'penguin':
-        return <AnimatedPenguin isMoving={isMoving} isDropped={isDropped} />;
-      case 'kitty':
-        return <AnimatedKitty isMoving={isMoving} isDropped={isDropped} />;
-      case 'astro':
-        return <AnimatedAstro isMoving={isMoving} isDropped={isDropped} />;
+        return <RealisticPenguin isMoving={isMoving} hasKnife={hasKnife} isCutting={isCompanionCuttingCake} />;
       case 'robo':
+        return <RealisticRobot isMoving={isMoving} hasKnife={hasKnife} isCutting={isCompanionCuttingCake} />;
+      case 'teddy':
       default:
-        return <AnimatedRobot isMoving={isMoving} isDropped={isDropped} />;
+        return <RealisticTeddy isMoving={isMoving} hasKnife={hasKnife} isCutting={isCompanionCuttingCake} />;
     }
   };
 
   return (
     <>
-      {/* Grounded Roaming Companion Container: POINTER EVENTS NONE on container so it NEVER intercepts clicks! */}
+      {/* 2D Full Screen Roaming Companion Container: POINTER EVENTS NONE on container so screen clicks pass through! */}
       <div
         style={{
           position: 'fixed',
-          bottom: '74px',
+          top: `${posY}%`,
           left: `${posX}%`,
-          transform: `translateX(-50%) scaleX(${direction})`,
-          transition: isFetchingNewCake ? 'left 0.8s ease-in-out' : 'transform 0.15s ease',
+          transform: `translate(-50%, -50%) scaleX(${direction})`,
+          transition: isFetchingNewCake ? 'left 0.8s ease, top 0.8s ease' : 'transform 0.15s ease',
           zIndex: 85,
           pointerEvents: 'none',
         }}
@@ -478,6 +532,8 @@ export const RoamingCompanion: React.FC = () => {
           animate={
             isDropped
               ? { rotate: [0, -20, 20, -15, 0], scale: [1, 1.15, 0.95, 1] }
+              : isCompanionCuttingCake
+              ? { y: [0, -14, 10, 0], scale: [1, 1.1, 1] }
               : isMoving
               ? { y: [0, -6, 0], rotate: [-2, 2, -2] }
               : { y: [0, -3, 0] }
@@ -485,6 +541,8 @@ export const RoamingCompanion: React.FC = () => {
           transition={
             isDropped
               ? { duration: 0.6, repeat: 2 }
+              : isCompanionCuttingCake
+              ? { duration: 0.35, repeat: 3 }
               : isMoving
               ? { duration: 0.28, repeat: Infinity, ease: 'easeInOut' }
               : { duration: 1.4, repeat: Infinity, ease: 'easeInOut' }
@@ -508,9 +566,9 @@ export const RoamingCompanion: React.FC = () => {
             {renderAnimatedMascot()}
           </div>
 
-          {/* Mini Birthday Cake in Hands */}
+          {/* Mini Birthday Cake in Hands (Unless dropped or in Cake scene where holding knife) */}
           <AnimatePresence>
-            {!isDropped && !isFetchingNewCake && (
+            {!isDropped && !isFetchingNewCake && currentScene !== 4 && (
               <motion.div
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -581,7 +639,7 @@ export const RoamingCompanion: React.FC = () => {
             boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
           }}
         >
-          {companion.name} {cakesDropped > 0 ? `(Dropped: ${cakesDropped}x)` : ''}
+          {companion.name} {currentScene === 4 && !cakeCutDone ? '🔪 Chef Knife' : ''} {cakesDropped > 0 ? `(Dropped: ${cakesDropped}x)` : ''}
         </div>
       </div>
 
@@ -666,7 +724,7 @@ export const RoamingCompanion: React.FC = () => {
                       Choose Your Companion
                     </h3>
                     <p style={{ margin: 0, fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.65)' }}>
-                      Who should deliver Sameeksha's cake? Tap to select!
+                      Teddy Bear is your main friend! Tap to switch companions!
                     </p>
                   </div>
                 </div>
@@ -720,7 +778,7 @@ export const RoamingCompanion: React.FC = () => {
                         <span style={{ fontSize: '2rem' }}>{c.emoji}</span>
                         <div>
                           <div style={{ fontSize: '0.95rem', fontWeight: 600, color: isSelected ? '#fbbf24' : '#fff' }}>
-                            {c.name}
+                            {c.name} {c.id === 'teddy' ? '⭐ (Main)' : ''}
                           </div>
                           <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.6)' }}>
                             {c.title} • "{c.intro}"

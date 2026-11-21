@@ -13,6 +13,38 @@ export interface PlaylistTrack {
 }
 
 export const PLAYLIST_TRACKS: PlaylistTrack[] = [
+  // ========== PUNJABI REAL HITS (Mundian To Bach Ke is Default!) ==========
+  {
+    id: 'punjabi-bhangra',
+    title: 'Mundian To Bach Ke',
+    artist: 'Panjabi MC & Labh Janjua',
+    category: 'punjabi',
+    type: 'file',
+    src: '/audio/punjabi-bhangra.mp3',
+    duration: '3:55',
+    description: 'Iconic worldwide Punjabi anthem with heavy dhol, tumbi and energetic vocals',
+  },
+  {
+    id: 'punjabi-laung-gawacha',
+    title: 'Mera Laung Gawacha',
+    artist: 'Bhangra Club Legends',
+    category: 'punjabi',
+    type: 'file',
+    src: '/audio/punjabi-laung-gawacha.mp3',
+    duration: '7:26',
+    description: 'All-time Punjabi folk-pop classic with soulful vocals and thumping beats',
+  },
+  {
+    id: 'punjabi-gidda-bhangra',
+    title: 'Gidda Pao Haan Deo',
+    artist: 'Bhangra Dhol Beats',
+    category: 'punjabi',
+    type: 'file',
+    src: '/audio/punjabi-gidda-bhangra.mp3',
+    duration: '3:38',
+    description: 'High voltage Punjabi Gidda dance celebration track',
+  },
+
   // ========== BIRTHDAY SONGS ==========
   {
     id: 'bollywood-birthday',
@@ -109,17 +141,7 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     description: 'Soulful acoustic guitar chords with haunting vocal-like synth pads',
   },
 
-  // ========== PUNJABI SONGS ==========
-  {
-    id: 'punjabi-bhangra',
-    title: 'Mundian To Bach Ke',
-    artist: 'Panjabi MC & Labh Janjua',
-    category: 'punjabi',
-    type: 'file',
-    src: '/audio/punjabi-bhangra.mp3',
-    duration: '3:55',
-    description: 'World-famous high-energy Punjabi Bhangra beat with heavy dhol and tumbi',
-  },
+  // ========== OTHER PUNJABI SONGS ==========
   {
     id: 'punjabi-soft',
     title: 'Kinna Chir & Tera Ban Jaunga',
@@ -349,6 +371,16 @@ class SoundManager {
   public prevTrack() {
     this.currentTrackIndex =
       (this.currentTrackIndex - 1 + PLAYLIST_TRACKS.length) % PLAYLIST_TRACKS.length;
+    this.switchTrack();
+  }
+
+  public playRandomTrack() {
+    if (PLAYLIST_TRACKS.length <= 1) return;
+    let nextIdx = Math.floor(Math.random() * PLAYLIST_TRACKS.length);
+    if (nextIdx === this.currentTrackIndex) {
+      nextIdx = (nextIdx + 1) % PLAYLIST_TRACKS.length;
+    }
+    this.currentTrackIndex = nextIdx;
     this.switchTrack();
   }
 

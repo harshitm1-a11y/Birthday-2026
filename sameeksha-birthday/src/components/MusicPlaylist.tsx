@@ -422,6 +422,33 @@ export const MusicPlaylist: React.FC = () => {
                   >
                     ⏭
                   </button>
+
+                  {/* Shuffle / Random Song Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundManager.playRandomTrack();
+                      if (!soundManager.isPlaying()) {
+                        soundManager.startAmbient();
+                      }
+                    }}
+                    style={{
+                      background: 'rgba(251, 191, 36, 0.2)',
+                      border: '1px solid rgba(251, 191, 36, 0.5)',
+                      borderRadius: '20px',
+                      padding: '4px 10px',
+                      color: '#fbbf24',
+                      cursor: 'pointer',
+                      fontSize: '0.78rem',
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                    }}
+                    title="Play a Random Song"
+                  >
+                    <span>🔀 Random</span>
+                  </button>
                 </div>
 
                 {/* Volume Slider */}
