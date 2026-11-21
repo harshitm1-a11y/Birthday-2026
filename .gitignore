@@ -1,9 +1,0 @@
-Sameeksha_Birthday_3D_Build_Kit/
-prompt.txt
-**/node_modules/
-**/dist/
-*.log
-.DS_Store
-screenshots/
-test-*.mjs
-sameeksha-birthday/*.mjs
