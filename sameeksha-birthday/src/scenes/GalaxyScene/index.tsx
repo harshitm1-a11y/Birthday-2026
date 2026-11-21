@@ -70,16 +70,21 @@ function Stardust() {
   );
 }
 
-// Mathematically Drawn Glowing Neon Heart (Parametric Curve inspired by python animation neon_heart.py)
+// Mathematically Drawn Glowing Neon Heart (Parametric Curve centered precisely at (0,0))
 function ParametricNeonHeart({ isPopped }: { isPopped: boolean }) {
   const pathData = useMemo(() => {
     const N = 200;
-    const scale = 8.6;
+    const scale = 10.5;
+    // Exactly center the heart: rawY ranges from -125.19 to +178.5 at scale 10.5.
+    // Center offset = (+178.5 - 125.19) / 2 = 26.65.
+    // Shifting by -26.65 makes y symmetrically span [-151.84, +151.85].
+    const yCenterOffset = 26.65;
     const pts: string[] = [];
     for (let i = 0; i <= N; i++) {
       const t = (i / N) * Math.PI * 2;
       const x = 16 * Math.pow(Math.sin(t), 3) * scale;
-      const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * scale;
+      const rawY = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * scale;
+      const y = rawY - yCenterOffset;
       pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
     }
     return 'M ' + pts.join(' L ') + ' Z';
@@ -110,10 +115,12 @@ function ParametricNeonHeart({ isPopped }: { isPopped: boolean }) {
       }}
     >
       <svg
-        width="460"
-        height="460"
-        viewBox="-200 -200 400 400"
+        width="480"
+        height="440"
+        viewBox="-200 -180 400 360"
         style={{
+          width: 'min(90vw, 480px)',
+          height: 'min(84vw, 440px)',
           overflow: 'visible',
           filter: 'drop-shadow(0 0 35px rgba(255, 0, 127, 0.85)) drop-shadow(0 0 65px rgba(255, 20, 147, 0.5))',
         }}
@@ -158,7 +165,7 @@ function ParametricNeonHeart({ isPopped }: { isPopped: boolean }) {
         {/* 3. Core Brilliant White/Pink Neon Line */}
         <motion.path
           d={pathData}
-          fill="rgba(255, 0, 127, 0.025)"
+          fill="rgba(255, 0, 127, 0.03)"
           stroke="#ffffff"
           strokeWidth="2.5"
           strokeOpacity="0.95"
@@ -168,8 +175,8 @@ function ParametricNeonHeart({ isPopped }: { isPopped: boolean }) {
           transition={{ duration: 1.8, ease: 'easeInOut' }}
         />
 
-        {/* Floating starlight particles along the heart curve */}
-        {Array.from({ length: 12 }).map((_, i) => (
+        {/* Floating starlight particles along the centered heart curve */}
+        {Array.from({ length: 16 }).map((_, i) => (
           <motion.circle
             key={i}
             r="2.2"
@@ -181,11 +188,11 @@ function ParametricNeonHeart({ isPopped }: { isPopped: boolean }) {
             }}
             transition={{
               duration: 2.2,
-              delay: i * 0.18,
+              delay: i * 0.14,
               repeat: Infinity,
             }}
-            cx={Math.sin((i / 12) * Math.PI * 2) * 115}
-            cy={Math.cos((i / 12) * Math.PI * 2) * 95 - 15}
+            cx={Math.sin((i / 16) * Math.PI * 2) * 140}
+            cy={Math.cos((i / 16) * Math.PI * 2) * 125}
           />
         ))}
       </svg>

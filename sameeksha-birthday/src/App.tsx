@@ -56,8 +56,8 @@ export default function App() {
     if (!soundManager.isPlaying()) return;
     switch (currentScene) {
       case 0:
-        // Front page: Aaja Sanam Madhur Chandni instrumental
-        soundManager.playTrack('hindi-romantic');
+        // Front page: Tum Hi Ho - Arijit Singh original vocals
+        soundManager.playTrack('hindi-tum-hi-ho');
         break;
       case 1:
         // Gift scene: Raataan Lambiyan

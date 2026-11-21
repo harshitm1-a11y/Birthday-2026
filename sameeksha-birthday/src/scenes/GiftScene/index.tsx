@@ -1,6 +1,6 @@
 import React, { useRef, useState, useMemo, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, OrbitControls, Sparkles } from '@react-three/drei';
+import { OrbitControls, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useExperienceStore } from '../../state/experienceStore';
@@ -152,7 +152,7 @@ function SingleGiftBox3D({
   );
 }
 
-// 3D Teddy Bear Model
+// 3D Teddy Bear Model with Living Plush Fur & Royal Crown
 function TeddyBear3D({
   position,
   scale,
@@ -169,11 +169,14 @@ function TeddyBear3D({
   useFrame(({ clock }) => {
     if (!teddyRef.current) return;
     const t = clock.getElapsedTime();
-    teddyRef.current.position.y = position[1] + Math.sin(t * 1.8) * 0.06;
+    // Gentle breathing scale and hover
+    const breath = 1 + Math.sin(t * 2.2) * 0.025;
+    teddyRef.current.position.y = position[1] + Math.sin(t * 1.8) * 0.05;
+    teddyRef.current.scale.set(scale * breath, scale * (1 + Math.sin(t * 2.2) * 0.035), scale * breath);
     if (isSolo) {
       teddyRef.current.rotation.y = t * 0.8;
     } else {
-      teddyRef.current.rotation.y = Math.sin(t * 1.2) * 0.2;
+      teddyRef.current.rotation.y = Math.sin(t * 1.2) * 0.25;
     }
   });
 
@@ -190,64 +193,122 @@ function TeddyBear3D({
       }}
     >
       {/* Body */}
-      <mesh position={[0, 0.35, 0]}>
-        <sphereGeometry args={[0.38, 20, 20]} />
-        <meshStandardMaterial color="#b45309" roughness={0.8} />
+      <mesh position={[0, 0.35, 0]} castShadow>
+        <sphereGeometry args={[0.38, 24, 24]} />
+        <meshStandardMaterial color="#b45309" roughness={0.75} />
       </mesh>
+      {/* Soft Plush Belly */}
       <mesh position={[0, 0.35, 0.28]}>
-        <sphereGeometry args={[0.22, 16, 16]} />
-        <meshStandardMaterial color="#fef3c7" roughness={0.9} />
+        <sphereGeometry args={[0.22, 18, 18]} />
+        <meshStandardMaterial color="#fef3c7" roughness={0.85} />
       </mesh>
       {/* Head */}
-      <mesh position={[0, 0.82, 0]}>
-        <sphereGeometry args={[0.32, 20, 20]} />
-        <meshStandardMaterial color="#b45309" roughness={0.8} />
+      <mesh position={[0, 0.82, 0]} castShadow>
+        <sphereGeometry args={[0.32, 24, 24]} />
+        <meshStandardMaterial color="#b45309" roughness={0.75} />
       </mesh>
+      {/* Snout */}
       <mesh position={[0, 0.76, 0.26]}>
-        <sphereGeometry args={[0.13, 16, 16]} />
-        <meshStandardMaterial color="#fef3c7" roughness={0.9} />
+        <sphereGeometry args={[0.13, 18, 18]} />
+        <meshStandardMaterial color="#fef3c7" roughness={0.85} />
       </mesh>
+      {/* Nose */}
       <mesh position={[0, 0.82, 0.37]}>
-        <sphereGeometry args={[0.04, 12, 12]} />
-        <meshStandardMaterial color="#18181b" roughness={0.3} />
+        <sphereGeometry args={[0.045, 14, 14]} />
+        <meshStandardMaterial color="#18181b" roughness={0.2} metalness={0.1} />
       </mesh>
-      {/* Eyes */}
-      <mesh position={[0.1, 0.88, 0.28]}>
-        <sphereGeometry args={[0.035, 12, 12]} />
-        <meshStandardMaterial color="#09090b" roughness={0.1} />
-      </mesh>
-      <mesh position={[-0.1, 0.88, 0.28]}>
-        <sphereGeometry args={[0.035, 12, 12]} />
-        <meshStandardMaterial color="#09090b" roughness={0.1} />
-      </mesh>
-      {/* Ears */}
-      <mesh position={[0.26, 1.08, 0]}>
-        <sphereGeometry args={[0.11, 16, 16]} />
-        <meshStandardMaterial color="#92400e" roughness={0.8} />
-      </mesh>
-      <mesh position={[-0.26, 1.08, 0]}>
-        <sphereGeometry args={[0.11, 16, 16]} />
-        <meshStandardMaterial color="#92400e" roughness={0.8} />
-      </mesh>
-      {/* Red Bow Tie */}
+      {/* Shiny Button Eyes with Specular Highlights */}
+      <group position={[0.1, 0.88, 0.28]}>
+        <mesh>
+          <sphereGeometry args={[0.038, 14, 14]} />
+          <meshStandardMaterial color="#09090b" roughness={0.05} metalness={0.8} />
+        </mesh>
+        <mesh position={[0.012, 0.012, 0.03]}>
+          <sphereGeometry args={[0.01, 8, 8]} />
+          <meshBasicMaterial color="#ffffff" />
+        </mesh>
+      </group>
+      <group position={[-0.1, 0.88, 0.28]}>
+        <mesh>
+          <sphereGeometry args={[0.038, 14, 14]} />
+          <meshStandardMaterial color="#09090b" roughness={0.05} metalness={0.8} />
+        </mesh>
+        <mesh position={[0.012, 0.012, 0.03]}>
+          <sphereGeometry args={[0.01, 8, 8]} />
+          <meshBasicMaterial color="#ffffff" />
+        </mesh>
+      </group>
+      {/* Ears with Soft Pink Lining */}
+      <group position={[0.26, 1.08, 0]}>
+        <mesh>
+          <sphereGeometry args={[0.11, 18, 18]} />
+          <meshStandardMaterial color="#92400e" roughness={0.8} />
+        </mesh>
+        <mesh position={[0, 0, 0.06]}>
+          <sphereGeometry args={[0.065, 14, 14]} />
+          <meshStandardMaterial color="#fbcfe8" roughness={0.9} />
+        </mesh>
+      </group>
+      <group position={[-0.26, 1.08, 0]}>
+        <mesh>
+          <sphereGeometry args={[0.11, 18, 18]} />
+          <meshStandardMaterial color="#92400e" roughness={0.8} />
+        </mesh>
+        <mesh position={[0, 0, 0.06]}>
+          <sphereGeometry args={[0.065, 14, 14]} />
+          <meshStandardMaterial color="#fbcfe8" roughness={0.9} />
+        </mesh>
+      </group>
+      {/* Golden Royal Crown */}
+      <group position={[0, 1.15, 0]}>
+        <mesh>
+          <cylinderGeometry args={[0.12, 0.1, 0.08, 16]} />
+          <meshStandardMaterial color="#fbbf24" metalness={0.95} roughness={0.15} />
+        </mesh>
+        {[-0.08, 0, 0.08].map((cx, idx) => (
+          <group key={idx} position={[cx, 0.06, 0]}>
+            <mesh>
+              <coneGeometry args={[0.03, 0.07, 8]} />
+              <meshStandardMaterial color="#fbbf24" metalness={0.95} roughness={0.15} />
+            </mesh>
+            <mesh position={[0, 0.04, 0]}>
+              <sphereGeometry args={[0.016, 8, 8]} />
+              <meshStandardMaterial color="#e11d48" metalness={0.8} roughness={0.1} />
+            </mesh>
+          </group>
+        ))}
+      </group>
+      {/* Ruby Bow Tie */}
       <mesh position={[0, 0.6, 0.32]} rotation={[0, 0, Math.PI / 4]}>
-        <boxGeometry args={[0.12, 0.12, 0.04]} />
-        <meshStandardMaterial color="#ef4444" roughness={0.4} />
+        <boxGeometry args={[0.13, 0.13, 0.04]} />
+        <meshStandardMaterial color="#dc2626" roughness={0.3} metalness={0.2} />
       </mesh>
-      {/* Paws */}
-      <mesh position={[0.34, 0.38, 0.15]}>
-        <sphereGeometry args={[0.11, 14, 14]} />
-        <meshStandardMaterial color="#b45309" roughness={0.8} />
-      </mesh>
-      <mesh position={[-0.34, 0.38, 0.15]}>
-        <sphereGeometry args={[0.11, 14, 14]} />
-        <meshStandardMaterial color="#b45309" roughness={0.8} />
-      </mesh>
+      {/* Paws with Stitched Pads */}
+      <group position={[0.34, 0.38, 0.15]}>
+        <mesh>
+          <sphereGeometry args={[0.11, 14, 14]} />
+          <meshStandardMaterial color="#b45309" roughness={0.8} />
+        </mesh>
+        <mesh position={[0, 0, 0.09]}>
+          <sphereGeometry args={[0.045, 10, 10]} />
+          <meshStandardMaterial color="#fef3c7" roughness={0.9} />
+        </mesh>
+      </group>
+      <group position={[-0.34, 0.38, 0.15]}>
+        <mesh>
+          <sphereGeometry args={[0.11, 14, 14]} />
+          <meshStandardMaterial color="#b45309" roughness={0.8} />
+        </mesh>
+        <mesh position={[0, 0, 0.09]}>
+          <sphereGeometry args={[0.045, 10, 10]} />
+          <meshStandardMaterial color="#fef3c7" roughness={0.9} />
+        </mesh>
+      </group>
     </group>
   );
 }
 
-// 3D Rose Bouquet Model
+// 3D Rose Bouquet Model with Swirling Velvet Petals
 function RoseBouquet3D({
   position,
   scale,
@@ -260,15 +321,19 @@ function RoseBouquet3D({
   onClick?: () => void;
 }) {
   const roseRef = useRef<THREE.Group>(null);
+  const petalsRef = useRef<THREE.Group>(null);
 
   useFrame(({ clock }) => {
     if (!roseRef.current) return;
     const t = clock.getElapsedTime();
-    roseRef.current.position.y = position[1] + Math.sin(t * 1.6 + 1) * 0.06;
+    roseRef.current.position.y = position[1] + Math.sin(t * 1.6 + 1) * 0.05;
     if (isSolo) {
-      roseRef.current.rotation.y = t * 0.8;
+      roseRef.current.rotation.y = t * 0.75;
     } else {
-      roseRef.current.rotation.y = -Math.sin(t * 1.2) * 0.2;
+      roseRef.current.rotation.y = -Math.sin(t * 1.1) * 0.22;
+    }
+    if (petalsRef.current) {
+      petalsRef.current.rotation.y = t * 0.9;
     }
   });
 
@@ -284,45 +349,93 @@ function RoseBouquet3D({
         }
       }}
     >
-      <group position={[0, 0.8, 0]}>
+      {/* Central Majestic Velvet Rose */}
+      <group position={[0, 0.82, 0]}>
         <mesh>
-          <sphereGeometry args={[0.22, 16, 16]} />
-          <meshStandardMaterial color="#dc2626" roughness={0.3} />
+          <sphereGeometry args={[0.24, 18, 18]} />
+          <meshStandardMaterial color="#991b1b" roughness={0.35} />
         </mesh>
         <mesh rotation={[0.4, 0.5, 0]}>
-          <cylinderGeometry args={[0.28, 0.2, 0.24, 16, 1, true]} />
-          <meshStandardMaterial color="#e11d48" roughness={0.3} side={THREE.DoubleSide} />
+          <cylinderGeometry args={[0.3, 0.22, 0.26, 16, 1, true]} />
+          <meshStandardMaterial color="#dc2626" roughness={0.3} side={THREE.DoubleSide} />
         </mesh>
         <mesh rotation={[-0.3, -0.6, 0.3]}>
-          <cylinderGeometry args={[0.34, 0.24, 0.28, 16, 1, true]} />
-          <meshStandardMaterial color="#f43f5e" roughness={0.3} side={THREE.DoubleSide} />
+          <cylinderGeometry args={[0.36, 0.26, 0.3, 16, 1, true]} />
+          <meshStandardMaterial color="#e11d48" roughness={0.3} side={THREE.DoubleSide} />
+        </mesh>
+        <mesh rotation={[0.6, -0.2, -0.4]}>
+          <cylinderGeometry args={[0.42, 0.3, 0.32, 16, 1, true]} />
+          <meshStandardMaterial color="#f43f5e" roughness={0.35} side={THREE.DoubleSide} />
         </mesh>
       </group>
-      <group position={[-0.26, 0.68, 0.1]}>
-        <mesh>
-          <sphereGeometry args={[0.15, 14, 14]} />
-          <meshStandardMaterial color="#fb7185" roughness={0.3} />
-        </mesh>
-      </group>
-      <group position={[0.24, 0.68, 0.12]}>
-        <mesh>
-          <sphereGeometry args={[0.15, 14, 14]} />
-          <meshStandardMaterial color="#fb7185" roughness={0.3} />
-        </mesh>
-      </group>
+
+      {/* Surrounding Cluster of Fresh Bloomed Roses */}
+      {[
+        { pos: [-0.28, 0.7, 0.12] as [number, number, number], col: '#e11d48', s: 0.75 },
+        { pos: [0.28, 0.7, 0.12] as [number, number, number], col: '#dc2626', s: 0.75 },
+        { pos: [0, 0.72, -0.25] as [number, number, number], col: '#b91c1c', s: 0.78 },
+        { pos: [-0.18, 0.62, -0.15] as [number, number, number], col: '#f43f5e', s: 0.65 },
+        { pos: [0.18, 0.62, -0.15] as [number, number, number], col: '#fb7185', s: 0.65 },
+      ].map((r, i) => (
+        <group key={i} position={r.pos} scale={[r.s, r.s, r.s]}>
+          <mesh>
+            <sphereGeometry args={[0.18, 14, 14]} />
+            <meshStandardMaterial color={r.col} roughness={0.3} />
+          </mesh>
+          <mesh rotation={[0.3 * i, 0.5 * i, 0]}>
+            <cylinderGeometry args={[0.22, 0.15, 0.2, 14, 1, true]} />
+            <meshStandardMaterial color={r.col} roughness={0.3} side={THREE.DoubleSide} />
+          </mesh>
+        </group>
+      ))}
+
+      {/* Emerald Stems & Leaves */}
       <mesh position={[0, 0.25, 0]}>
-        <cylinderGeometry args={[0.04, 0.04, 0.75, 12]} />
+        <cylinderGeometry args={[0.06, 0.05, 0.75, 12]} />
+        <meshStandardMaterial color="#166534" roughness={0.6} />
+      </mesh>
+      <mesh position={[-0.14, 0.42, 0]} rotation={[0, 0, Math.PI / 4]}>
+        <boxGeometry args={[0.2, 0.02, 0.08]} />
         <meshStandardMaterial color="#15803d" roughness={0.5} />
       </mesh>
-      <mesh position={[0, 0.08, 0]}>
-        <cylinderGeometry args={[0.16, 0.1, 0.26, 16]} />
-        <meshStandardMaterial color="#fbbf24" metalness={0.8} roughness={0.2} />
+      <mesh position={[0.14, 0.38, 0]} rotation={[0, 0, -Math.PI / 4]}>
+        <boxGeometry args={[0.2, 0.02, 0.08]} />
+        <meshStandardMaterial color="#15803d" roughness={0.5} />
       </mesh>
+
+      {/* Golden Luxury Vase & Ribbon */}
+      <mesh position={[0, 0.08, 0]}>
+        <cylinderGeometry args={[0.18, 0.12, 0.28, 20]} />
+        <meshStandardMaterial color="#fbbf24" metalness={0.9} roughness={0.15} />
+      </mesh>
+      <mesh position={[0, 0.18, 0]}>
+        <torusGeometry args={[0.185, 0.02, 16, 24]} />
+        <meshStandardMaterial color="#e11d48" metalness={0.4} roughness={0.2} />
+      </mesh>
+
+      {/* Orbiting Swirling Rose Petals */}
+      <group ref={petalsRef} position={[0, 0.65, 0]}>
+        {[0, 1, 2, 3, 4, 5].map((idx) => {
+          const angle = (idx / 6) * Math.PI * 2;
+          const radius = 0.52 + (idx % 2) * 0.12;
+          const py = Math.sin(idx) * 0.18;
+          return (
+            <mesh
+              key={idx}
+              position={[Math.cos(angle) * radius, py, Math.sin(angle) * radius]}
+              rotation={[0.4, angle, 0.3]}
+            >
+              <sphereGeometry args={[0.045, 8, 8]} />
+              <meshStandardMaterial color="#e11d48" roughness={0.4} />
+            </mesh>
+          );
+        })}
+      </group>
     </group>
   );
 }
 
-// 3D Diamond Heart Pendant Model
+// 3D Diamond Heart Pendant Model with Dual Orbital Halos
 function DiamondHeart3D({
   position,
   scale,
@@ -336,6 +449,7 @@ function DiamondHeart3D({
 }) {
   const giftRef = useRef<THREE.Group>(null);
   const ringRef = useRef<THREE.Mesh>(null);
+  const outerRingRef = useRef<THREE.Mesh>(null);
 
   const heartShape = useMemo(() => {
     const shape = new THREE.Shape();
@@ -376,6 +490,10 @@ function DiamondHeart3D({
       ringRef.current.rotation.z = t * 0.8;
       ringRef.current.rotation.x = Math.PI / 4 + Math.sin(t) * 0.15;
     }
+    if (outerRingRef.current) {
+      outerRingRef.current.rotation.y = -t * 0.65;
+      outerRingRef.current.rotation.z = Math.PI / 3 + Math.cos(t * 0.8) * 0.12;
+    }
   });
 
   return (
@@ -390,43 +508,52 @@ function DiamondHeart3D({
         }
       }}
     >
+      {/* Brilliant Rose Diamond Heart */}
       <mesh position={[0, 0.05, -0.07]}>
         <extrudeGeometry args={[heartShape, extrudeSettings]} />
         <meshPhysicalMaterial
           color="#f43f5e"
           emissive="#e11d48"
           emissiveIntensity={0.65}
-          roughness={0.12}
-          metalness={0.4}
+          roughness={0.08}
+          metalness={0.35}
           clearcoat={1}
-          clearcoatRoughness={0.1}
+          clearcoatRoughness={0.08}
         />
       </mesh>
+      {/* Central High-Refraction Diamond Core */}
       <mesh position={[0, 0.06, 0.03]}>
-        <octahedronGeometry args={[0.18, 0]} />
+        <octahedronGeometry args={[0.2, 0]} />
         <meshPhysicalMaterial
           color="#ffffff"
           emissive="#fef08a"
-          emissiveIntensity={0.8}
-          roughness={0.05}
+          emissiveIntensity={0.85}
+          roughness={0.04}
           metalness={0.95}
           clearcoat={1}
         />
       </mesh>
+      {/* Bail Mount */}
       <mesh position={[0, 0.42, 0]}>
         <torusGeometry args={[0.075, 0.02, 16, 32]} />
         <meshStandardMaterial color="#fbbf24" metalness={0.9} roughness={0.15} />
       </mesh>
+      {/* Inner Celestial Gold Halo */}
       <mesh ref={ringRef} position={[0, 0.06, 0]}>
         <torusGeometry args={[0.66, 0.015, 16, 64]} />
         <meshStandardMaterial color="#fcd34d" metalness={0.95} roughness={0.1} />
+      </mesh>
+      {/* Outer Rose Gold Orbital Ring */}
+      <mesh ref={outerRingRef} position={[0, 0.06, 0]}>
+        <torusGeometry args={[0.82, 0.012, 16, 64]} />
+        <meshStandardMaterial color="#f472b6" metalness={0.95} roughness={0.1} />
       </mesh>
       <pointLight color="#ff2d75" intensity={2.8} distance={3.0} />
     </group>
   );
 }
 
-// 3D Belgian Chocolates Box
+// 3D Belgian Chocolates Box with Handcrafted Truffles
 function Chocolates3D({
   position,
   scale,
@@ -463,25 +590,46 @@ function Chocolates3D({
         }
       }}
     >
-      <mesh position={[0, 0.2, 0]}>
-        <cylinderGeometry args={[0.55, 0.55, 0.22, 24]} />
-        <meshStandardMaterial color="#d97706" metalness={0.8} roughness={0.2} />
+      {/* Golden Box Base */}
+      <mesh position={[0, 0.2, 0]} castShadow>
+        <cylinderGeometry args={[0.55, 0.55, 0.22, 28]} />
+        <meshStandardMaterial color="#d97706" metalness={0.85} roughness={0.18} />
       </mesh>
+      {/* Red Velvet Quilted Interior */}
       <mesh position={[0, 0.32, 0]}>
-        <cylinderGeometry args={[0.58, 0.58, 0.04, 24]} />
-        <meshStandardMaterial color="#ef4444" roughness={0.4} />
+        <cylinderGeometry args={[0.58, 0.58, 0.04, 28]} />
+        <meshStandardMaterial color="#dc2626" roughness={0.4} />
       </mesh>
-      <mesh position={[-0.18, 0.36, -0.1]}>
-        <sphereGeometry args={[0.1, 14, 14]} />
-        <meshStandardMaterial color="#3e2723" roughness={0.3} />
-      </mesh>
-      <mesh position={[0.18, 0.36, -0.1]}>
+      {/* Truffle 1: Dark Chocolate Swirl with Gold Leaf */}
+      <group position={[-0.2, 0.38, -0.1]}>
+        <mesh>
+          <sphereGeometry args={[0.1, 14, 14]} />
+          <meshStandardMaterial color="#2d1810" roughness={0.25} />
+        </mesh>
+        <mesh position={[0, 0.09, 0]}>
+          <coneGeometry args={[0.03, 0.04, 8]} />
+          <meshStandardMaterial color="#fbbf24" metalness={0.95} roughness={0.1} />
+        </mesh>
+      </group>
+      {/* Truffle 2: Milk Chocolate Hazelnut Praline */}
+      <mesh position={[0.2, 0.38, -0.1]}>
         <sphereGeometry args={[0.1, 14, 14]} />
         <meshStandardMaterial color="#5d4037" roughness={0.3} />
       </mesh>
-      <mesh position={[0, 0.36, 0.16]}>
-        <sphereGeometry args={[0.1, 14, 14]} />
-        <meshStandardMaterial color="#fbbf24" metalness={0.9} roughness={0.15} />
+      {/* Truffle 3: White Chocolate Strawberry Truffle */}
+      <mesh position={[-0.15, 0.38, 0.16]}>
+        <sphereGeometry args={[0.09, 14, 14]} />
+        <meshStandardMaterial color="#fef08a" roughness={0.35} />
+      </mesh>
+      {/* Truffle 4: Golden Heart Wrapped Bonbon */}
+      <mesh position={[0.15, 0.38, 0.16]}>
+        <sphereGeometry args={[0.09, 14, 14]} />
+        <meshStandardMaterial color="#fbbf24" metalness={0.92} roughness={0.15} />
+      </mesh>
+      {/* Truffle 5: Center Dark Cocoa Truffle */}
+      <mesh position={[0, 0.39, 0.03]}>
+        <sphereGeometry args={[0.11, 16, 16]} />
+        <meshStandardMaterial color="#1a0f0a" roughness={0.8} />
       </mesh>
     </group>
   );
@@ -759,29 +907,11 @@ const GiftScene: React.FC = () => {
           {/* Landing Target Drop Zone Platform */}
           <LandingPedestalDropZone isDelivered={isDelivered} />
 
-          {/* SOLO SPOTLIGHT VIEW when a specific opened gift is clicked */}
-          {selectedGiftId && (
-            <Float speed={1.2} rotationIntensity={0.08} floatIntensity={0.15}>
-              {selectedGiftId === 'teddy' && (
-                <TeddyBear3D position={[0, 0.45, 0]} scale={0.75} isSolo={true} />
-              )}
-              {selectedGiftId === 'rose' && (
-                <RoseBouquet3D position={[0, 0.35, 0]} scale={0.8} isSolo={true} />
-              )}
-              {selectedGiftId === 'diamond' && (
-                <DiamondHeart3D position={[0, 0.55, 0]} scale={1.25} isSolo={true} />
-              )}
-              {selectedGiftId === 'chocolates' && (
-                <Chocolates3D position={[0, 0.45, 0]} scale={1.1} isSolo={true} />
-              )}
-            </Float>
-          )}
-
-          {/* 4 INDIVIDUAL GIFTS (Each opens individually!) Shown when not in solo spotlight */}
-          {isDelivered && !selectedGiftId && (
+          {/* ALL 4 SURPRISE GIFTS ALWAYS CO-VISIBLE ON THE PLATFORM TOGETHER (Opening one NEVER hides the others!) */}
+          {isDelivered && (
             <group position={[0, 0, 0]}>
-              {/* Gift 1: Teddy Bear */}
-              <group position={[-1.25, 0.1, 0.2]}>
+              {/* Gift 1: Plush Teddy Bear */}
+              <group position={[-1.42, 0.1, 0.05]}>
                 {!openedGiftIds.has('teddy') ? (
                   <SingleGiftBox3D
                     position={[0, 0, 0]}
@@ -791,17 +921,28 @@ const GiftScene: React.FC = () => {
                     onOpen={() => handleOpenIndividualGift('teddy')}
                   />
                 ) : (
-                  <TeddyBear3D
-                    position={[0, 0.35, 0]}
-                    scale={0.46}
-                    isSolo={false}
-                    onClick={() => handleSelectGift('teddy')}
-                  />
+                  <group position={[0, selectedGiftId === 'teddy' ? 0.32 : 0.12, 0]}>
+                    {selectedGiftId === 'teddy' && (
+                      <>
+                        <pointLight position={[0, 1.2, 0]} intensity={3.5} color="#fbbf24" distance={3.2} />
+                        <mesh position={[0, -0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                          <ringGeometry args={[0.42, 0.52, 32]} />
+                          <meshBasicMaterial color="#fbbf24" transparent opacity={0.65} side={THREE.DoubleSide} />
+                        </mesh>
+                      </>
+                    )}
+                    <TeddyBear3D
+                      position={[0, 0.15, 0]}
+                      scale={selectedGiftId === 'teddy' ? 0.74 : 0.46}
+                      isSolo={selectedGiftId === 'teddy'}
+                      onClick={() => handleSelectGift('teddy')}
+                    />
+                  </group>
                 )}
               </group>
 
-              {/* Gift 2: 100 Red Roses */}
-              <group position={[-0.42, 0.1, 0.4]}>
+              {/* Gift 2: 100 Red Roses Bouquet */}
+              <group position={[-0.48, 0.1, 0.35]}>
                 {!openedGiftIds.has('rose') ? (
                   <SingleGiftBox3D
                     position={[0, 0, 0]}
@@ -811,17 +952,28 @@ const GiftScene: React.FC = () => {
                     onOpen={() => handleOpenIndividualGift('rose')}
                   />
                 ) : (
-                  <RoseBouquet3D
-                    position={[0, 0.3, 0]}
-                    scale={0.5}
-                    isSolo={false}
-                    onClick={() => handleSelectGift('rose')}
-                  />
+                  <group position={[0, selectedGiftId === 'rose' ? 0.32 : 0.12, 0]}>
+                    {selectedGiftId === 'rose' && (
+                      <>
+                        <pointLight position={[0, 1.2, 0]} intensity={3.5} color="#fbbf24" distance={3.2} />
+                        <mesh position={[0, -0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                          <ringGeometry args={[0.42, 0.52, 32]} />
+                          <meshBasicMaterial color="#f43f5e" transparent opacity={0.65} side={THREE.DoubleSide} />
+                        </mesh>
+                      </>
+                    )}
+                    <RoseBouquet3D
+                      position={[0, 0.15, 0]}
+                      scale={selectedGiftId === 'rose' ? 0.74 : 0.48}
+                      isSolo={selectedGiftId === 'rose'}
+                      onClick={() => handleSelectGift('rose')}
+                    />
+                  </group>
                 )}
               </group>
 
-              {/* Gift 3: Diamond Heart */}
-              <group position={[0.42, 0.1, 0.4]}>
+              {/* Gift 3: Diamond Heart Pendant */}
+              <group position={[0.48, 0.1, 0.35]}>
                 {!openedGiftIds.has('diamond') ? (
                   <SingleGiftBox3D
                     position={[0, 0, 0]}
@@ -831,17 +983,28 @@ const GiftScene: React.FC = () => {
                     onOpen={() => handleOpenIndividualGift('diamond')}
                   />
                 ) : (
-                  <DiamondHeart3D
-                    position={[0, 0.42, 0]}
-                    scale={0.72}
-                    isSolo={false}
-                    onClick={() => handleSelectGift('diamond')}
-                  />
+                  <group position={[0, selectedGiftId === 'diamond' ? 0.32 : 0.12, 0]}>
+                    {selectedGiftId === 'diamond' && (
+                      <>
+                        <pointLight position={[0, 1.2, 0]} intensity={3.5} color="#fbbf24" distance={3.2} />
+                        <mesh position={[0, -0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                          <ringGeometry args={[0.42, 0.52, 32]} />
+                          <meshBasicMaterial color="#38bdf8" transparent opacity={0.65} side={THREE.DoubleSide} />
+                        </mesh>
+                      </>
+                    )}
+                    <DiamondHeart3D
+                      position={[0, 0.22, 0]}
+                      scale={selectedGiftId === 'diamond' ? 1.08 : 0.68}
+                      isSolo={selectedGiftId === 'diamond'}
+                      onClick={() => handleSelectGift('diamond')}
+                    />
+                  </group>
                 )}
               </group>
 
-              {/* Gift 4: Belgian Chocolates */}
-              <group position={[1.25, 0.1, 0.2]}>
+              {/* Gift 4: Belgian Luxury Chocolates */}
+              <group position={[1.42, 0.1, 0.05]}>
                 {!openedGiftIds.has('chocolates') ? (
                   <SingleGiftBox3D
                     position={[0, 0, 0]}
@@ -851,12 +1014,23 @@ const GiftScene: React.FC = () => {
                     onOpen={() => handleOpenIndividualGift('chocolates')}
                   />
                 ) : (
-                  <Chocolates3D
-                    position={[0, 0.35, 0]}
-                    scale={0.68}
-                    isSolo={false}
-                    onClick={() => handleSelectGift('chocolates')}
-                  />
+                  <group position={[0, selectedGiftId === 'chocolates' ? 0.32 : 0.12, 0]}>
+                    {selectedGiftId === 'chocolates' && (
+                      <>
+                        <pointLight position={[0, 1.2, 0]} intensity={3.5} color="#fbbf24" distance={3.2} />
+                        <mesh position={[0, -0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                          <ringGeometry args={[0.42, 0.52, 32]} />
+                          <meshBasicMaterial color="#fbbf24" transparent opacity={0.65} side={THREE.DoubleSide} />
+                        </mesh>
+                      </>
+                    )}
+                    <Chocolates3D
+                      position={[0, 0.18, 0]}
+                      scale={selectedGiftId === 'chocolates' ? 0.98 : 0.65}
+                      isSolo={selectedGiftId === 'chocolates'}
+                      onClick={() => handleSelectGift('chocolates')}
+                    />
+                  </group>
                 )}
               </group>
             </group>
@@ -1054,6 +1228,39 @@ const GiftScene: React.FC = () => {
             <p style={{ fontSize: '0.82rem', color: '#e2e8f0', margin: '0 0 0.6rem 0', lineHeight: 1.4 }}>
               {selectedGift.description}
             </p>
+
+            {/* Quick Switcher Between All 4 Gifts */}
+            <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
+              {GIFTS.map((g) => {
+                const isCurrent = g.id === selectedGift.id;
+                const isOpened = openedGiftIds.has(g.id);
+                return (
+                  <button
+                    key={g.id}
+                    type="button"
+                    onClick={() => {
+                      if (!isOpened) {
+                        handleOpenIndividualGift(g.id);
+                      } else {
+                        handleSelectGift(g.id);
+                      }
+                    }}
+                    style={{
+                      background: isCurrent ? 'rgba(251, 191, 36, 0.28)' : 'rgba(255, 255, 255, 0.08)',
+                      border: isCurrent ? '1.5px solid #fbbf24' : '1px solid rgba(255, 255, 255, 0.2)',
+                      borderRadius: '12px',
+                      padding: '4px 10px',
+                      color: isCurrent ? '#fbbf24' : '#fff',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <span>{g.emoji}</span> <span>{g.name.split(' ')[0]}</span>
+                  </button>
+                );
+              })}
+            </div>
 
             {/* Harshit's Promised Gift Delivery Announcement! */}
             <div

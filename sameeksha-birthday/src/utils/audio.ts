@@ -13,19 +13,7 @@ export interface PlaylistTrack {
 }
 
 export const PLAYLIST_TRACKS: PlaylistTrack[] = [
-  // ========== 1. FRONT PAGE SOUNDTRACK ==========
-  {
-    id: 'hindi-romantic',
-    title: 'Aaja Sanam Madhur Chandni',
-    artist: 'Soulful Bollywood Romance Instrumental',
-    category: 'hindi',
-    type: 'file',
-    src: '/audio/hindi-romantic.mp3',
-    duration: '4:38',
-    description: 'Timeless Bollywood romantic acoustic melody with acoustic guitar and strings for Sameeksha',
-  },
-
-  // ========== 2. HINDI ROMANTIC VOCAL HITS ==========
+  // ========== 1. HINDI ROMANTIC VOCAL HITS ==========
   {
     id: 'hindi-tum-hi-ho',
     title: 'Tum Hi Ho',
@@ -34,7 +22,7 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     type: 'file',
     src: '/audio/hindi-tum-hi-ho.mp3',
     duration: '4:22',
-    description: 'Iconic heartfelt Bollywood romantic ballad with Arijit Singh vocals',
+    description: 'Iconic heartfelt Bollywood romantic ballad with soulful Arijit Singh vocals',
   },
   {
     id: 'hindi-dil-diyan-gallan',
@@ -57,26 +45,16 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     description: 'Heart-touching romantic melody with magical male-female duet vocals',
   },
 
-  // ========== 3. BIRTHDAY CELEBRATION HITS ==========
+  // ========== 2. BIRTHDAY CELEBRATION HITS ==========
   {
     id: 'birthday-pop',
     title: 'Happy Birthday Pop Celebration',
-    artist: 'Joyful Birthday Pop Ensemble',
+    artist: 'Joyful Birthday Pop Anthem',
     category: 'birthday',
     type: 'file',
     src: '/audio/birthday-pop.mp3',
     duration: '3:12',
     description: 'Upbeat, modern, catchy celebration birthday song for cake cutting',
-  },
-  {
-    id: 'birthday-teddy',
-    title: 'Teddy Sings Happy Birthday',
-    artist: 'Cute Mascot Ensemble',
-    category: 'birthday',
-    type: 'file',
-    src: '/audio/birthday-teddy.mp3',
-    duration: '2:35',
-    description: 'Adorable mascot song celebrating Sameeksha\'s 23rd birthday',
   },
   {
     id: 'bollywood-birthday',
@@ -88,8 +66,18 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     duration: '4:48',
     description: 'All-time classic Bollywood birthday anthem for Sameeksha baby',
   },
+  {
+    id: 'birthday-teddy',
+    title: 'Teddy Sings Happy Birthday',
+    artist: 'Cute Mascot Ensemble',
+    category: 'birthday',
+    type: 'file',
+    src: '/audio/birthday-teddy.mp3',
+    duration: '2:35',
+    description: 'Adorable mascot song celebrating Sameeksha\'s 23rd birthday',
+  },
 
-  // ========== 4. PUNJABI REAL HITS ==========
+  // ========== 3. PUNJABI REAL VOCAL HITS ==========
   {
     id: 'punjabi-bhangra',
     title: 'Mundian To Bach Ke',
@@ -141,7 +129,7 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     description: 'High voltage Punjabi Gidda dance celebration track',
   },
 
-  // ========== 5. PARTY DANCE BUSTERS ==========
+  // ========== 4. PARTY DANCE BUSTERS ==========
   {
     id: 'party-brown-rang',
     title: 'Brown Rang',
@@ -171,18 +159,6 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     src: '/audio/party-love-dose.mp3',
     duration: '3:48',
     description: 'Flirty, joyful party romance dance hit',
-  },
-
-  // ========== 6. THEME / BGM ==========
-  {
-    id: 'theme-lofi',
-    title: 'Midnight Starlight Romance',
-    artist: 'Celestial Chill Romance BGM',
-    category: 'theme',
-    type: 'file',
-    src: '/audio/theme-lofi.mp3',
-    duration: '2:13',
-    description: 'Warm, cozy tape-saturated lo-fi guitar chords and ambient beats',
   },
 ];
 
@@ -238,6 +214,14 @@ class SoundManager {
         this.nextTrack();
       });
 
+      this.audioElement.addEventListener('timeupdate', () => {
+        this.notify();
+      });
+
+      this.audioElement.addEventListener('loadedmetadata', () => {
+        this.notify();
+      });
+
       this.audioElement.addEventListener('error', () => {
         console.warn('Audio file playback failed. Falling back to procedural audio engine.');
         if (this.isAudioPlaying) {
@@ -249,6 +233,23 @@ class SoundManager {
 
   public isPlaying(): boolean {
     return this.isAudioPlaying;
+  }
+
+  public getCurrentTime(): number {
+    return this.audioElement ? this.audioElement.currentTime : 0;
+  }
+
+  public getDuration(): number {
+    return this.audioElement && !isNaN(this.audioElement.duration)
+      ? this.audioElement.duration
+      : 0;
+  }
+
+  public seekTo(seconds: number) {
+    if (this.audioElement) {
+      this.audioElement.currentTime = Math.max(0, Math.min(seconds, this.audioElement.duration || 0));
+      this.notify();
+    }
   }
 
   public getCurrentTrack(): PlaylistTrack {

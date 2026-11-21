@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useExperienceStore } from '../../state/experienceStore';
 import { content } from '../../content/siteContent';
@@ -15,9 +15,40 @@ const flowers = [
   { emoji: '💐', color: '#a855f7' },
 ];
 
+const PARTY_HITS = [
+  { id: 'party-angreji-beat', name: 'Angreji Beat', emoji: '🎉', artist: 'Honey Singh & Gippy' },
+  { id: 'punjabi-bhangra', name: 'Mundian To Bach Ke', emoji: '🥁', artist: 'Panjabi MC' },
+  { id: 'party-brown-rang', name: 'Brown Rang', emoji: '🔥', artist: 'Honey Singh' },
+  { id: 'punjabi-blue-eyes', name: 'Blue Eyes', emoji: '💙', artist: 'Honey Singh' },
+  { id: 'party-dope-shope', name: 'Dope Shope', emoji: '💃', artist: 'Deep Money' },
+];
+
 const FinaleScene: React.FC = () => {
   const setScene = useExperienceStore((s) => s.setScene);
   const [selectedFlower, setSelectedFlower] = useState<number | null>(null);
+  const [currentPartyTrackId, setCurrentPartyTrackId] = useState<string>(soundManager.getCurrentTrack().id);
+
+  // Automatically start high-energy party Punjabi soundtrack when entering finale poppers scene!
+  useEffect(() => {
+    soundManager.playTrack('party-angreji-beat');
+    if (!soundManager.isPlaying()) {
+      soundManager.startAmbient();
+    }
+
+    const unsub = soundManager.subscribe(() => {
+      setCurrentPartyTrackId(soundManager.getCurrentTrack().id);
+    });
+    return () => {
+      unsub();
+    };
+  }, []);
+
+  const handleSelectPartyTrack = (trackId: string) => {
+    soundManager.playTrack(trackId);
+    if (!soundManager.isPlaying()) {
+      soundManager.startAmbient();
+    }
+  };
 
   const compliments = content.compliments;
 
@@ -69,6 +100,62 @@ const FinaleScene: React.FC = () => {
 
           {/* Realistic Party Popper with Banner */}
           <RealisticPopper />
+
+          {/* Party & Punjabi Celebration Soundtrack Chips */}
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(251, 191, 36, 0.35)',
+              borderRadius: '20px',
+              padding: '14px 18px',
+              margin: '1.2rem auto',
+              maxWidth: '650px',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
+            <div style={{ fontSize: '0.92rem', color: '#fbbf24', fontWeight: 700, marginBottom: '4px' }}>
+              🎉 Party & Punjabi Celebration Soundtrack 🥁
+            </div>
+            <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.7)', marginBottom: '10px' }}>
+              Tap any song to blast your favorite Punjabi dance party anthem while popping poppers!
+            </div>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+              {PARTY_HITS.map((hit) => {
+                const isActive = currentPartyTrackId === hit.id;
+                return (
+                  <motion.button
+                    key={hit.id}
+                    type="button"
+                    onClick={() => handleSelectPartyTrack(hit.id)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    style={{
+                      background: isActive
+                        ? 'linear-gradient(135deg, #f59e0b, #ec4899)'
+                        : 'rgba(255, 255, 255, 0.08)',
+                      border: isActive
+                        ? '1px solid #fbbf24'
+                        : '1px solid rgba(255, 255, 255, 0.15)',
+                      borderRadius: '16px',
+                      padding: '7px 12px',
+                      color: '#fff',
+                      fontSize: '0.78rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      boxShadow: isActive ? '0 4px 14px rgba(245, 158, 11, 0.4)' : 'none',
+                    }}
+                  >
+                    <span>{hit.emoji}</span>
+                    <span>{hit.name}</span>
+                    {isActive && <span style={{ fontSize: '0.68rem', color: '#fef08a' }}>🔊</span>}
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
 
           {/* Navigation Action Buttons */}
           <div className="finale-buttons">

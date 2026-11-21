@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { soundManager, PLAYLIST_TRACKS, type PlaylistTrack } from '../utils/audio';
 
-type MusicCategory = 'all' | 'hindi' | 'punjabi' | 'theme' | 'birthday' | 'party';
+type MusicCategory = 'all' | 'hindi' | 'punjabi' | 'birthday' | 'party';
 
 export const MusicPlaylist: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,17 +10,39 @@ export const MusicPlaylist: React.FC = () => {
   const [currentTrack, setCurrentTrack] = useState<PlaylistTrack>(soundManager.getCurrentTrack());
   const [activeCategory, setActiveCategory] = useState<MusicCategory>('all');
   const [volume, setVolume] = useState(soundManager.getVolume());
+  const [currentTime, setCurrentTime] = useState<number>(soundManager.getCurrentTime());
+  const [duration, setDuration] = useState<number>(soundManager.getDuration());
 
   useEffect(() => {
     const unsubscribe = soundManager.subscribe(() => {
       setIsPlaying(soundManager.isPlaying());
       setCurrentTrack(soundManager.getCurrentTrack());
       setVolume(soundManager.getVolume());
+      setCurrentTime(soundManager.getCurrentTime());
+      setDuration(soundManager.getDuration());
     });
     return () => {
       unsubscribe();
     };
   }, []);
+
+  const formatTime = (secs: number) => {
+    if (isNaN(secs) || secs < 0) return '0:00';
+    const m = Math.floor(secs / 60);
+    const s = Math.floor(secs % 60);
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const targetTime = parseFloat(e.target.value);
+    setCurrentTime(targetTime);
+    soundManager.seekTo(targetTime);
+  };
+
+  const handleJump = (offsetSecs: number) => {
+    const now = soundManager.getCurrentTime();
+    soundManager.seekTo(now + offsetSecs);
+  };
 
   const handleTogglePlay = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -44,7 +66,6 @@ export const MusicPlaylist: React.FC = () => {
     if (activeCategory === 'all') return true;
     if (activeCategory === 'hindi') return t.category === 'hindi';
     if (activeCategory === 'punjabi') return t.category === 'punjabi';
-    if (activeCategory === 'theme') return t.category === 'theme';
     if (activeCategory === 'birthday') return t.category === 'birthday' || t.id === 'bollywood-birthday';
     if (activeCategory === 'party') return t.category === 'party';
     return true;
@@ -164,35 +185,6 @@ export const MusicPlaylist: React.FC = () => {
         >
           {isPlaying ? '⏸' : '▶'}
         </button>
-
-        {/* Quick Shuffle Random Button in Mini Pill */}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            soundManager.playRandomTrack();
-            if (!soundManager.isPlaying()) {
-              soundManager.startAmbient();
-            }
-          }}
-          style={{
-            background: 'rgba(251, 191, 36, 0.2)',
-            border: '1px solid #fbbf24',
-            borderRadius: '50%',
-            width: '28px',
-            height: '28px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#fbbf24',
-            cursor: 'pointer',
-            fontSize: '0.75rem',
-          }}
-          title="Play Random Song"
-          aria-label="Play random song"
-        >
-          🔀
-        </button>
       </motion.div>
 
       {/* Full Music Playlist Drawer Modal */}
@@ -246,7 +238,7 @@ export const MusicPlaylist: React.FC = () => {
                       Birthday Playlist
                     </h3>
                     <p style={{ margin: 0, fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.65)' }}>
-                      Curated Hindi, Punjabi & Theme BGM for Sameeksha Baby 💖
+                      Curated Real Hindi, Punjabi & Birthday Songs for Sameeksha Baby 💖
                     </p>
                   </div>
                 </div>
@@ -279,12 +271,11 @@ export const MusicPlaylist: React.FC = () => {
                 }}
               >
                 {[
-                  { id: 'all', label: 'All' },
+                  { id: 'all', label: 'All Songs' },
                   { id: 'hindi', label: '🇮🇳 Real Hindi' },
                   { id: 'punjabi', label: '🥁 Punjabi Hits' },
-                  { id: 'theme', label: '🎹 Theme & BGM' },
                   { id: 'birthday', label: '🎂 Birthday' },
-                  { id: 'party', label: '🎉 Party' },
+                  { id: 'party', label: '🎉 Party Hits' },
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -381,151 +372,221 @@ export const MusicPlaylist: React.FC = () => {
                 })}
               </div>
 
-              {/* Master Volume Slider & Controls */}
+              {/* Master Audio Seek Bar & Playback Controls */}
               <div
                 style={{
                   padding: '16px 20px',
-                  background: 'rgba(0, 0, 0, 0.35)',
+                  background: 'rgba(0, 0, 0, 0.45)',
                   borderTop: '1px solid rgba(255, 255, 255, 0.08)',
                   display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '16px',
+                  flexDirection: 'column',
+                  gap: '12px',
                 }}
               >
-                {/* Previous / Play / Next Controls */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <button
-                    type="button"
-                    onClick={() => soundManager.prevTrack()}
+                {/* 1. Interactive Scrubbable Song Timeline Seek Bar */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%' }}>
+                  <span
                     style={{
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: '32px',
-                      height: '32px',
-                      color: '#fff',
-                      cursor: 'pointer',
-                      fontSize: '0.85rem',
-                    }}
-                    title="Previous Song"
-                  >
-                    ⏮
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => soundManager.toggleAmbient()}
-                    style={{
-                      background: 'linear-gradient(135deg, #f59e0b, #ec4899)',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: '40px',
-                      height: '40px',
-                      color: '#fff',
-                      cursor: 'pointer',
-                      fontSize: '1rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: '0 4px 15px rgba(245, 158, 11, 0.4)',
-                    }}
-                  >
-                    {isPlaying ? '⏸' : '▶'}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => soundManager.nextTrack()}
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: '32px',
-                      height: '32px',
-                      color: '#fff',
-                      cursor: 'pointer',
-                      fontSize: '0.85rem',
-                    }}
-                    title="Next Song"
-                  >
-                    ⏭
-                  </button>
-
-                  {/* Shuffle / Random Song Button */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      soundManager.playRandomTrack();
-                      if (!soundManager.isPlaying()) {
-                        soundManager.startAmbient();
-                      }
-                    }}
-                    style={{
-                      background: 'rgba(251, 191, 36, 0.18)',
-                      border: '1px solid rgba(251, 191, 36, 0.5)',
-                      borderRadius: '20px',
-                      padding: '6px 12px',
+                      fontSize: '0.74rem',
                       color: '#fbbf24',
-                      cursor: 'pointer',
-                      fontSize: '0.8rem',
                       fontWeight: 600,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
+                      minWidth: '34px',
+                      textAlign: 'right',
+                      fontVariantNumeric: 'tabular-nums',
                     }}
-                    title="Play Random Song"
                   >
-                    <span>🔀</span>
-                    <span>Random</span>
-                  </button>
+                    {formatTime(currentTime)}
+                  </span>
 
-                  {/* Shuffle / Random Song Button */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      soundManager.playRandomTrack();
-                      if (!soundManager.isPlaying()) {
-                        soundManager.startAmbient();
-                      }
-                    }}
-                    style={{
-                      background: 'rgba(251, 191, 36, 0.2)',
-                      border: '1px solid rgba(251, 191, 36, 0.5)',
-                      borderRadius: '20px',
-                      padding: '4px 10px',
-                      color: '#fbbf24',
-                      cursor: 'pointer',
-                      fontSize: '0.78rem',
-                      fontWeight: 600,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                    }}
-                    title="Play a Random Song"
-                  >
-                    <span>🔀 Random</span>
-                  </button>
-                </div>
-
-                {/* Volume Slider */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, maxWidth: '160px' }}>
-                  <span style={{ fontSize: '0.9rem', opacity: 0.7 }}>🔈</span>
                   <input
                     type="range"
                     min="0"
-                    max="1"
-                    step="0.01"
-                    value={volume}
-                    onChange={handleVolumeChange}
+                    max={duration > 0 ? duration : 100}
+                    step="0.5"
+                    value={currentTime}
+                    onChange={handleSeek}
                     style={{
                       flex: 1,
+                      height: '6px',
                       accentColor: '#fbbf24',
                       cursor: 'pointer',
+                      borderRadius: '9999px',
                     }}
-                    aria-label="Volume slider"
+                    aria-label="Audio scrubber timeline"
                   />
-                  <span style={{ fontSize: '0.9rem', opacity: 0.7 }}>🔊</span>
+
+                  <span
+                    style={{
+                      fontSize: '0.74rem',
+                      color: 'rgba(255, 255, 255, 0.65)',
+                      minWidth: '34px',
+                      fontVariantNumeric: 'tabular-nums',
+                    }}
+                  >
+                    {duration > 0 ? formatTime(duration) : currentTrack.duration}
+                  </span>
+                </div>
+
+                {/* 2. Control Buttons & Volume */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '12px',
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  {/* Playback Buttons */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    {/* Rewind 10s */}
+                    <button
+                      type="button"
+                      onClick={() => handleJump(-10)}
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.08)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        borderRadius: '16px',
+                        padding: '4px 8px',
+                        color: '#fbbf24',
+                        cursor: 'pointer',
+                        fontSize: '0.72rem',
+                        fontWeight: 600,
+                      }}
+                      title="Rewind 10 seconds"
+                    >
+                      ⏪ 10s
+                    </button>
+
+                    {/* Previous Song */}
+                    <button
+                      type="button"
+                      onClick={() => soundManager.prevTrack()}
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '32px',
+                        height: '32px',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        fontSize: '0.85rem',
+                      }}
+                      title="Previous Song"
+                    >
+                      ⏮
+                    </button>
+
+                    {/* Play / Pause Primary Button */}
+                    <button
+                      type="button"
+                      onClick={() => soundManager.toggleAmbient()}
+                      style={{
+                        background: 'linear-gradient(135deg, #f59e0b, #ec4899)',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '40px',
+                        height: '40px',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        fontSize: '1rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 4px 15px rgba(245, 158, 11, 0.4)',
+                      }}
+                      title={isPlaying ? 'Pause' : 'Play'}
+                    >
+                      {isPlaying ? '⏸' : '▶'}
+                    </button>
+
+                    {/* Next Song */}
+                    <button
+                      type="button"
+                      onClick={() => soundManager.nextTrack()}
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '32px',
+                        height: '32px',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        fontSize: '0.85rem',
+                      }}
+                      title="Next Song"
+                    >
+                      ⏭
+                    </button>
+
+                    {/* Fast Forward 10s */}
+                    <button
+                      type="button"
+                      onClick={() => handleJump(10)}
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.08)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        borderRadius: '16px',
+                        padding: '4px 8px',
+                        color: '#fbbf24',
+                        cursor: 'pointer',
+                        fontSize: '0.72rem',
+                        fontWeight: 600,
+                      }}
+                      title="Forward 10 seconds"
+                    >
+                      10s ⏩
+                    </button>
+
+                    {/* Single Shuffle / Random Button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        soundManager.playRandomTrack();
+                        if (!soundManager.isPlaying()) {
+                          soundManager.startAmbient();
+                        }
+                      }}
+                      style={{
+                        background: 'rgba(251, 191, 36, 0.18)',
+                        border: '1px solid rgba(251, 191, 36, 0.5)',
+                        borderRadius: '20px',
+                        padding: '5px 12px',
+                        color: '#fbbf24',
+                        cursor: 'pointer',
+                        fontSize: '0.78rem',
+                        fontWeight: 600,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        marginLeft: '4px',
+                      }}
+                      title="Play Random Song (Shuffle)"
+                    >
+                      <span>🔀</span>
+                      <span>Shuffle</span>
+                    </button>
+                  </div>
+
+                  {/* Volume Slider */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: '120px' }}>
+                    <span style={{ fontSize: '0.85rem', opacity: 0.7 }}>🔈</span>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      value={volume}
+                      onChange={handleVolumeChange}
+                      style={{
+                        width: '75px',
+                        accentColor: '#fbbf24',
+                        cursor: 'pointer',
+                      }}
+                      aria-label="Volume slider"
+                    />
+                    <span style={{ fontSize: '0.85rem', opacity: 0.7 }}>🔊</span>
+                  </div>
                 </div>
               </div>
             </motion.div>
