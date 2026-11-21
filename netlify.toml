@@ -1,7 +1,6 @@
 [build]
-  base = ""
-  publish = "sameeksha-birthday/dist"
-  command = "npm --prefix sameeksha-birthday run build"
+  publish = "dist"
+  command = "npm run build"
 
 [[redirects]]
   from = "/*"

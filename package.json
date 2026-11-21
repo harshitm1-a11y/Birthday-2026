@@ -5,7 +5,7 @@
   "description": "3D Interactive Birthday Website for Sameeksha",
   "scripts": {
     "dev": "npm --prefix sameeksha-birthday run dev",
-    "build": "npm --prefix sameeksha-birthday run build",
+    "build": "npm --prefix sameeksha-birthday run build && node -e \"const fs = require('fs'); fs.cpSync('sameeksha-birthday/dist', 'dist', { recursive: true });\"",
     "preview": "npm --prefix sameeksha-birthday run preview",
     "deploy:vercel": "npx vercel",
     "deploy:netlify": "npx netlify deploy --prod --dir=sameeksha-birthday/dist",
