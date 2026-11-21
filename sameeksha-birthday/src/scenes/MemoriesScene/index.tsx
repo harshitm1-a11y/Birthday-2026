@@ -1,10 +1,17 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useExperienceStore } from '../../state/experienceStore';
 import { content } from '../../content/siteContent';
 import HiddenHeart from '../../components/HiddenHeart';
 import { soundManager } from '../../utils/audio';
 import { getAssetUrl } from '../../utils/assets';
+
+interface MemoryPhoto {
+  src: string;
+  caption?: string;
+  id?: string;
+  isCustom?: boolean;
+}
 
 const MemoriesScene: React.FC = () => {
   const nextScene = useExperienceStore((s) => s.nextScene);
@@ -13,10 +20,35 @@ const MemoriesScene: React.FC = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [direction, setDirection] = useState(1);
+  const [speedMultiplier, setSpeedMultiplier] = useState(0.035); // 4x slower and elegant!
 
-  const photos = content.photos;
-  const count = photos.length; // 49 photos
-  const halfCount = Math.ceil(count / 2); // ~25 per tier
+  // Custom uploaded photos state persisted in localStorage
+  const [customPhotos, setCustomPhotos] = useState<MemoryPhoto[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('sameeksha_custom_photos');
+        return saved ? JSON.parse(saved) : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  });
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Combine custom uploaded photos with pre-loaded photos
+  const allPhotos: MemoryPhoto[] = useMemo(() => {
+    const formattedBuiltin: MemoryPhoto[] = content.photos.map((p, idx) => ({
+      ...p,
+      id: `builtin_${idx}`,
+      isCustom: false,
+    }));
+    return [...customPhotos, ...formattedBuiltin];
+  }, [customPhotos]);
+
+  const count = allPhotos.length;
+  const halfCount = Math.ceil(count / 2);
 
   // Responsive radius based on window width
   const [radius, setRadius] = useState(480);
@@ -36,8 +68,6 @@ const MemoriesScene: React.FC = () => {
     window.addEventListener('resize', updateRadius);
     return () => window.removeEventListener('resize', updateRadius);
   }, []);
-
-  const [speedMultiplier, setSpeedMultiplier] = useState(0.035); // 4x slower and elegant!
 
   // Continuous auto-rotation using requestAnimationFrame
   const isDraggingRef = useRef(false);
@@ -81,16 +111,16 @@ const MemoriesScene: React.FC = () => {
       if (e.key === 'Escape') {
         setSelectedIdx(null);
       } else if (e.key === 'ArrowRight') {
-        setSelectedIdx((prev) => (prev !== null ? (prev + 1) % photos.length : 0));
+        setSelectedIdx((prev) => (prev !== null ? (prev + 1) % allPhotos.length : 0));
       } else if (e.key === 'ArrowLeft') {
         setSelectedIdx((prev) =>
-          prev !== null ? (prev - 1 + photos.length) % photos.length : 0
+          prev !== null ? (prev - 1 + allPhotos.length) % allPhotos.length : 0
         );
       }
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [selectedIdx, photos.length]);
+  }, [selectedIdx, allPhotos.length]);
 
   const handleCardClick = (idx: number, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -102,11 +132,67 @@ const MemoriesScene: React.FC = () => {
     const target = e.currentTarget;
     if (!target.dataset.retried) {
       target.dataset.retried = 'true';
-      // Fallback 1: Try relative path without leading slash
       const relative = originalSrc.startsWith('/') ? '.' + originalSrc : originalSrc;
       target.src = relative;
     }
   };
+
+  // Upload user photos from local device
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const result = event.target?.result as string;
+        if (result) {
+          const newPhoto: MemoryPhoto = {
+            src: result,
+            caption: file.name.replace(/\.[^/.]+$/, ''),
+            id: 'custom_' + Date.now() + '_' + Math.random(),
+            isCustom: true,
+          };
+          setCustomPhotos((prev) => {
+            const updated = [newPhoto, ...prev];
+            try {
+              localStorage.setItem('sameeksha_custom_photos', JSON.stringify(updated));
+            } catch (err) {
+              console.warn('LocalStorage quota limit reached:', err);
+            }
+            return updated;
+          });
+          soundManager.playTwinkle();
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Reset input value so same file can be re-uploaded if desired
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Delete a custom uploaded photo
+  const handleDeleteCustomPhoto = (idx: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const photo = allPhotos[idx];
+    if (!photo || !photo.isCustom) return;
+
+    setCustomPhotos((prev) => {
+      const updated = prev.filter((p) => p.id !== photo.id);
+      try {
+        localStorage.setItem('sameeksha_custom_photos', JSON.stringify(updated));
+      } catch (err) {
+        console.warn('Could not update storage:', err);
+      }
+      return updated;
+    });
+    setSelectedIdx(null);
+  };
+
+  const currentPhoto = selectedIdx !== null ? allPhotos[selectedIdx] : null;
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
@@ -118,6 +204,46 @@ const MemoriesScene: React.FC = () => {
           background: 'radial-gradient(circle at center, rgba(45, 27, 105, 0.45) 0%, rgba(10, 10, 26, 0.95) 75%)',
           pointerEvents: 'none',
         }}
+      />
+
+      {/* Floating Corner Upload Button */}
+      <motion.button
+        type="button"
+        onClick={() => fileInputRef.current?.click()}
+        whileHover={{ scale: 1.06 }}
+        whileTap={{ scale: 0.95 }}
+        style={{
+          position: 'fixed',
+          top: '72px',
+          right: '20px',
+          zIndex: 80,
+          background: 'linear-gradient(135deg, #f59e0b, #ec4899)',
+          border: '1px solid rgba(251, 191, 36, 0.5)',
+          borderRadius: '24px',
+          padding: '7px 16px',
+          color: '#fff',
+          fontSize: '0.82rem',
+          fontWeight: 600,
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          boxShadow: '0 4px 15px rgba(236, 72, 153, 0.4)',
+        }}
+        title="Upload photos from device to memory album"
+      >
+        <span>📸</span>
+        <span>+ Upload Photos</span>
+      </motion.button>
+
+      {/* Hidden File Input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        style={{ display: 'none' }}
+        onChange={handleFileUpload}
       />
 
       {/* Main Overlay Content */}
@@ -198,8 +324,9 @@ const MemoriesScene: React.FC = () => {
               </>
             )}
 
-            <span style={{ fontSize: '0.8rem', color: '#fbcfe8' }}>
-              ✨ 49 Memories Loaded • Tap any photo to open!
+            {/* Clean Hint without numbers or counters */}
+            <span style={{ fontSize: '0.82rem', color: '#fbcfe8', fontWeight: 500 }}>
+              ✨ Tap any photo to open & enjoy!
             </span>
           </div>
 
@@ -220,16 +347,16 @@ const MemoriesScene: React.FC = () => {
                   transform: `rotateY(${rotation}deg) rotateX(-3deg)`,
                 }}
               >
-                {photos.map((item, idx) => {
-                  const tier = idx % 2 === 0 ? 0 : 1; // 0 = upper row, 1 = lower row
-                  const itemInTier = Math.floor(idx / 2);
-                  const angle = (itemInTier / halfCount) * 360;
-                  const yOffset = tier === 0 ? -70 : 70;
-                  const resolvedSrc = getAssetUrl(item.src);
+                {allPhotos.map((item, idx) => {
+                  const tier = idx % 2;
+                  const tierIdx = Math.floor(idx / 2);
+                  const angle = (tierIdx / halfCount) * 360;
+                  const yOffset = tier === 0 ? -110 : 110;
+                  const resolvedSrc = item.src.startsWith('data:') ? item.src : getAssetUrl(item.src);
 
                   return (
                     <div
-                      key={idx}
+                      key={item.id || idx}
                       className="cylinder-card"
                       style={{
                         transform: `rotateY(${angle}deg) translateZ(${radius}px) translateY(${yOffset}px)`,
@@ -237,17 +364,17 @@ const MemoriesScene: React.FC = () => {
                       onClick={(e) => handleCardClick(idx, e)}
                       role="button"
                       tabIndex={0}
-                      aria-label={`Open memory ${idx + 1}`}
+                      aria-label="Open memory photo"
                     >
                       <img
                         src={resolvedSrc}
-                        alt={`Sameeksha memory ${idx + 1}`}
+                        alt="Sameeksha memory"
                         loading="lazy"
                         draggable={false}
                         onError={(e) => handleImageError(e, item.src)}
                       />
                       <div className="cylinder-card-caption">
-                        {item.caption || `#${idx + 1}`}
+                        {item.caption || '❤️'}
                       </div>
                     </div>
                   );
@@ -257,11 +384,11 @@ const MemoriesScene: React.FC = () => {
           ) : (
             /* View Mode 2: Responsive Photo Grid Album */
             <div className="gallery-grid" style={{ maxHeight: '55vh', margin: '0.5rem auto' }}>
-              {photos.map((item, idx) => {
-                const resolvedSrc = getAssetUrl(item.src);
+              {allPhotos.map((item, idx) => {
+                const resolvedSrc = item.src.startsWith('data:') ? item.src : getAssetUrl(item.src);
                 return (
                   <motion.div
-                    key={idx}
+                    key={item.id || idx}
                     className="gallery-item"
                     onClick={(e) => handleCardClick(idx, e)}
                     whileHover={{ scale: 1.05 }}
@@ -272,7 +399,7 @@ const MemoriesScene: React.FC = () => {
                   >
                     <img
                       src={resolvedSrc}
-                      alt={`Sameeksha photo ${idx + 1}`}
+                      alt="Sameeksha photo"
                       loading="lazy"
                       onError={(e) => handleImageError(e, item.src)}
                     />
@@ -290,7 +417,7 @@ const MemoriesScene: React.FC = () => {
                         textOverflow: 'ellipsis',
                       }}
                     >
-                      {item.caption || `#${idx + 1}`}
+                      {item.caption || '❤️'}
                     </div>
                   </motion.div>
                 );
@@ -311,9 +438,9 @@ const MemoriesScene: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* Fullscreen Photo Modal with Pop-out Animation */}
+      {/* Fullscreen Photo Modal with Silky Smooth Animation (No Numbers/Counter) */}
       <AnimatePresence>
-        {selectedIdx !== null && (
+        {selectedIdx !== null && currentPhoto && (
           <motion.div
             className="gallery-modal"
             initial={{ opacity: 0 }}
@@ -360,7 +487,7 @@ const MemoriesScene: React.FC = () => {
                 className="gallery-modal-nav prev"
                 onClick={() =>
                   setSelectedIdx((prev) =>
-                    prev !== null ? (prev - 1 + photos.length) % photos.length : 0
+                    prev !== null ? (prev - 1 + allPhotos.length) % allPhotos.length : 0
                   )
                 }
                 aria-label="Previous photo"
@@ -369,9 +496,13 @@ const MemoriesScene: React.FC = () => {
               </button>
 
               <img
-                src={getAssetUrl(photos[selectedIdx].src)}
-                alt={`Sameeksha photo full view ${selectedIdx + 1}`}
-                onError={(e) => handleImageError(e, photos[selectedIdx].src)}
+                src={
+                  currentPhoto.src.startsWith('data:')
+                    ? currentPhoto.src
+                    : getAssetUrl(currentPhoto.src)
+                }
+                alt="Sameeksha photo full view"
+                onError={(e) => handleImageError(e, currentPhoto.src)}
                 style={{
                   maxHeight: '70vh',
                   maxWidth: '85vw',
@@ -385,7 +516,7 @@ const MemoriesScene: React.FC = () => {
               <button
                 className="gallery-modal-nav next"
                 onClick={() =>
-                  setSelectedIdx((prev) => (prev !== null ? (prev + 1) % photos.length : 0))
+                  setSelectedIdx((prev) => (prev !== null ? (prev + 1) % allPhotos.length : 0))
                 }
                 aria-label="Next photo"
               >
@@ -393,12 +524,49 @@ const MemoriesScene: React.FC = () => {
               </button>
 
               <div className="gallery-modal-caption">
-                <span style={{ color: '#fbbf24', fontWeight: 600 }}>
-                  Photo {selectedIdx + 1} of {photos.length}
-                </span>
-                {photos[selectedIdx].caption && (
-                  <div style={{ marginTop: '0.25rem', color: '#ff8fb3', fontStyle: 'italic' }}>
-                    "{photos[selectedIdx].caption}"
+                {currentPhoto.isCustom && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      marginBottom: '0.4rem',
+                    }}
+                  >
+                    <span
+                      style={{
+                        color: '#34d399',
+                        fontSize: '0.76rem',
+                        background: 'rgba(52, 211, 153, 0.15)',
+                        padding: '2px 8px',
+                        borderRadius: '10px',
+                        border: '1px solid rgba(52, 211, 153, 0.3)',
+                      }}
+                    >
+                      ✨ Uploaded Memory
+                    </span>
+                    <button
+                      type="button"
+                      onClick={(e) => handleDeleteCustomPhoto(selectedIdx, e)}
+                      style={{
+                        background: 'rgba(239, 68, 68, 0.2)',
+                        border: '1px solid #ef4444',
+                        color: '#f87171',
+                        borderRadius: '8px',
+                        padding: '2px 8px',
+                        fontSize: '0.74rem',
+                        cursor: 'pointer',
+                      }}
+                      title="Delete this uploaded photo"
+                    >
+                      🗑️ Delete
+                    </button>
+                  </div>
+                )}
+                {currentPhoto.caption && (
+                  <div style={{ color: '#ff8fb3', fontStyle: 'italic', fontSize: '0.95rem' }}>
+                    "{currentPhoto.caption}"
                   </div>
                 )}
               </div>

@@ -81,6 +81,46 @@ export const content = {
 
   letter: {
     heading: "A Letter From The Heart",
+    hindi: `मेरी प्यारी समीक्षा बेबी, ❤️
+
+जन्मदिन बहुत-बहुत मुबारक हो मेरी जान! ✨
+
+"तेरे आने से ज़िंदगी में ऐसी बहार आई है,
+जैसे सूखी ज़मीन पे पहली बारिश की बूँदें बरसी हों...
+तू हँसती रहे हमेशा चाँद-तारों की तरह,
+तेरी हर एक मुस्कान से ही तो मेरी दुनिया सजी है।" 🌹✨
+
+कभी-कभी सोचता हूँ कि ऊपरवाले ने कितनी फुर्सत और प्यार से तुम्हें बनाया होगा। तुम्हारी वो प्यारी सी मुस्कान, तुम्हारी मासूम बातें, और वो क्यूट सा ड्रामा — हर एक पल तुम्हारे साथ एक खूबसूरत ख्वाब जैसा लगता है। 💕
+
+अगर पूरी दुनिया भी एक तरफ हो जाए, तब भी मेरा दिल हमेशा सिर्फ और सिर्फ तुम्हारे लिए ही धड़केगा। तुम मेरी सबसे अच्छी दोस्त भी हो, मेरी ताकत भी हो, और मेरी पूरी दुनिया भी। 💫
+
+दुआ है कि तुम्हारी ज़िंदगी में कभी कोई गम ना आए, तुम्हारी हर एक ख्वाहिश पूरी हो, और तुम्हारा चेहरा हमेशा ऐसे ही खिलता रहे। 🌸
+
+Thank you for being in my life, Sameeksha. आज का दिन तुम्हारा है, और मेरा दिल हमेशा के लिए तुम्हारा।
+
+Forever yours, with all my love ❤️
+Happy Birthday Sameeksha Baby! 🎂✨`,
+
+    english: `Dearest Sameeksha Baby, ❤️
+
+Happy Birthday to the most precious soul in my universe! ✨
+
+"In a sky filled with countless stars,
+You are the one that lights my way,
+With every beat of my grateful heart,
+I cherish your love more each day..." 🌹✨
+
+Sometimes I wonder how the universe created someone as wonderfully pure and magical as you. Your radiant smile that effortlessly brightens my darkest days, your tender warmth, and the sweet innocence of your laughter — every single second spent with you feels like a dream come true. 💕
+
+Even if the entire world stood on one side, my heart would always and unconditionally choose you. You are my greatest confidante, my deepest strength, and my whole universe wrapped in one person. 💫
+
+On this special birthday, I pray that endless joy, good health, and boundless laughter surround you forever. May all your sweetest dreams take flight and become reality. 🌸
+
+Thank you for being you, and thank you for making my life so incredibly beautiful. Today is all about celebrating you, my love.
+
+Forever and always yours, with all my love ❤️
+Happy Birthday Sameeksha Baby! 🎂✨`,
+
     content: `Dear Sameeksha Baby, ❤️
 
 Happy Birthday Meri Jaan! ✨
