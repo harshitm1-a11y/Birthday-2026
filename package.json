@@ -7,6 +7,7 @@
     "dev": "npm --prefix sameeksha-birthday run dev",
     "build": "npm --prefix sameeksha-birthday run build && node scripts/sync-build.mjs",
     "preview": "npm --prefix sameeksha-birthday run preview",
+    "deploy": "npm run build && git add -A && git commit -m \"update: auto-deploy changes\" && git push origin main",
     "postinstall": "npm --prefix sameeksha-birthday install"
   }
 }
