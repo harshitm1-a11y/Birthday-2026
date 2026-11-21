@@ -5,7 +5,7 @@
   "description": "3D Interactive Birthday Website for Sameeksha",
   "scripts": {
     "dev": "npm --prefix sameeksha-birthday run dev",
-    "build": "npm --prefix sameeksha-birthday run build",
+    "build": "npm --prefix sameeksha-birthday run build && node scripts/sync-build.mjs",
     "preview": "npm --prefix sameeksha-birthday run preview"
   }
 }

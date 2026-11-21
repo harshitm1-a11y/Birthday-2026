@@ -12,8 +12,8 @@ class RobotSpeaker {
   private onSpeakingChange: ((isSpeaking: boolean) => void) | null = null;
   private voices: SpeechSynthesisVoice[] = [];
   private selectedVoice: SpeechSynthesisVoice | null = null;
-  private pitch = 1.05;
-  private rate = 0.92;
+  private pitch = 1.0;
+  private rate = 0.88;
 
   constructor() {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -69,11 +69,10 @@ class RobotSpeaker {
       .replace(/Psst\.\.\./gi, 'Hey, ')
       .replace(/Psst/gi, 'Hey, ')
       .replace(/chhoti-chhoti/gi, 'chhoti chhoti')
-      .replace(/saal/gi, 'saal')
+      .replace(/\.\.\./g, ', ')
       // Strip emojis
       .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '')
-      // Keep only clean conversational characters
-      .replace(/[^\w\s\d,?!.'"-]/g, '')
+      .replace(/['"`]/g, '')
       .replace(/\s+/g, ' ')
       .trim();
   }

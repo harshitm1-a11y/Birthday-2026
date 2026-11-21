@@ -5,5 +5,5 @@ prompt.txt
 *.log
 .DS_Store
 screenshots/
-*.mjs
+test-*.mjs
 sameeksha-birthday/*.mjs

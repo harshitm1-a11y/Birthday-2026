@@ -93,6 +93,79 @@ class SoundManager {
     }
   }
 
+  // Snappy Party Popper Burst Sound Effect
+  public playPopperSound() {
+    try {
+      this.initCtx();
+      if (!this.ctx) return;
+      if (this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+
+      const now = this.ctx.currentTime;
+
+      // 1. Acoustic thump: resonant low sine dropping fast
+      const osc = this.ctx.createOscillator();
+      const oscGain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(320, now);
+      osc.frequency.exponentialRampToValueAtTime(45, now + 0.16);
+      oscGain.gain.setValueAtTime(0.35, now);
+      oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+      osc.connect(oscGain);
+      oscGain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.22);
+
+      // 2. High snap noise transient (balloon/cork pop)
+      const bufferSize = this.ctx.sampleRate * 0.08;
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const output = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+      }
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = buffer;
+
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(1200, now);
+      filter.Q.setValueAtTime(1.5, now);
+
+      const noiseGain = this.ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.3, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+      noise.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(this.ctx.destination);
+
+      noise.start(now);
+      noise.stop(now + 0.09);
+
+      // 3. Celebratory sparkle fanfare
+      const chimeNotes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
+      chimeNotes.forEach((freq, idx) => {
+        if (!this.ctx) return;
+        const chimeOsc = this.ctx.createOscillator();
+        const chimeGain = this.ctx.createGain();
+        chimeOsc.type = 'sine';
+        chimeOsc.frequency.setValueAtTime(freq, now + 0.08 + idx * 0.06);
+
+        chimeGain.gain.setValueAtTime(0.08, now + 0.08 + idx * 0.06);
+        chimeGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4 + idx * 0.06);
+
+        chimeOsc.connect(chimeGain);
+        chimeGain.connect(this.ctx.destination);
+
+        chimeOsc.start(now + 0.08 + idx * 0.06);
+        chimeOsc.stop(now + 0.45 + idx * 0.06);
+      });
+    } catch {
+      // Audio fallback
+    }
+  }
+
   // Soft sparkle sound effect on button clicks / photo opens
   public playTwinkle() {
     try {

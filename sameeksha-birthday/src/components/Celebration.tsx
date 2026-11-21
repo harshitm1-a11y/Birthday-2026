@@ -4,28 +4,35 @@ interface CelebrationProps {
   active: boolean;
 }
 
-// ---- Particle system types ----
 interface Particle {
   x: number;
   y: number;
   vx: number;
   vy: number;
-  radius: number;
+  w: number;
+  h: number;
   color: string;
   alpha: number;
   decay: number;
   gravity: number;
   life: number;
+  rotation: number;
+  rotSpeed: number;
+  wobbleX: number;
+  wobbleY: number;
+  wobbleSpeed: number;
 }
 
-const COLORS = [
-  '#ff6b9d',
-  '#fbbf24',
-  '#f472b6',
-  '#a855f7',
-  '#6366f1',
-  '#38bdf8',
-  '#34d399',
+const METALLIC_COLORS = [
+  '#fbbf24', // Gold
+  '#f59e0b', // Deep Amber
+  '#ff6b9d', // Rose Gold
+  '#f43f5e', // Hot Red/Pink
+  '#ec4899', // Bright Pink
+  '#a855f7', // Purple Sparkle
+  '#38bdf8', // Sky Blue
+  '#34d399', // Emerald
+  '#ffffff', // Diamond White
 ];
 
 function randomBetween(a: number, b: number) {
@@ -33,29 +40,31 @@ function randomBetween(a: number, b: number) {
 }
 
 function randomColor() {
-  return COLORS[Math.floor(Math.random() * COLORS.length)];
+  return METALLIC_COLORS[Math.floor(Math.random() * METALLIC_COLORS.length)];
 }
 
-function createBurst(
-  x: number,
-  y: number,
-  count: number,
-): Particle[] {
+function createBurst(x: number, y: number, count: number): Particle[] {
   const particles: Particle[] = [];
   for (let i = 0; i < count; i++) {
-    const angle = (Math.PI * 2 * i) / count + randomBetween(-0.15, 0.15);
-    const speed = randomBetween(2, 7);
+    const angle = (Math.PI * 2 * i) / count + randomBetween(-0.25, 0.25);
+    const speed = randomBetween(4, 12);
     particles.push({
       x,
       y,
       vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed,
-      radius: randomBetween(2, 5),
+      vy: Math.sin(angle) * speed - randomBetween(2, 6), // Upward pop bias
+      w: randomBetween(6, 14),
+      h: randomBetween(12, 22),
       color: randomColor(),
       alpha: 1,
-      decay: randomBetween(0.012, 0.025),
-      gravity: randomBetween(0.03, 0.07),
+      decay: randomBetween(0.008, 0.018),
+      gravity: randomBetween(0.2, 0.35),
       life: 1,
+      rotation: Math.random() * Math.PI * 2,
+      rotSpeed: randomBetween(-0.2, 0.2),
+      wobbleX: Math.random() * Math.PI,
+      wobbleY: Math.random() * Math.PI,
+      wobbleSpeed: randomBetween(0.06, 0.14),
     });
   }
   return particles;
@@ -69,12 +78,11 @@ const Celebration: React.FC<CelebrationProps> = ({ active }) => {
 
   const spawnBursts = useCallback((canvas: HTMLCanvasElement) => {
     const { width, height } = canvas;
-    // Spawn 3-5 bursts at random positions
-    const burstCount = Math.floor(randomBetween(3, 6));
+    const burstCount = Math.floor(randomBetween(3, 5));
     for (let b = 0; b < burstCount; b++) {
-      const bx = randomBetween(width * 0.1, width * 0.9);
-      const by = randomBetween(height * 0.1, height * 0.6);
-      const count = Math.floor(randomBetween(30, 60));
+      const bx = randomBetween(width * 0.15, width * 0.85);
+      const by = randomBetween(height * 0.15, height * 0.55);
+      const count = Math.floor(randomBetween(35, 55));
       particlesRef.current.push(...createBurst(bx, by, count));
     }
   }, []);
@@ -85,7 +93,6 @@ const Celebration: React.FC<CelebrationProps> = ({ active }) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Size to viewport
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -94,44 +101,53 @@ const Celebration: React.FC<CelebrationProps> = ({ active }) => {
     window.addEventListener('resize', resize);
 
     if (!active) {
-      // Clear everything when deactivated
       particlesRef.current = [];
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       window.removeEventListener('resize', resize);
       return;
     }
 
-    // Initial burst
     spawnBursts(canvas);
 
-    // Periodic bursts while active
-    const scheduleBurst = () => {
+    const scheduleNextBurst = () => {
+      if (!active) return;
+      const delay = randomBetween(1800, 3500);
       burstTimerRef.current = setTimeout(() => {
-        spawnBursts(canvas);
-        scheduleBurst();
-      }, randomBetween(600, 1400));
+        if (active && canvasRef.current) {
+          spawnBursts(canvasRef.current);
+          scheduleNextBurst();
+        }
+      }, delay);
     };
-    scheduleBurst();
+    scheduleNextBurst();
 
-    // Animation loop
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const alive: Particle[] = [];
       for (const p of particlesRef.current) {
         p.vy += p.gravity;
-        p.x += p.vx;
+        p.vx *= 0.98; // Air resistance
+        p.x += p.vx + Math.sin(p.wobbleX) * 0.8;
         p.y += p.vy;
+        p.rotation += p.rotSpeed;
+        p.wobbleX += p.wobbleSpeed;
+        p.wobbleY += p.wobbleSpeed * 0.8;
+
         p.life -= p.decay;
         p.alpha = Math.max(0, p.life);
 
-        if (p.life > 0) {
+        if (p.life > 0 && p.y < canvas.height + 40) {
           ctx.save();
           ctx.globalAlpha = p.alpha;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius * p.life, 0, Math.PI * 2);
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rotation);
+          // Realistic 3D foil flip
+          ctx.scale(Math.cos(p.wobbleX), Math.sin(p.wobbleY));
+
           ctx.fillStyle = p.color;
-          ctx.fill();
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+
           ctx.restore();
           alive.push(p);
         }
@@ -160,7 +176,7 @@ const Celebration: React.FC<CelebrationProps> = ({ active }) => {
         width: '100%',
         height: '100%',
         pointerEvents: 'none',
-        zIndex: 9999,
+        zIndex: 150,
       }}
       aria-hidden
     />

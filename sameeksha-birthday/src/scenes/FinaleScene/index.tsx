@@ -5,6 +5,7 @@ import { content } from '../../content/siteContent';
 import Celebration from '../../components/Celebration';
 import HiddenHeart from '../../components/HiddenHeart';
 import { soundManager } from '../../utils/audio';
+import { RealisticPopper } from '../../components/RealisticPopper';
 
 const flowers = [
   { emoji: '🌸', color: '#ff6b9d' },
@@ -63,9 +64,12 @@ const FinaleScene: React.FC = () => {
           </motion.div>
 
           {/* Subtext */}
-          <p className="scene-subtext" style={{ fontSize: 'clamp(1rem, 3vw, 1.25rem)', marginBottom: '1.8rem' }}>
+          <p className="scene-subtext" style={{ fontSize: 'clamp(1rem, 3vw, 1.25rem)', marginBottom: '1.2rem', whiteSpace: 'pre-line' }}>
             {content.finale.subtext}
           </p>
+
+          {/* Realistic Party Popper with Banner */}
+          <RealisticPopper />
 
           {/* Navigation Action Buttons */}
           <div className="finale-buttons">

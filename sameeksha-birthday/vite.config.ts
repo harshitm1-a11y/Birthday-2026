@@ -1,8 +1,8 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
-// https://vite.dev/config/
+// Base path configured for GitHub Pages repository: /Birthday-2026/
 export default defineConfig({
   plugins: [react()],
-  base: './',
+  base: '/Birthday-2026/',
 })

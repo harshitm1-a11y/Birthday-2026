@@ -1,8 +1,8 @@
 export const content = {
-  siteTitle: "A Universe Made Just For You",
+  siteTitle: "A Universe Made Just For You ✨",
   recipient: {
     name: "Sameeksha",
-    nickname: "Sameeksha",
+    nickname: "Sameeksha Baby",
     birthday: "2026-11-23",
   },
 
@@ -17,61 +17,78 @@ export const content = {
   ],
 
   welcome: {
-    heading: "Hey Sameeksha...",
-    subtext: "Aaj tumhare liye ek chhoti si duniya banayi hai.\nReady to step inside?",
-    button: "Enter Your Universe ✨",
+    heading: "Hey Sameeksha Baby...",
+    subtext: "Aaj tumhare liye ek chhoti si pyari duniya sajayi hai.\nReady to step inside my heart?",
+    button: "Enter Your Universe 💖",
+  },
+
+  hero: {
+    title: "A Universe Made Just For You ✨",
+    subtitle: "23 November 2026",
+    recipient: "Sameeksha Baby",
+    buttonText: "Enter Your Universe 💖",
   },
 
   gift: {
     heading: "The Magical Gift",
     subtext: "Because someone as special as you deserves a little extra magic.",
+    instruction: "Yeh surprise sirf tumhare liye hai... Box ko tap karke dekho! 🎁",
     button: "Open Your Gift 🎁",
+    opened: {
+      heading: "A Gift From The Stars",
+      text: "Tumhare aane se meri zindagi me har din ek tyohar ban gaya hai... Ready ho humari pyari yaadon me chalne ke liye? 💕",
+      button: "Step Inside Our Memories 📸",
+    },
   },
 
   memories: {
-    heading: "Our Little Memories",
-    subtext: "Some moments are small, but they become the ones we keep closest.",
-    emptyState: "Yahan tumhari favourite memories aayengi — photos add karke is jagah ko apna bana do.",
+    heading: "Our Beautiful Memories",
+    subtext: "Har ek tasveer me tumhari ek pyari si ada qaid hai... Har lamha mere dil ke sabse kareeb hai.",
+    emptyState: "Yahan tumhari favourite memories hain — har ek photo meri sabse keemti daulat hai.",
   },
 
   companion: {
     dialogues: [
-      "Psst... Sameeksha, ek secret bataun? 🤫",
-      "Tumhari smile kaafi powerful hai. Mood instantly better kar deti hai. 😊",
-      "Tum jis tarah chhoti-chhoti baaton mein khushi dhoond leti ho, that's lovely. 💕",
-      "Never stop being your wonderfully unique self. ✨",
-      "Okay, ab cake time! Ready? 🎂",
+      "Suno Sameeksha baby... Ek baat sach kahun? 🤫✨",
+      "Tere chehre ki hansi se hi meri har subah roshan hoti hai... Tum meri zindagi ki sabse pyari shayari ho. 💕",
+      "Hazaaron chehron mein bhi sirf ek chehra nazar aata hai... aur wo ho sirf tum, meri jaan. 🌹✨",
+      "Chaand taaron ki tarah hamesha aise hi chamakti raho... Happy Birthday to my favorite human! 💖",
+      "Chalo ab cake cutting ka waqt aa gaya hai... Ready ho na Sameeksha baby? 🎂🎉",
     ],
   },
 
   cake: {
-    heading: "Make a Wish",
-    subtext: "Make a wish, Sameeksha. Aaj ka din tumhara hai! 🎂",
-    button: "Blow the Candles 🎉",
+    heading: "Make a Wish, Sameeksha Baby",
+    subtext: "Aankhein band karke ek pyari si wish maango... Aaj ka poora jahan sirf tumhara hai! 🎂✨",
+    button: "Blow the Candles 🕯️✨",
     fallback: "Tap to blow the candles",
   },
 
   letter: {
     heading: "A Letter From The Heart",
-    content: `Dear Sameeksha,
+    content: `Dear Sameeksha Baby, ❤️
 
-Happy Birthday! ❤️
+Happy Birthday Meri Jaan! ✨
 
-Kabhi-kabhi sochta hoon ki kuch log life mein aate hain aur ordinary moments ko bhi special bana dete hain. Tum unhi logon mein se ho.
+"Tere aane se zindagi me aisi bahaar aayi hai,
+Jaise sookhi zameen pe pehli baarish ki boondein barsi hon..." 🌹
 
-Tumhari smile, tumhari little-little baatein, tumhara cute sa drama — honestly, sab apni jagah special hai. 😄
+Kabhi-kabhi sochta hoon ki bhagwan ne kitni fursat aur pyaar se tumhe banaya hoga. Tumhari wo pyari si muskaan, tumhari masoom baatein, aur wo cute sa drama — har ek pal tumhare saath ek khubsurat khwab jaisa lagta hai. 💕
 
-I hope tumhara aane wala year happiness, success, peace aur bahut saari beautiful memories se bhara ho. Jo dreams tum dekhti ho, woh ek-ek karke poore hon.
+Agar poori duniya bhi ek taraf ho jaye, tab bhi mera dil hamesha sirf aur sirf tumhare liye hi dhadkega. Tum meri sabse achhi dost bhi ho, meri taqat bhi ho, aur meri poori duniya bhi. 💫
 
-Thank you for being you. Aaj bas itna yaad rakhna: you are special, you are appreciated, and you deserve all the happiness in the world.
+I pray ki tumhari zindagi me kabhi koi gham na aaye, tumhari har ek dua qubool ho jaye, aur tumhara chehra hamesha aise hi khilta rahe. 🌸
 
-Once again, Happy Birthday, Sameeksha! ✨`,
+Thank you for being in my life, Sameeksha. Aaj ka din tumhara hai, aur mera dil hamesha ke liye tumhara.
+
+Forever yours, with all my love ❤️
+Happy Birthday Sameeksha Baby! 🎂✨`,
   },
 
   finale: {
-    heading: "Happy Birthday, Sameeksha! 🎉",
+    heading: "Happy Birthday, Sameeksha Baby! 🎉",
     subtext:
-      "Sameeksha, may your world always be full of reasons to smile.\nKeep shining, keep laughing, and keep being wonderfully you.\nHappy Birthday!",
+      "Sameeksha, may your world always be full of laughter, love, and boundless joy.\nKeep shining, keep smiling, and keep being wonderfully you.\nHappy Birthday Meri Jaan! 💖",
     buttons: {
       replay: "Replay Our Story 🔄",
       memories: "Visit Memories 📸",
@@ -80,23 +97,23 @@ Once again, Happy Birthday, Sameeksha! ✨`,
   },
 
   compliments: [
-    "Tumhari smile genuinely special hai. ✨",
-    "Tum jis tarah chhoti-chhoti baaton mein khushi dhoond leti ho, that's lovely. 💕",
-    "Never stop being your wonderfully unique self. 🌟",
-    "Tumhara cute sa drama secretly everyone ko happy karta hai. 😄",
-    "You make ordinary moments feel extraordinary. 💫",
-    "Tumhari energy contagious hai — in the best way! 🌈",
+    "Tumhari smile me ek aisi roshni hai jo mere andhere ko bhi chamka deti hai. ✨",
+    "Tumhare bina ye dil kahin nahi lagta... Tum hi meri aadat aur tum hi meri chahat ho. 💕",
+    "Har janam me agar mujhe kisi ko maangna ho, to har baar sirf tumhe maangunga. 🌹",
+    "Tumhara cute sa gussa aur wo masoom adaayein... uff, jaan le leti hain! 😄💖",
+    "Duniya ki sabse khoobsurat ladki ko uske birthday ki dher saari mubarakbaad. 🌟",
+    "Hamesha aise hi muskurati rehna Sameeksha baby, tum meri sabse pyari khushi ho. 🌈❤️",
   ],
 
   secretMessage:
-    "Secret unlocked: If I could give you one thing today, it would be a chance to see how special you are through my eyes. 💖",
+    "Secret unlocked: Meri har dua me sirf tumhara naam hai. Happy Birthday Sameeksha Baby — you are my forever! 💖✨",
 
   loading: {
-    text: "Thodi si magic prepare ho rahi hai... ✨",
+    text: "Sameeksha ke liye thodi si magic prepare ho rahi hai... ✨",
     webglFallback:
-      "Your surprise is still here. This device couldn't load the full 3D effects, so we're showing a lighter version.",
+      "Your surprise is still here. Showing a lighter version for your device.",
     retryText: "Something didn't load. Want to try again?",
-    audioHint: "Music is optional — turn it on whenever you like. 🎵",
+    audioHint: "Bollywood birthday special music is playing for you! 🎵",
   },
 
   photos: [
@@ -138,16 +155,16 @@ Once again, Happy Birthday, Sameeksha! ✨`,
     { src: '/images/Snapchat-410425552.jpg', caption: 'Cute snaps' },
     { src: '/images/Snapchat-471878294.jpg', caption: 'Sweet days' },
     { src: '/images/Snapchat-536449986.jpg', caption: 'Full of wonder' },
-    { src: '/images/Snapchat-582205884.jpg', caption: 'Sparkling eyes' },
-    { src: '/images/Snapchat-583664518.jpg', caption: 'Pure innocence' },
-    { src: '/images/Snapchat-634634094.jpg', caption: 'Glow like no other' },
-    { src: '/images/Snapchat-678267051.jpg', caption: 'Beautiful soul' },
-    { src: '/images/Snapchat-818290771.jpg', caption: 'Memories to keep' },
-    { src: '/images/Snapchat-847031106.jpg', caption: 'Ever smiling' },
-    { src: '/images/Snapchat-896209332.jpg', caption: 'Soft laughter' },
-    { src: '/images/Snapchat-923724155.jpg', caption: 'Sweet sunshine' },
-    { src: '/images/Snapchat-935851942.jpg', caption: 'Heart of gold' },
-    { src: '/images/Snapchat-981711303.jpg', caption: 'Radiant happiness' },
-    { src: '/images/Snapchat-998123242.jpg', caption: 'Forever special' },
+    { src: '/images/Snapchat-591873722.jpg', caption: 'Golden memories' },
+    { src: '/images/Snapchat-616183020.jpg', caption: 'Beautiful light' },
+    { src: '/images/Snapchat-624008779.jpg', caption: 'Heart of gold' },
+    { src: '/images/Snapchat-68007604.jpg', caption: 'Forever moments' },
+    { src: '/images/Snapchat-766723201.jpg', caption: 'Sunshine soul' },
+    { src: '/images/Snapchat-801569476.jpg', caption: 'Special smile' },
+    { src: '/images/Snapchat-817882260.jpg', caption: 'Pure magic' },
+    { src: '/images/Snapchat-861036814.jpg', caption: 'Lovely day' },
+    { src: '/images/Snapchat-908064506.jpg', caption: 'Unforgettable' },
+    { src: '/images/Snapchat-944203774.jpg', caption: 'Sparkle in eyes' },
+    { src: '/images/Snapchat-951566898.jpg', caption: 'Forever and always' },
   ],
-} as const;
+};

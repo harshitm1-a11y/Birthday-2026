@@ -164,6 +164,7 @@ const CakeScene: React.FC = () => {
     if (!blown) {
       setBlown(true);
       setCandlesBlown();
+      soundManager.playPopperSound();
       soundManager.playCelebrationTune();
     }
   };
