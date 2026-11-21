@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { soundManager, PLAYLIST_TRACKS, type PlaylistTrack } from '../utils/audio';
 
+type MusicCategory = 'all' | 'hindi' | 'punjabi' | 'theme' | 'birthday' | 'party';
+
 export const MusicPlaylist: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(soundManager.isPlaying());
   const [currentTrack, setCurrentTrack] = useState<PlaylistTrack>(soundManager.getCurrentTrack());
-  const [activeCategory, setActiveCategory] = useState<'all' | 'birthday' | 'party' | 'romantic' | 'soft'>('all');
+  const [activeCategory, setActiveCategory] = useState<MusicCategory>('all');
   const [volume, setVolume] = useState(soundManager.getVolume());
 
   useEffect(() => {
@@ -40,11 +42,30 @@ export const MusicPlaylist: React.FC = () => {
 
   const filteredTracks = PLAYLIST_TRACKS.filter((t) => {
     if (activeCategory === 'all') return true;
-    if (activeCategory === 'romantic' || activeCategory === 'soft') {
-      return t.category === 'romantic' || t.category === 'soft';
-    }
-    return t.category === activeCategory;
+    if (activeCategory === 'hindi') return t.category === 'hindi';
+    if (activeCategory === 'punjabi') return t.category === 'punjabi';
+    if (activeCategory === 'theme') return t.category === 'theme';
+    if (activeCategory === 'birthday') return t.category === 'birthday' || t.id === 'bollywood-birthday';
+    if (activeCategory === 'party') return t.category === 'party';
+    return true;
   });
+
+  const getCategoryEmoji = (category: string) => {
+    switch (category) {
+      case 'hindi':
+        return '🇮🇳';
+      case 'punjabi':
+        return '🥁';
+      case 'theme':
+        return '🎹';
+      case 'birthday':
+        return '🎂';
+      case 'party':
+        return '🎉';
+      default:
+        return '🎵';
+    }
+  };
 
   return (
     <>
@@ -108,16 +129,15 @@ export const MusicPlaylist: React.FC = () => {
           <div
             style={{
               fontSize: '0.68rem',
-              color: 'rgba(255, 255, 255, 0.7)',
+              color: 'rgba(255, 255, 255, 0.65)',
               display: 'flex',
               alignItems: 'center',
               gap: '4px',
             }}
           >
-            {isPlaying ? (
-              <span style={{ color: '#34d399', letterSpacing: '1px' }}>ılıılı Playing</span>
-            ) : (
-              <span style={{ color: '#9ca3af' }}>Paused • Tap for Playlist</span>
+            <span>{currentTrack.artist}</span>
+            {isPlaying && (
+              <span style={{ color: '#34d399', fontSize: '0.6rem' }}>● Playing</span>
             )}
           </div>
         </div>
@@ -127,17 +147,17 @@ export const MusicPlaylist: React.FC = () => {
           type="button"
           onClick={handleTogglePlay}
           style={{
-            background: isPlaying ? 'rgba(251, 191, 36, 0.2)' : 'rgba(255,255,255,0.1)',
-            border: '1px solid rgba(251, 191, 36, 0.4)',
-            color: '#fbbf24',
+            background: isPlaying ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)',
+            border: `1px solid ${isPlaying ? '#ef4444' : '#10b981'}`,
             borderRadius: '50%',
             width: '28px',
             height: '28px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            color: '#fff',
             cursor: 'pointer',
-            fontSize: '0.85rem',
+            fontSize: '0.75rem',
             marginLeft: '4px',
           }}
           aria-label={isPlaying ? 'Pause music' : 'Play music'}
@@ -146,7 +166,7 @@ export const MusicPlaylist: React.FC = () => {
         </button>
       </motion.div>
 
-      {/* Playlist Drawer Modal */}
+      {/* Full Music Playlist Drawer Modal */}
       <AnimatePresence>
         {isOpen && (
           <div
@@ -171,9 +191,9 @@ export const MusicPlaylist: React.FC = () => {
               style={{
                 width: '100%',
                 maxWidth: '460px',
-                background: 'linear-gradient(135deg, rgba(26, 16, 50, 0.95), rgba(13, 10, 31, 0.98))',
+                background: 'linear-gradient(135deg, rgba(22, 14, 45, 0.98), rgba(12, 8, 28, 0.98))',
                 borderRadius: '24px',
-                border: '1px solid rgba(251, 191, 36, 0.35)',
+                border: '1px solid rgba(251, 191, 36, 0.4)',
                 boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(251, 191, 36, 0.15)',
                 overflow: 'hidden',
                 color: '#fff',
@@ -183,22 +203,21 @@ export const MusicPlaylist: React.FC = () => {
               {/* Header */}
               <div
                 style={{
-                  padding: '18px 20px',
+                  padding: '18px 22px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-                  background: 'rgba(255, 255, 255, 0.03)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '1.5rem' }}>🎵</span>
+                  <span style={{ fontSize: '1.6rem' }}>🎵</span>
                   <div>
-                    <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#fbbf24' }}>
+                    <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#fbbf24' }}>
                       Birthday Playlist
                     </h3>
                     <p style={{ margin: 0, fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.65)' }}>
-                      Special songs curated for Sameeksha Baby 💖
+                      Curated Hindi, Punjabi & Theme BGM for Sameeksha Baby 💖
                     </p>
                   </div>
                 </div>
@@ -231,15 +250,17 @@ export const MusicPlaylist: React.FC = () => {
                 }}
               >
                 {[
-                  { id: 'all', label: 'All Songs' },
+                  { id: 'all', label: 'All' },
+                  { id: 'hindi', label: '🇮🇳 Real Hindi' },
+                  { id: 'punjabi', label: '🥁 Punjabi Hits' },
+                  { id: 'theme', label: '🎹 Theme & BGM' },
                   { id: 'birthday', label: '🎂 Birthday' },
-                  { id: 'party', label: '🎉 Party Beats' },
-                  { id: 'romantic', label: '💖 Romantic / Soft' },
+                  { id: 'party', label: '🎉 Party' },
                 ].map((tab) => (
                   <button
                     key={tab.id}
                     type="button"
-                    onClick={() => setActiveCategory(tab.id as any)}
+                    onClick={() => setActiveCategory(tab.id as MusicCategory)}
                     style={{
                       background:
                         activeCategory === tab.id
@@ -293,7 +314,7 @@ export const MusicPlaylist: React.FC = () => {
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <span style={{ fontSize: '1.25rem' }}>
-                          {track.category === 'birthday' ? '🎂' : track.category === 'party' ? '💃' : '💖'}
+                          {getCategoryEmoji(track.category)}
                         </span>
                         <div>
                           <div
@@ -305,57 +326,58 @@ export const MusicPlaylist: React.FC = () => {
                           >
                             {track.title}
                           </div>
-                          <div style={{ fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.6)' }}>
+                          <div
+                            style={{
+                              fontSize: '0.72rem',
+                              color: 'rgba(255, 255, 255, 0.6)',
+                            }}
+                          >
                             {track.artist} • {track.description}
                           </div>
                         </div>
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        {isCurrent && isPlaying ? (
-                          <span style={{ fontSize: '0.75rem', color: '#34d399', fontWeight: 600 }}>
-                            Playing
-                          </span>
-                        ) : null}
-                        <span
-                          style={{
-                            fontSize: '0.75rem',
-                            color: 'rgba(255, 255, 255, 0.5)',
-                            padding: '2px 6px',
-                            background: 'rgba(255, 255, 255, 0.06)',
-                            borderRadius: '6px',
-                          }}
-                        >
+                        <span style={{ fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.5)' }}>
                           {track.duration}
                         </span>
+                        {isCurrent && isPlaying ? (
+                          <span style={{ color: '#fbbf24', fontSize: '1rem' }}>🔊</span>
+                        ) : (
+                          <span style={{ opacity: 0.4, fontSize: '0.85rem' }}>▶</span>
+                        )}
                       </div>
                     </motion.div>
                   );
                 })}
               </div>
 
-              {/* Bottom Player Controls & Volume */}
+              {/* Master Volume Slider & Controls */}
               <div
                 style={{
                   padding: '16px 20px',
-                  background: 'rgba(0, 0, 0, 0.4)',
-                  borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: 'rgba(0, 0, 0, 0.35)',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.08)',
                   display: 'flex',
-                  flexDirection: 'column',
-                  gap: '12px',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '16px',
                 }}
               >
-                {/* Control Buttons */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
+                {/* Previous / Play / Next Controls */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <button
                     type="button"
                     onClick={() => soundManager.prevTrack()}
                     style={{
-                      background: 'none',
+                      background: 'rgba(255, 255, 255, 0.1)',
                       border: 'none',
-                      color: '#fbbf24',
-                      fontSize: '1.3rem',
+                      borderRadius: '50%',
+                      width: '32px',
+                      height: '32px',
+                      color: '#fff',
                       cursor: 'pointer',
+                      fontSize: '0.85rem',
                     }}
                     title="Previous Song"
                   >
@@ -369,17 +391,16 @@ export const MusicPlaylist: React.FC = () => {
                       background: 'linear-gradient(135deg, #f59e0b, #ec4899)',
                       border: 'none',
                       borderRadius: '50%',
-                      width: '46px',
-                      height: '46px',
+                      width: '40px',
+                      height: '40px',
                       color: '#fff',
-                      fontSize: '1.2rem',
+                      cursor: 'pointer',
+                      fontSize: '1rem',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      cursor: 'pointer',
                       boxShadow: '0 4px 15px rgba(245, 158, 11, 0.4)',
                     }}
-                    title={isPlaying ? 'Pause' : 'Play'}
                   >
                     {isPlaying ? '⏸' : '▶'}
                   </button>
@@ -388,11 +409,14 @@ export const MusicPlaylist: React.FC = () => {
                     type="button"
                     onClick={() => soundManager.nextTrack()}
                     style={{
-                      background: 'none',
+                      background: 'rgba(255, 255, 255, 0.1)',
                       border: 'none',
-                      color: '#fbbf24',
-                      fontSize: '1.3rem',
+                      borderRadius: '50%',
+                      width: '32px',
+                      height: '32px',
+                      color: '#fff',
                       cursor: 'pointer',
+                      fontSize: '0.85rem',
                     }}
                     title="Next Song"
                   >
@@ -401,15 +425,13 @@ export const MusicPlaylist: React.FC = () => {
                 </div>
 
                 {/* Volume Slider */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '0.85rem', color: '#fbbf24' }}>
-                    {volume === 0 ? '🔇' : volume < 0.4 ? '🔉' : '🔊'}
-                  </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, maxWidth: '160px' }}>
+                  <span style={{ fontSize: '0.9rem', opacity: 0.7 }}>🔈</span>
                   <input
                     type="range"
                     min="0"
                     max="1"
-                    step="0.02"
+                    step="0.01"
                     value={volume}
                     onChange={handleVolumeChange}
                     style={{
@@ -417,10 +439,9 @@ export const MusicPlaylist: React.FC = () => {
                       accentColor: '#fbbf24',
                       cursor: 'pointer',
                     }}
+                    aria-label="Volume slider"
                   />
-                  <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.6)', width: '32px' }}>
-                    {Math.round(volume * 100)}%
-                  </span>
+                  <span style={{ fontSize: '0.9rem', opacity: 0.7 }}>🔊</span>
                 </div>
               </div>
             </motion.div>

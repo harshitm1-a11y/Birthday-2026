@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useExperienceStore, COMPANIONS, type CompanionId } from '../state/experienceStore';
 import { soundManager } from '../utils/audio';
@@ -23,9 +23,11 @@ export const RoamingCompanion: React.FC = () => {
 
   const companion = COMPANIONS[selectedCompanionId] || COMPANIONS.robo;
 
-  // Position state (percentage across bottom of screen: 10% to 85%)
-  const [posX, setPosX] = useState(20);
-  const [direction, setDirection] = useState<1 | -1>(1); // 1 = moving right, -1 = moving left
+  // Position state (percentage across screen width: 8% to 90%, bottom distance: 74px to 180px)
+  const [posX, setPosX] = useState(25);
+  const [posY, setPosY] = useState(76);
+  const [direction, setDirection] = useState<1 | -1>(1); // 1 = facing right, -1 = facing left
+  const [isMoving, setIsMoving] = useState(false);
   const [isDropped, setIsDropped] = useState(false);
   const [isFetchingNewCake, setIsFetchingNewCake] = useState(false);
   const [speechText, setSpeechText] = useState(companion.intro);
@@ -33,35 +35,80 @@ export const RoamingCompanion: React.FC = () => {
   const [isChooserOpen, setIsChooserOpen] = useState(false);
   const [splatParticles, setSplatParticles] = useState<CreamParticle[]>([]);
 
-  // Smooth automatic roaming
-  useEffect(() => {
-    if (isDropped || isFetchingNewCake) return;
+  const targetRef = useRef<{ x: number; y: number }>({ x: 25, y: 76 });
 
-    // In Cake scene (Scene 4), move towards center (50%) to deliver!
+  // Mouse & Touch Tracking: Follow the cursor smoothly!
+  useEffect(() => {
+    let rafId: number;
+
+    const handlePointerMove = (e: MouseEvent | TouchEvent) => {
+      if (isDropped || isFetchingNewCake) return;
+
+      const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
+      const clientY = 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
+
+      if (typeof window !== 'undefined') {
+        // Clamped target percentage along screen width
+        const pctX = Math.max(8, Math.min(88, (clientX / window.innerWidth) * 100));
+        // Vertical floating: follow cursor up to 180px above bottom
+        const fromBottom = window.innerHeight - clientY;
+        const btmY = Math.max(74, Math.min(180, fromBottom - 25));
+
+        targetRef.current = { x: pctX, y: btmY };
+      }
+    };
+
+    window.addEventListener('mousemove', handlePointerMove);
+    window.addEventListener('touchmove', handlePointerMove);
+
+    // Smooth lerp follow loop
+    const updatePosition = () => {
+      if (!isDropped && !isFetchingNewCake) {
+        if (currentScene === 4) {
+          // In Cake scene (Scene 4), move proudly to center (50%) to deliver!
+          setPosX((prev) => (Math.abs(50 - prev) > 0.5 ? prev + (50 - prev) * 0.1 : 50));
+          setPosY((prev) => (Math.abs(76 - prev) > 1 ? prev + (76 - prev) * 0.1 : 76));
+          setDirection(1);
+          setIsMoving(false);
+        } else {
+          setPosX((prevX) => {
+            const dx = targetRef.current.x - prevX;
+            if (Math.abs(dx) > 0.4) {
+              setDirection(dx > 0 ? 1 : -1);
+              setIsMoving(true);
+              return prevX + dx * 0.1; // Smooth follow speed
+            } else {
+              setIsMoving(false);
+              return prevX;
+            }
+          });
+
+          setPosY((prevY) => {
+            const dy = targetRef.current.y - prevY;
+            return Math.abs(dy) > 1 ? prevY + dy * 0.1 : prevY;
+          });
+        }
+      }
+      rafId = requestAnimationFrame(updatePosition);
+    };
+
+    rafId = requestAnimationFrame(updatePosition);
+
+    return () => {
+      window.removeEventListener('mousemove', handlePointerMove);
+      window.removeEventListener('touchmove', handlePointerMove);
+      cancelAnimationFrame(rafId);
+    };
+  }, [isDropped, isFetchingNewCake, currentScene]);
+
+  // Cake Scene dialogue update
+  useEffect(() => {
     if (currentScene === 4) {
-      setPosX(50);
-      setSpeechText('Lo Sameeksha baby, aapka special birthday cake aa gaya! 🎂✨');
+      setSpeechText('Lo Sameeksha baby, aapka special birthday cake hazir hai! 🎂✨');
       setIsSpeechOpen(true);
       setCakeDelivered(true);
-      return;
     }
-
-    const interval = setInterval(() => {
-      setPosX((prev) => {
-        let next = prev + direction * 1.8;
-        if (next > 82) {
-          setDirection(-1);
-          next = 82;
-        } else if (next < 14) {
-          setDirection(1);
-          next = 14;
-        }
-        return next;
-      });
-    }, 120);
-
-    return () => clearInterval(interval);
-  }, [direction, isDropped, isFetchingNewCake, currentScene, setCakeDelivered]);
+  }, [currentScene, setCakeDelivered]);
 
   // Click on companion: DROP THE CAKE!
   const handleCompanionClick = () => {
@@ -70,7 +117,7 @@ export const RoamingCompanion: React.FC = () => {
     soundManager.playCakeSplatSound();
     dropCompanionCake();
     setIsDropped(true);
-    setSpeechText('Areyyy Baap Re! 😱 Mera cake gir gaya!');
+    setSpeechText('Areyyy Baap Re! 😱 Cake gir gaya!');
     setIsSpeechOpen(true);
 
     // Generate splat cream particles
@@ -89,7 +136,7 @@ export const RoamingCompanion: React.FC = () => {
     // Mascot panics and runs off to fetch a new cake
     setTimeout(() => {
       setIsFetchingNewCake(true);
-      setSpeechText('Ruko ruko! Main abhi naya fresh cake leke aata hu! 🏃💨');
+      setSpeechText('Rukiye rukiye! Main abhi aapke liye naya fresh cake leke aata hu! 🏃💨');
     }, 1400);
 
     // Mascot returns with brand new cake
@@ -97,7 +144,7 @@ export const RoamingCompanion: React.FC = () => {
       soundManager.playCakeDeliverySound();
       setIsDropped(false);
       setIsFetchingNewCake(false);
-      setSpeechText('Ta-da! Naya fresh cake ready hai! Bach gaya! 🎂✨');
+      setSpeechText('Ta-da! Naya fresh cake hazir hai aapke liye! 🎂✨');
       setSplatParticles([]);
     }, 3200);
 
@@ -109,14 +156,14 @@ export const RoamingCompanion: React.FC = () => {
 
   return (
     <>
-      {/* Roaming Companion Container along bottom */}
+      {/* Roaming Companion Container following cursor */}
       <div
         style={{
           position: 'fixed',
-          bottom: '76px', // Above bottom navigation dock
+          bottom: `${posY}px`,
           left: `${posX}%`,
           transform: `translateX(-50%) scaleX(${direction})`,
-          transition: isFetchingNewCake ? 'left 0.8s ease-in-out' : 'left 0.25s linear',
+          transition: isFetchingNewCake ? 'left 0.8s ease-in-out' : 'transform 0.15s ease',
           zIndex: 85,
           pointerEvents: 'auto',
           cursor: 'pointer',
@@ -134,7 +181,7 @@ export const RoamingCompanion: React.FC = () => {
                 position: 'absolute',
                 bottom: '100px',
                 left: '50%',
-                transform: `translateX(-50%) scaleX(${direction})`, // Keep text reading correctly
+                transform: `translateX(-50%) scaleX(${direction})`, // Keep text un-flipped
                 background: 'rgba(17, 12, 34, 0.92)',
                 backdropFilter: 'blur(12px)',
                 border: '1px solid rgba(251, 191, 36, 0.45)',
@@ -172,12 +219,16 @@ export const RoamingCompanion: React.FC = () => {
           animate={
             isDropped
               ? { rotate: [0, -20, 20, -15, 0], scale: [1, 1.15, 0.95, 1] }
-              : { y: [0, -6, 0] }
+              : isMoving
+              ? { y: [0, -8, 0], rotate: [-4, 4, -4] } // Walking bounce
+              : { y: [0, -4, 0] } // Idle breathing
           }
           transition={
             isDropped
               ? { duration: 0.6, repeat: 2 }
-              : { duration: 0.5, repeat: Infinity, ease: 'easeInOut' }
+              : isMoving
+              ? { duration: 0.25, repeat: Infinity, ease: 'easeInOut' }
+              : { duration: 1.2, repeat: Infinity, ease: 'easeInOut' }
           }
           style={{
             display: 'flex',

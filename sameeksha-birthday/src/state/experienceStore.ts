@@ -83,7 +83,7 @@ export const COMPANIONS: Record<CompanionId, CompanionInfo> = {
     emoji: '🤖',
     title: 'The Cute Funny Bot',
     color: '#ff8fb3',
-    intro: 'BEEP BOOP! Sameeksha baby ka special birthday robot!',
+    intro: 'BEEP BOOP! Sameeksha Ji ke liye special birthday robot!',
   },
   teddy: {
     id: 'teddy',
@@ -91,7 +91,7 @@ export const COMPANIONS: Record<CompanionId, CompanionInfo> = {
     emoji: '🧸',
     title: 'Pyara Fluffy Bear',
     color: '#d97706',
-    intro: 'Hugs & cuddles! Main Sameeksha baby ke liye cake laya hu!',
+    intro: 'Hugs & cuddles! Main Sameeksha Ji ke liye cake lekar aaya hu!',
   },
   penguin: {
     id: 'penguin',
@@ -99,7 +99,7 @@ export const COMPANIONS: Record<CompanionId, CompanionInfo> = {
     emoji: '🐧',
     title: 'Chibi Chef Penguin',
     color: '#06b6d4',
-    intro: 'Waddle waddle! World-class birthday cake coming right up!',
+    intro: 'Waddle waddle! World-class birthday cake Sameeksha Ji ke liye!',
   },
   kitty: {
     id: 'kitty',
@@ -107,7 +107,7 @@ export const COMPANIONS: Record<CompanionId, CompanionInfo> = {
     emoji: '🐱',
     title: 'Adorable Calico Kitty',
     color: '#f43f5e',
-    intro: 'Meow! Sameeksha baby ke liye sabse meetha surprise!',
+    intro: 'Meow! Sameeksha Ji ke liye sabse meetha surprise!',
   },
   astro: {
     id: 'astro',
@@ -115,7 +115,7 @@ export const COMPANIONS: Record<CompanionId, CompanionInfo> = {
     emoji: '🚀',
     title: 'Starry Chibi Astronaut',
     color: '#8b5cf6',
-    intro: 'Mission: Deliver sweetest cake across the galaxy!',
+    intro: 'Mission: Galaxy ka sabse pyara cake Sameeksha Ji ke liye!',
   },
 };
 

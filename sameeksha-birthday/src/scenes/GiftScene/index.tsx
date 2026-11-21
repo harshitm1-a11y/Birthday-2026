@@ -395,7 +395,7 @@ const GiftScene: React.FC = () => {
                   fontStyle: 'italic',
                 }}
               >
-                "Ye sirf ek gift nahi hai Sameeksha baby, ye mera dil hai jo hamesha tumhare paas rahega. Meri har khushi tumhari muskaan se shuru hoti hai. Happy Birthday Meri Jaan! 💖"
+                "Ye sirf ek gift nahi hai Sameeksha Ji, ye mera dil hai jo hamesha aapke paas rahega. Meri har khushi aapki muskaan se shuru hoti hai. Happy Birthday Meri Jaan! 💖"
               </p>
 
               <button

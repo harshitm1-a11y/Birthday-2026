@@ -12,6 +12,73 @@ interface MemoryPhoto {
   isCustom?: boolean;
 }
 
+interface PhotoAnimationVariant {
+  badge: string;
+  flash: boolean;
+  initial: any;
+  animate: any;
+  exit: any;
+  transition: any;
+}
+
+// 6 Distinct, exciting animation variants for clicking photos
+const PHOTO_ANIMATIONS: PhotoAnimationVariant[] = [
+  // 0: Polaroid Flash Snap
+  {
+    badge: '📸 Polaroid Flash Snap',
+    flash: true,
+    initial: { scale: 0.15, rotate: -14, opacity: 0, y: 70 },
+    animate: { scale: 1, rotate: [-14, 4, 0], opacity: 1, y: 0 },
+    exit: { scale: 0.2, rotate: 12, opacity: 0 },
+    transition: { type: 'spring', damping: 16, stiffness: 240 },
+  },
+  // 1: 3D Heart Bloom Unfold
+  {
+    badge: '💖 Romantic Heart Bloom',
+    flash: false,
+    initial: { scale: 0.1, rotateY: 90, opacity: 0 },
+    animate: { scale: [0.1, 1.12, 1], rotateY: [90, -8, 0], opacity: 1 },
+    exit: { scale: 0.2, rotateY: 90, opacity: 0 },
+    transition: { type: 'spring', damping: 18, stiffness: 220 },
+  },
+  // 2: Cosmic Nebula Spiral
+  {
+    badge: '🌌 Cosmic Portal Swirl',
+    flash: false,
+    initial: { scale: 0, rotate: 180, opacity: 0, filter: 'blur(16px)' },
+    animate: { scale: 1, rotate: [180, -6, 0], opacity: 1, filter: 'blur(0px)' },
+    exit: { scale: 0, rotate: -180, opacity: 0 },
+    transition: { duration: 0.55, ease: [0.34, 1.56, 0.64, 1] },
+  },
+  // 3: Cinematic Shutter Drop
+  {
+    badge: '🎬 Cinematic Shutter Drop',
+    flash: false,
+    initial: { y: -180, rotateX: -60, scale: 0.5, opacity: 0 },
+    animate: { y: 0, rotateX: 0, scale: 1, opacity: 1 },
+    exit: { y: 180, opacity: 0 },
+    transition: { type: 'spring', damping: 15, stiffness: 250 },
+  },
+  // 4: Starlight Angelic Float
+  {
+    badge: '✨ Starlight Angelic Float',
+    flash: false,
+    initial: { y: 150, scale: 0.35, opacity: 0, borderRadius: '40px' },
+    animate: { y: [150, -10, 0], scale: 1, opacity: 1, borderRadius: '16px' },
+    exit: { y: -80, scale: 0.4, opacity: 0 },
+    transition: { type: 'spring', damping: 20, stiffness: 200 },
+  },
+  // 5: Origami Diagonal Unfold
+  {
+    badge: '💌 Origami Corner Unfold',
+    flash: false,
+    initial: { x: 140, y: 60, rotateZ: 25, scale: 0.2, opacity: 0 },
+    animate: { x: 0, y: 0, rotateZ: 0, scale: 1, opacity: 1 },
+    exit: { x: -140, scale: 0.2, opacity: 0 },
+    transition: { type: 'spring', damping: 17, stiffness: 230 },
+  },
+];
+
 const MemoriesScene: React.FC = () => {
   const nextScene = useExperienceStore((s) => s.nextScene);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
@@ -130,9 +197,12 @@ const MemoriesScene: React.FC = () => {
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>, originalSrc: string) => {
     const target = e.currentTarget;
     if (!target.dataset.retried) {
-      target.dataset.retried = 'true';
+      target.dataset.retried = 'relative';
       const relative = originalSrc.startsWith('/') ? '.' + originalSrc : originalSrc;
       target.src = relative;
+    } else if (target.dataset.retried === 'relative') {
+      target.dataset.retried = 'fallback';
+      target.src = getAssetUrl('/images/IMG-20250423-WA0001.jpg');
     }
   };
 
@@ -437,141 +507,186 @@ const MemoriesScene: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* Fullscreen Photo Modal with Silky Smooth Animation (No Numbers/Counter) */}
-      <AnimatePresence>
-        {selectedIdx !== null && currentPhoto && (
-          <motion.div
-            className="gallery-modal"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            onClick={() => setSelectedIdx(null)}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              zIndex: 140,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'rgba(5, 5, 18, 0.88)',
-              backdropFilter: 'blur(16px)',
-              padding: '16px',
-            }}
-          >
+      {/* Fullscreen Photo Modal with Dynamic Unique Animations per Photo */}
+      <AnimatePresence mode="wait">
+        {selectedIdx !== null && currentPhoto && (() => {
+          const anim = PHOTO_ANIMATIONS[selectedIdx % PHOTO_ANIMATIONS.length];
+          return (
             <motion.div
-              className="gallery-modal-content"
-              initial={{ scale: 0.88, opacity: 0, y: 15 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.88, opacity: 0, y: 15 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 26 }}
+              key="gallery-modal-backdrop"
+              className="gallery-modal"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              onClick={() => setSelectedIdx(null)}
               style={{
-                position: 'relative',
+                position: 'fixed',
+                inset: 0,
+                zIndex: 140,
                 display: 'flex',
-                flexDirection: 'column',
                 alignItems: 'center',
-                willChange: 'transform, opacity',
+                justifyContent: 'center',
+                background: 'rgba(5, 5, 18, 0.9)',
+                backdropFilter: 'blur(18px)',
+                padding: '16px',
               }}
-              onClick={(e) => e.stopPropagation()}
             >
-              <button
-                className="gallery-modal-close"
-                onClick={() => setSelectedIdx(null)}
-                aria-label="Close photo preview"
-              >
-                ✕
-              </button>
+              {/* Simulated camera flash on Polaroid animation variant */}
+              {anim.flash && (
+                <motion.div
+                  initial={{ opacity: 0.9 }}
+                  animate={{ opacity: 0 }}
+                  transition={{ duration: 0.4, ease: 'easeOut' }}
+                  style={{
+                    position: 'fixed',
+                    inset: 0,
+                    background: '#ffffff',
+                    pointerEvents: 'none',
+                    zIndex: 220,
+                  }}
+                />
+              )}
 
-              <button
-                className="gallery-modal-nav prev"
-                onClick={() =>
-                  setSelectedIdx((prev) =>
-                    prev !== null ? (prev - 1 + allPhotos.length) % allPhotos.length : 0
-                  )
-                }
-                aria-label="Previous photo"
-              >
-                ‹
-              </button>
-
-              <img
-                src={
-                  currentPhoto.src.startsWith('data:')
-                    ? currentPhoto.src
-                    : getAssetUrl(currentPhoto.src)
-                }
-                alt="Sameeksha photo full view"
-                onError={(e) => handleImageError(e, currentPhoto.src)}
+              <motion.div
+                key={`modal-card-${selectedIdx}`}
+                className="gallery-modal-content"
+                initial={anim.initial}
+                animate={anim.animate}
+                exit={anim.exit}
+                transition={anim.transition}
                 style={{
-                  maxHeight: '70vh',
-                  maxWidth: '85vw',
-                  objectFit: 'contain',
-                  borderRadius: '12px',
-                  boxShadow: '0 10px 40px rgba(0,0,0,0.8), 0 0 30px rgba(255, 107, 157, 0.4)',
-                  border: '2px solid rgba(255, 255, 255, 0.3)',
+                  position: 'relative',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  willChange: 'transform, opacity',
+                  maxWidth: '92vw',
                 }}
-              />
-
-              <button
-                className="gallery-modal-nav next"
-                onClick={() =>
-                  setSelectedIdx((prev) => (prev !== null ? (prev + 1) % allPhotos.length : 0))
-                }
-                aria-label="Next photo"
+                onClick={(e) => e.stopPropagation()}
               >
-                ›
-              </button>
+                {/* Animation Type Pill */}
+                <div
+                  style={{
+                    marginBottom: '8px',
+                    background: 'rgba(251, 191, 36, 0.16)',
+                    border: '1px solid rgba(251, 191, 36, 0.45)',
+                    color: '#fef08a',
+                    borderRadius: '20px',
+                    padding: '3px 12px',
+                    fontSize: '0.74rem',
+                    fontWeight: 600,
+                    letterSpacing: '0.5px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+                  }}
+                >
+                  <span>{anim.badge}</span>
+                </div>
 
-              <div className="gallery-modal-caption">
-                {currentPhoto.isCustom && (
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
-                      marginBottom: '0.4rem',
-                    }}
-                  >
-                    <span
+                <button
+                  className="gallery-modal-close"
+                  onClick={() => setSelectedIdx(null)}
+                  aria-label="Close photo preview"
+                >
+                  ✕
+                </button>
+
+                <button
+                  className="gallery-modal-nav prev"
+                  onClick={() => {
+                    soundManager.playTwinkle();
+                    setSelectedIdx((prev) =>
+                      prev !== null ? (prev - 1 + allPhotos.length) % allPhotos.length : 0
+                    );
+                  }}
+                  aria-label="Previous photo"
+                >
+                  ‹
+                </button>
+
+                <img
+                  src={
+                    currentPhoto.src.startsWith('data:')
+                      ? currentPhoto.src
+                      : getAssetUrl(currentPhoto.src)
+                  }
+                  alt="Sameeksha photo full view"
+                  onError={(e) => handleImageError(e, currentPhoto.src)}
+                  style={{
+                    maxHeight: '68vh',
+                    maxWidth: '85vw',
+                    objectFit: 'contain',
+                    borderRadius: '14px',
+                    boxShadow: '0 12px 45px rgba(0,0,0,0.85), 0 0 35px rgba(255, 107, 157, 0.45)',
+                    border: '2px solid rgba(255, 255, 255, 0.35)',
+                  }}
+                />
+
+                <button
+                  className="gallery-modal-nav next"
+                  onClick={() => {
+                    soundManager.playTwinkle();
+                    setSelectedIdx((prev) => (prev !== null ? (prev + 1) % allPhotos.length : 0));
+                  }}
+                  aria-label="Next photo"
+                >
+                  ›
+                </button>
+
+                <div className="gallery-modal-caption">
+                  {currentPhoto.isCustom && (
+                    <div
                       style={{
-                        color: '#34d399',
-                        fontSize: '0.76rem',
-                        background: 'rgba(52, 211, 153, 0.15)',
-                        padding: '2px 8px',
-                        borderRadius: '10px',
-                        border: '1px solid rgba(52, 211, 153, 0.3)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        marginBottom: '0.4rem',
                       }}
                     >
-                      ✨ Uploaded Memory
-                    </span>
-                    <button
-                      type="button"
-                      onClick={(e) => handleDeleteCustomPhoto(selectedIdx, e)}
-                      style={{
-                        background: 'rgba(239, 68, 68, 0.2)',
-                        border: '1px solid #ef4444',
-                        color: '#f87171',
-                        borderRadius: '8px',
-                        padding: '2px 8px',
-                        fontSize: '0.74rem',
-                        cursor: 'pointer',
-                      }}
-                      title="Delete this uploaded photo"
-                    >
-                      🗑️ Delete
-                    </button>
-                  </div>
-                )}
-                {currentPhoto.caption && (
-                  <div style={{ color: '#ff8fb3', fontStyle: 'italic', fontSize: '0.95rem' }}>
-                    "{currentPhoto.caption}"
-                  </div>
-                )}
-              </div>
+                      <span
+                        style={{
+                          color: '#34d399',
+                          fontSize: '0.76rem',
+                          background: 'rgba(52, 211, 153, 0.15)',
+                          padding: '2px 8px',
+                          borderRadius: '10px',
+                          border: '1px solid rgba(52, 211, 153, 0.3)',
+                        }}
+                      >
+                        ✨ Uploaded Memory
+                      </span>
+                      <button
+                        type="button"
+                        onClick={(e) => handleDeleteCustomPhoto(selectedIdx, e)}
+                        style={{
+                          background: 'rgba(239, 68, 68, 0.2)',
+                          border: '1px solid #ef4444',
+                          color: '#f87171',
+                          borderRadius: '8px',
+                          padding: '2px 8px',
+                          fontSize: '0.74rem',
+                          cursor: 'pointer',
+                        }}
+                        title="Delete this uploaded photo"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
+                  )}
+                  {currentPhoto.caption && (
+                    <div style={{ color: '#ff8fb3', fontStyle: 'italic', fontSize: '0.96rem', fontWeight: 500 }}>
+                      "{currentPhoto.caption}"
+                    </div>
+                  )}
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
+          );
+        })()}
       </AnimatePresence>
     </div>
   );
