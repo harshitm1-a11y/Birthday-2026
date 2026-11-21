@@ -188,7 +188,7 @@ export const useExperienceStore = create<ExperienceState>((set, get) => ({
   currentScene: 0,
   visitedScenes: new Set<number>([0]),
   collectedHearts: new Set<number>(),
-  audioEnabled: false,
+  audioEnabled: true,
   reducedMotion: typeof window !== 'undefined'
     ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
     : false,
@@ -214,7 +214,7 @@ export const useExperienceStore = create<ExperienceState>((set, get) => ({
   isPlaylistOpen: false,
   isCompanionCuttingCake: false,
   cakeCutDone: false,
-  frontKissPopped: false,
+  frontKissPopped: true,
 
   setScene: (scene) => {
     if (scene >= 0 && scene < TOTAL_SCENES) {

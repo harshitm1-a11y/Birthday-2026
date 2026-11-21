@@ -25,14 +25,14 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     description: 'Iconic heartfelt Bollywood romantic ballad with soulful Arijit Singh vocals',
   },
   {
-    id: 'hindi-dil-diyan-gallan',
-    title: 'Dil Diyan Gallan',
-    artist: 'Atif Aslam',
+    id: 'hindi-channa-mereya',
+    title: 'Channa Mereya',
+    artist: 'Arijit Singh (Ae Dil Hai Mushkil)',
     category: 'hindi',
     type: 'file',
-    src: '/audio/hindi-dil-diyan-gallan.mp3',
-    duration: '4:20',
-    description: 'Soulful romantic waltz celebrating true love and sweet moments',
+    src: '/audio/hindi-channa-mereya.mp3',
+    duration: '4:49',
+    description: 'Soul-stirring romantic masterpiece by Arijit Singh',
   },
   {
     id: 'hindi-raataan-lambiyan',
@@ -43,6 +43,56 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     src: '/audio/hindi-raataan-lambiyan.mp3',
     duration: '3:50',
     description: 'Heart-touching romantic melody with magical male-female duet vocals',
+  },
+  {
+    id: 'hindi-dil-diyan-gallan',
+    title: 'Dil Diyan Gallan',
+    artist: 'Atif Aslam',
+    category: 'hindi',
+    type: 'file',
+    src: '/audio/hindi-dil-diyan-gallan.mp3',
+    duration: '4:20',
+    description: 'Soulful romantic waltz celebrating true love and sweet moments',
+  },
+  {
+    id: 'hindi-chahun-main-ya-naa',
+    title: 'Chahun Main Ya Naa',
+    artist: 'Arijit Singh & Palak Muchhal',
+    category: 'hindi',
+    type: 'file',
+    src: '/audio/hindi-chahun-main-ya-naa.mp3',
+    duration: '5:04',
+    description: 'Pure romantic confession with angelic male and female vocals',
+  },
+  {
+    id: 'hindi-tujh-mein-rab',
+    title: 'Tujh Mein Rab Dikhta Hai',
+    artist: 'Roop Kumar Rathod',
+    category: 'hindi',
+    type: 'file',
+    src: '/audio/hindi-tujh-mein-rab.mp3',
+    duration: '4:41',
+    description: 'Timeless anthem of unconditional love and devotion',
+  },
+  {
+    id: 'hindi-sunn-raha-hai',
+    title: 'Sunn Raha Hai Na Tu',
+    artist: 'Ankit Tiwari (Aashiqui 2)',
+    category: 'hindi',
+    type: 'file',
+    src: '/audio/hindi-sunn-raha-hai.mp3',
+    duration: '6:30',
+    description: 'Emotionally intense romantic rock ballad with soaring vocals',
+  },
+  {
+    id: 'hindi-tera-ban-jaunga',
+    title: 'Tera Ban Jaunga',
+    artist: 'Akhil Sachdeva & Tulsi Kumar',
+    category: 'hindi',
+    type: 'file',
+    src: '/audio/hindi-tera-ban-jaunga.mp3',
+    duration: '3:56',
+    description: 'Romantic pledge of eternal love and togetherness',
   },
 
   // ========== 2. BIRTHDAY CELEBRATION HITS ==========
@@ -160,6 +210,33 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     duration: '3:48',
     description: 'Flirty, joyful party romance dance hit',
   },
+];
+
+export interface PhotoReelTrack {
+  trackId: string;
+  songTitle: string;
+  artist: string;
+  chorusStartTime: number; // In seconds, starting right at the iconic hook/chorus
+}
+
+// Reel-style vocal soundtracks mapped uniquely to each memory photo!
+export const PHOTO_REEL_SOUNDTRACKS: PhotoReelTrack[] = [
+  { trackId: 'hindi-channa-mereya', songTitle: 'Channa Mereya', artist: 'Arijit Singh', chorusStartTime: 58 },
+  { trackId: 'hindi-tum-hi-ho', songTitle: 'Tum Hi Ho', artist: 'Arijit Singh', chorusStartTime: 48 },
+  { trackId: 'hindi-raataan-lambiyan', songTitle: 'Raataan Lambiyan', artist: 'Jubin Nautiyal & Asees Kaur', chorusStartTime: 56 },
+  { trackId: 'hindi-chahun-main-ya-naa', songTitle: 'Chahun Main Ya Naa', artist: 'Arijit Singh & Palak Muchhal', chorusStartTime: 50 },
+  { trackId: 'hindi-dil-diyan-gallan', songTitle: 'Dil Diyan Gallan', artist: 'Atif Aslam', chorusStartTime: 52 },
+  { trackId: 'hindi-tujh-mein-rab', songTitle: 'Tujh Mein Rab Dikhta Hai', artist: 'Roop Kumar Rathod', chorusStartTime: 42 },
+  { trackId: 'hindi-sunn-raha-hai', songTitle: 'Sunn Raha Hai Na Tu', artist: 'Ankit Tiwari', chorusStartTime: 64 },
+  { trackId: 'punjabi-blue-eyes', songTitle: 'Blue Eyes', artist: 'Yo Yo Honey Singh', chorusStartTime: 44 },
+  { trackId: 'party-brown-rang', songTitle: 'Brown Rang', artist: 'Yo Yo Honey Singh', chorusStartTime: 38 },
+  { trackId: 'party-love-dose', songTitle: 'Love Dose', artist: 'Yo Yo Honey Singh', chorusStartTime: 50 },
+  { trackId: 'party-angreji-beat', songTitle: 'Angreji Beat', artist: 'Gippy Grewal & Honey Singh', chorusStartTime: 34 },
+  { trackId: 'party-dope-shope', songTitle: 'Dope Shope', artist: 'Deep Money & Honey Singh', chorusStartTime: 42 },
+  { trackId: 'punjabi-bhangra', songTitle: 'Mundian To Bach Ke', artist: 'Panjabi MC & Labh Janjua', chorusStartTime: 32 },
+  { trackId: 'punjabi-laung-gawacha', songTitle: 'Mera Laung Gawacha', artist: 'Bhangra Club Legends', chorusStartTime: 40 },
+  { trackId: 'punjabi-gidda-bhangra', songTitle: 'Gidda Pao Haan Deo', artist: 'Bhangra Dhol Beats', chorusStartTime: 30 },
+  { trackId: 'hindi-tera-ban-jaunga', songTitle: 'Tera Ban Jaunga', artist: 'Akhil Sachdeva & Tulsi Kumar', chorusStartTime: 35 },
 ];
 
 class SoundManager {

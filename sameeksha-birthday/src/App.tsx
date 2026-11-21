@@ -49,6 +49,29 @@ export default function App() {
 
   const handleLoadComplete = useCallback(() => {
     setLoaded(true);
+    soundManager.initCtx();
+    soundManager.playTrack('hindi-tum-hi-ho');
+    soundManager.startAmbient();
+  }, []);
+
+  // Browser Autoplay Fallback Unlocker:
+  // Guarantees audio starts immediately without getting blocked by browser autoplay policies
+  useEffect(() => {
+    const unlockAudio = () => {
+      soundManager.initCtx();
+      if (!soundManager.isPlaying()) {
+        soundManager.playTrack('hindi-tum-hi-ho');
+        soundManager.startAmbient();
+      }
+    };
+    window.addEventListener('pointerdown', unlockAudio, { once: true });
+    window.addEventListener('touchstart', unlockAudio, { once: true });
+    window.addEventListener('keydown', unlockAudio, { once: true });
+    return () => {
+      window.removeEventListener('pointerdown', unlockAudio);
+      window.removeEventListener('touchstart', unlockAudio);
+      window.removeEventListener('keydown', unlockAudio);
+    };
   }, []);
 
   // Automatic soundtrack transitions per scene as requested!

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { content } from '../content/siteContent';
+import { soundManager } from '../utils/audio';
 
 interface Props {
   onComplete: () => void;
@@ -15,6 +16,10 @@ export function LoadingScreen({ onComplete }: Props) {
         if (p >= 100) {
           clearInterval(interval);
           setFadeOut(true);
+          // Automatically start audio as requested!
+          soundManager.initCtx();
+          soundManager.playTrack('hindi-tum-hi-ho');
+          soundManager.startAmbient();
           setTimeout(onComplete, 800);
           return 100;
         }

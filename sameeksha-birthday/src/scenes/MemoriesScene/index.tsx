@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
 import { useExperienceStore } from '../../state/experienceStore';
 import { content } from '../../content/siteContent';
-import { soundManager } from '../../utils/audio';
+import { soundManager, PHOTO_REEL_SOUNDTRACKS } from '../../utils/audio';
 import { getAssetUrl } from '../../utils/assets';
 import { MathematicalFlower } from '../../components';
 
@@ -86,6 +86,31 @@ const MemoriesScene: React.FC = () => {
 
   const count = allPhotos.length;
   const halfCount = Math.ceil(count / 2);
+
+  // Per-photo unique reel soundtrack (starts directly at the hook/chorus!)
+  const prevSoundtrackRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (selectedIdx !== null) {
+      if (!prevSoundtrackRef.current) {
+        prevSoundtrackRef.current = soundManager.getCurrentTrack().id;
+      }
+      const reelTrack = PHOTO_REEL_SOUNDTRACKS[selectedIdx % PHOTO_REEL_SOUNDTRACKS.length];
+      soundManager.playTrack(reelTrack.trackId);
+      const timer = setTimeout(() => {
+        soundManager.seekTo(reelTrack.chorusStartTime);
+      }, 60);
+      if (!soundManager.isPlaying()) {
+        soundManager.startAmbient();
+      }
+      return () => clearTimeout(timer);
+    } else {
+      if (prevSoundtrackRef.current) {
+        soundManager.playTrack(prevSoundtrackRef.current);
+        prevSoundtrackRef.current = null;
+      }
+    }
+  }, [selectedIdx]);
 
   // Responsive radius based on window width
   const [radius, setRadius] = useState(480);
@@ -768,6 +793,34 @@ const MemoriesScene: React.FC = () => {
                 {currentPhoto.caption && (
                   <div style={{ color: '#ff8fb3', fontStyle: 'italic', fontSize: '0.96rem', fontWeight: 500 }}>
                     "{currentPhoto.caption}"
+                  </div>
+                )}
+
+                {/* Instagram Reel Audio Badge */}
+                {selectedIdx !== null && (
+                  <div
+                    style={{
+                      marginTop: '8px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      background: 'rgba(251, 191, 36, 0.18)',
+                      border: '1.5px solid rgba(251, 191, 36, 0.55)',
+                      borderRadius: '20px',
+                      padding: '4px 14px',
+                      fontSize: '0.78rem',
+                      color: '#fef08a',
+                      boxShadow: '0 4px 15px rgba(0,0,0,0.6)',
+                    }}
+                  >
+                    <span>🎵</span>
+                    <span style={{ fontWeight: 700 }}>
+                      {PHOTO_REEL_SOUNDTRACKS[selectedIdx % PHOTO_REEL_SOUNDTRACKS.length].songTitle}
+                    </span>
+                    <span style={{ opacity: 0.8 }}>
+                      • {PHOTO_REEL_SOUNDTRACKS[selectedIdx % PHOTO_REEL_SOUNDTRACKS.length].artist}
+                    </span>
+                    <span style={{ fontSize: '0.68rem', color: '#34d399', fontWeight: 600 }}>● Reel Hook</span>
                   </div>
                 )}
               </div>

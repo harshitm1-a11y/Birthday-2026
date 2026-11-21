@@ -385,7 +385,6 @@ export const RoamingCompanion: React.FC = () => {
   const finishCompanionCakeCut = useExperienceStore((s) => s.finishCompanionCakeCut);
   const cakeCutDone = useExperienceStore((s) => s.cakeCutDone);
   const frontKissPopped = useExperienceStore((s) => s.frontKissPopped);
-  const setFrontKissPopped = useExperienceStore((s) => s.setFrontKissPopped);
 
   const companion = COMPANIONS[selectedCompanionId] || COMPANIONS.teddy;
 
@@ -407,8 +406,8 @@ export const RoamingCompanion: React.FC = () => {
   );
 
   // 2D Full-Screen position state (% of viewport)
-  const [posX, setPosX] = useState(25);
-  const [posY, setPosY] = useState(72);
+  const [posX, setPosX] = useState(50);
+  const [posY, setPosY] = useState(36);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [isMoving, setIsMoving] = useState(false);
   const [isDropped, setIsDropped] = useState(false);
@@ -418,15 +417,13 @@ export const RoamingCompanion: React.FC = () => {
   const [isChooserOpen, setIsChooserOpen] = useState(false);
   const [splatParticles, setSplatParticles] = useState<CreamParticle[]>([]);
   const [complimentIndex, setComplimentIndex] = useState(0);
-  const [isKissFlying, setIsKissFlying] = useState(false);
-  const [kissBurst, setKissBurst] = useState(false);
   const [clickSparks, setClickSparks] = useState<{ id: number; x: number; y: number; emoji: string }[]>([]);
   const [isClapping, setIsClapping] = useState(false);
   const [isFeeding, setIsFeeding] = useState(false);
   const [isCuttingActive, setIsCuttingActive] = useState(false);
 
-  const targetXRef = useRef<number>(25);
-  const targetYRef = useRef<number>(72);
+  const targetXRef = useRef<number>(50);
+  const targetYRef = useRef<number>(36);
   const lastMouseMoveRef = useRef<number>(Date.now());
 
   // Full Screen 2D Cursor Following & Mobile Wandering Engine
@@ -474,11 +471,14 @@ export const RoamingCompanion: React.FC = () => {
 
     // Smooth physics loop
     const updatePosition = () => {
-      if (currentScene === 0 && !frontKissPopped) {
-        // Firmly locked in intro position during flying kiss sequence - Never follows cursor!
-        setPosX(76);
-        setPosY(70);
-        setDirection(-1);
+      if (currentScene === 0) {
+        // Comfortably positioned beside the title on desktop, or above on mobile!
+        const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+        const targetX = isMobile ? 50 : 70;
+        const targetY = isMobile ? 22 : 46;
+        setPosX((prev) => (Math.abs(targetX - prev) > 0.3 ? prev + (targetX - prev) * 0.1 : targetX));
+        setPosY((prev) => (Math.abs(targetY - prev) > 0.3 ? prev + (targetY - prev) * 0.1 : targetY));
+        setDirection(isMobile ? 1 : -1);
         setIsMoving(false);
       } else if (!isDropped && !isFetchingNewCake) {
         if (isCompanionCuttingCake || currentScene === 4) {
@@ -597,39 +597,18 @@ export const RoamingCompanion: React.FC = () => {
     }
   }, [currentScene, cakeCutDone]);
 
-  // Scene 0: Flying kiss to welcome Sameeksha into the glowing neon heart!
+  // Scene 0: Graceful companion welcome for Sameeksha beside the glowing neon heart
   useEffect(() => {
-    if (currentScene === 0 && !frontKissPopped) {
-      setPosX(76);
-      setPosY(70);
+    if (currentScene === 0) {
+      setPosX(68);
+      setPosY(48);
       setDirection(-1);
-      const greeting = 'Happy 23rd Birthday Sameeksha! Here is a flying kiss just for you! 💋✨';
+      const greeting = 'Happy 23rd Birthday Sameeksha! Welcome to your magical celestial universe! 👑✨💖';
       setSpeechText(greeting);
       setIsSpeechOpen(true);
-      robotSpeaker.speak(greeting);
-      setIsKissFlying(true);
-
-      const arriveTimer = setTimeout(() => {
-        setIsKissFlying(false);
-        setKissBurst(true);
-        soundManager.playPopperBurstSound();
-        soundManager.playTwinkle();
-        setFrontKissPopped(true);
-        const welcome = 'Welcome to your magical celestial universe, Sameeksha! 👑✨';
-        setSpeechText(welcome);
-        robotSpeaker.speak(welcome);
-      }, 1900);
-
-      const burstCleanTimer = setTimeout(() => {
-        setKissBurst(false);
-      }, 3200);
-
-      return () => {
-        clearTimeout(arriveTimer);
-        clearTimeout(burstCleanTimer);
-      };
+      robotSpeaker.speak('Happy 23rd Birthday Sameeksha! Welcome to your universe!');
     }
-  }, [currentScene, frontKissPopped, setFrontKissPopped]);
+  }, [currentScene]);
 
   // Click on companion: Sweet romantic praises & compliments for Sameeksha!
   const handleCompanionClick = (e: React.MouseEvent) => {
@@ -729,66 +708,6 @@ export const RoamingCompanion: React.FC = () => {
 
   return (
     <>
-      {/* Flying Kiss on Front Page */}
-      <AnimatePresence>
-        {isKissFlying && (
-          <motion.div
-            initial={{ left: '76vw', top: '70vh', scale: 0.6, opacity: 0 }}
-            animate={{
-              left: ['76vw', '63vw', '50vw'],
-              top: ['70vh', '58vh', '50vh'],
-              scale: [0.6, 1.3, 1.8],
-              opacity: [0, 1, 1],
-              rotate: [0, -12, 12, 0],
-            }}
-            exit={{ scale: 2.6, opacity: 0 }}
-            transition={{ duration: 1.8, ease: 'easeOut' }}
-            style={{
-              position: 'fixed',
-              transform: 'translate(-50%, -50%)',
-              zIndex: 99,
-              pointerEvents: 'none',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              filter: 'drop-shadow(0 0 25px rgba(244, 63, 94, 0.9))',
-            }}
-          >
-            <span style={{ fontSize: '3.8rem' }}>💋</span>
-            <div style={{ display: 'flex', gap: '6px' }}>
-              <span style={{ fontSize: '1.4rem' }}>💖</span>
-              <span style={{ fontSize: '1.4rem' }}>✨</span>
-              <span style={{ fontSize: '1.4rem' }}>💫</span>
-            </div>
-          </motion.div>
-        )}
-
-        {kissBurst && (
-          <motion.div
-            initial={{ scale: 0.7, opacity: 1 }}
-            animate={{ scale: [1, 2.5, 3.2], opacity: [1, 0.95, 0] }}
-            transition={{ duration: 1.0, ease: 'easeOut' }}
-            style={{
-              position: 'fixed',
-              left: '50vw',
-              top: '50vh',
-              transform: 'translate(-50%, -50%)',
-              zIndex: 99,
-              pointerEvents: 'none',
-              fontSize: '4.5rem',
-              filter: 'drop-shadow(0 0 35px rgba(251, 191, 36, 1))',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-            }}
-          >
-            <span>💥</span>
-            <span>💖</span>
-            <span>✨</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* 2D Full Screen Roaming Companion Container: POINTER EVENTS NONE on container so screen clicks pass through! */}
       <div
         style={{
