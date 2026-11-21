@@ -148,6 +148,7 @@ export interface ExperienceState {
   isPlaylistOpen: boolean;
   isCompanionCuttingCake: boolean;
   cakeCutDone: boolean;
+  frontKissPopped: boolean;
 
   setScene: (scene: number) => void;
   nextScene: () => void;
@@ -177,6 +178,7 @@ export interface ExperienceState {
   setPlaylistOpen: (open: boolean) => void;
   triggerCompanionCakeCut: () => void;
   finishCompanionCakeCut: () => void;
+  setFrontKissPopped: (val: boolean) => void;
 }
 
 const TOTAL_SCENES = 7;
@@ -212,6 +214,7 @@ export const useExperienceStore = create<ExperienceState>((set, get) => ({
   isPlaylistOpen: false,
   isCompanionCuttingCake: false,
   cakeCutDone: false,
+  frontKissPopped: false,
 
   setScene: (scene) => {
     if (scene >= 0 && scene < TOTAL_SCENES) {
@@ -275,4 +278,5 @@ export const useExperienceStore = create<ExperienceState>((set, get) => ({
   setPlaylistOpen: (open) => set({ isPlaylistOpen: open }),
   triggerCompanionCakeCut: () => set({ isCompanionCuttingCake: true }),
   finishCompanionCakeCut: () => set({ isCompanionCuttingCake: false, cakeCutDone: true }),
+  setFrontKissPopped: (val) => set({ frontKissPopped: val }),
 }));

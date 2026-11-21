@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useExperienceStore, COMPANIONS, type CompanionId } from '../state/experienceStore';
 import { soundManager } from '../utils/audio';
@@ -275,8 +275,27 @@ export const RoamingCompanion: React.FC = () => {
   const isCompanionCuttingCake = useExperienceStore((s) => s.isCompanionCuttingCake);
   const finishCompanionCakeCut = useExperienceStore((s) => s.finishCompanionCakeCut);
   const cakeCutDone = useExperienceStore((s) => s.cakeCutDone);
+  const frontKissPopped = useExperienceStore((s) => s.frontKissPopped);
+  const setFrontKissPopped = useExperienceStore((s) => s.setFrontKissPopped);
 
   const companion = COMPANIONS[selectedCompanionId] || COMPANIONS.teddy;
+
+  // Sweet Romantic Praises & Compliments for Sameeksha
+  const COMPLIMENTS = useMemo(
+    () => [
+      'Sameeksha Ji, aapki muskaan poori duniya ki sabse pyari cheez hai! 💖',
+      'Harshit hamesha kehta hai, aap unki zindagi ka sabse anmol tohfa ho! ✨',
+      'Aapke aane se Harshit ki duniya mein har roz ek celebration hai, Meri Jaan! 🌸',
+      'Happy Birthday to the most gorgeous, sweet, and caring girl in the universe! 👑',
+      'Aapki aankhon mein alag hi noor aur masoomiyat hai Sameeksha Ji! 🌟',
+      'Har dua mein aur har khwab mein sirf aapka hi zikr hota hai! 💫',
+      'Aap hamesha aise hi muskurati rahein, aapki smile Harshit ki heartbeat hai! 🥰',
+      'Sameeksha, aap sirf perfect hi nahi, aap sabse alag aur sabse khas ho! 🌹',
+      'Harshit ka dil sirf aur sirf aapke liye dhadakta hai! ❤️',
+      'Duniya ki saari khushiyan, taare aur roshni aapke kadmon mein ho! 🎂✨',
+    ],
+    []
+  );
 
   // 2D Full-Screen position state (% of viewport)
   const [posX, setPosX] = useState(25);
@@ -289,6 +308,10 @@ export const RoamingCompanion: React.FC = () => {
   const [isSpeechOpen, setIsSpeechOpen] = useState(true);
   const [isChooserOpen, setIsChooserOpen] = useState(false);
   const [splatParticles, setSplatParticles] = useState<CreamParticle[]>([]);
+  const [complimentIndex, setComplimentIndex] = useState(0);
+  const [isKissFlying, setIsKissFlying] = useState(false);
+  const [kissBurst, setKissBurst] = useState(false);
+  const [clickSparks, setClickSparks] = useState<{ id: number; x: number; y: number; emoji: string }[]>([]);
 
   const targetXRef = useRef<number>(25);
   const targetYRef = useRef<number>(72);
@@ -408,8 +431,70 @@ export const RoamingCompanion: React.FC = () => {
     }
   }, [currentScene, cakeCutDone]);
 
-  // Click on companion: DROP THE CAKE!
+  // Scene 0: Flying kiss to welcome Sameeksha!
+  useEffect(() => {
+    if (currentScene === 0 && !frontKissPopped) {
+      setPosX(78);
+      setPosY(72);
+      setDirection(-1);
+      const greeting = 'Happy Birthday Sameeksha Ji! Yeh flying kiss aapke liye! 💋✨';
+      setSpeechText(greeting);
+      setIsSpeechOpen(true);
+      robotSpeaker.speak(greeting);
+      setIsKissFlying(true);
+
+      const arriveTimer = setTimeout(() => {
+        setIsKissFlying(false);
+        setKissBurst(true);
+        soundManager.playPopperBurstSound();
+        soundManager.playTwinkle();
+        setFrontKissPopped(true);
+        const welcome = 'Welcome to your magical universe, Sameeksha Ji! 👑✨';
+        setSpeechText(welcome);
+        robotSpeaker.speak(welcome);
+      }, 1900);
+
+      const burstCleanTimer = setTimeout(() => {
+        setKissBurst(false);
+      }, 3200);
+
+      return () => {
+        clearTimeout(arriveTimer);
+        clearTimeout(burstCleanTimer);
+      };
+    }
+  }, [currentScene, frontKissPopped, setFrontKissPopped]);
+
+  // Click on companion: Sweet romantic praises & compliments for Sameeksha!
   const handleCompanionClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isDropped || isFetchingNewCake || isCompanionCuttingCake) return;
+
+    soundManager.playTwinkle();
+
+    // Advance to next compliment
+    const nextIdx = (complimentIndex + 1) % COMPLIMENTS.length;
+    setComplimentIndex(nextIdx);
+    const compliment = COMPLIMENTS[nextIdx];
+
+    setSpeechText(compliment);
+    setIsSpeechOpen(true);
+    robotSpeaker.speak(compliment);
+
+    // Burst sweet heart & sparkle particles
+    const emojis = ['💖', '✨', '🌸', '🥰', '💫', '🌹', '❤️', '💋'];
+    const newSparks = Array.from({ length: 8 }).map((_, i) => ({
+      id: Date.now() + i,
+      x: (Math.random() - 0.5) * 80,
+      y: -(Math.random() * 70 + 20),
+      emoji: emojis[Math.floor(Math.random() * emojis.length)],
+    }));
+    setClickSparks(newSparks);
+    setTimeout(() => setClickSparks([]), 1400);
+  };
+
+  // Double click: Playful mini cake drop easter egg!
+  const handleCompanionDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isDropped || isFetchingNewCake || isCompanionCuttingCake) return;
 
@@ -421,7 +506,6 @@ export const RoamingCompanion: React.FC = () => {
     setIsSpeechOpen(true);
     robotSpeaker.speak(dropText);
 
-    // Cream particles
     const colors = ['#f43f5e', '#fbbf24', '#fff1f2', '#fda4af', '#fef08a'];
     const newParticles: CreamParticle[] = Array.from({ length: 14 }).map((_, i) => ({
       id: Date.now() + i,
@@ -471,19 +555,79 @@ export const RoamingCompanion: React.FC = () => {
 
   return (
     <>
+      {/* Flying Kiss on Front Page */}
+      <AnimatePresence>
+        {isKissFlying && (
+          <motion.div
+            initial={{ left: '78vw', top: '72vh', scale: 0.6, opacity: 0 }}
+            animate={{
+              left: ['78vw', '65vw', '50vw'],
+              top: ['72vh', '55vh', '42vh'],
+              scale: [0.6, 1.3, 1.8],
+              opacity: [0, 1, 1],
+              rotate: [0, -12, 12, 0],
+            }}
+            exit={{ scale: 2.6, opacity: 0 }}
+            transition={{ duration: 1.8, ease: 'easeOut' }}
+            style={{
+              position: 'fixed',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 99,
+              pointerEvents: 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              filter: 'drop-shadow(0 0 25px rgba(244, 63, 94, 0.9))',
+            }}
+          >
+            <span style={{ fontSize: '3.8rem' }}>💋</span>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <span style={{ fontSize: '1.4rem' }}>💖</span>
+              <span style={{ fontSize: '1.4rem' }}>✨</span>
+              <span style={{ fontSize: '1.4rem' }}>💫</span>
+            </div>
+          </motion.div>
+        )}
+
+        {kissBurst && (
+          <motion.div
+            initial={{ scale: 0.7, opacity: 1 }}
+            animate={{ scale: [1, 2.5, 3.2], opacity: [1, 0.95, 0] }}
+            transition={{ duration: 1.0, ease: 'easeOut' }}
+            style={{
+              position: 'fixed',
+              left: '50vw',
+              top: '42vh',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 99,
+              pointerEvents: 'none',
+              fontSize: '4.5rem',
+              filter: 'drop-shadow(0 0 35px rgba(251, 191, 36, 1))',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+            }}
+          >
+            <span>💥</span>
+            <span>💖</span>
+            <span>✨</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* 2D Full Screen Roaming Companion Container: POINTER EVENTS NONE on container so screen clicks pass through! */}
       <div
         style={{
           position: 'fixed',
           top: `${posY}%`,
           left: `${posX}%`,
-          transform: `translate(-50%, -50%) scaleX(${direction})`,
-          transition: isFetchingNewCake ? 'left 0.8s ease, top 0.8s ease' : 'transform 0.15s ease',
+          transform: 'translate(-50%, -50%)',
+          transition: isFetchingNewCake ? 'left 0.8s ease, top 0.8s ease' : 'none',
           zIndex: 85,
           pointerEvents: 'none',
         }}
       >
-        {/* Floating Dialogue Speech Bubble */}
+        {/* Floating Dialogue Speech Bubble - NEVER MIRRORED! */}
         <AnimatePresence>
           {isSpeechOpen && (
             <motion.div
@@ -494,7 +638,7 @@ export const RoamingCompanion: React.FC = () => {
                 position: 'absolute',
                 bottom: '105px',
                 left: '50%',
-                transform: `translateX(-50%) scaleX(${direction})`,
+                transform: 'translateX(-50%)',
                 background: 'rgba(17, 12, 34, 0.94)',
                 backdropFilter: 'blur(12px)',
                 border: '1px solid rgba(251, 191, 36, 0.45)',
@@ -529,6 +673,7 @@ export const RoamingCompanion: React.FC = () => {
         {/* Mascot Avatar Body */}
         <motion.div
           onClick={handleCompanionClick}
+          onDoubleClick={handleCompanionDoubleClick}
           animate={
             isDropped
               ? { rotate: [0, -20, 20, -15, 0], scale: [1, 1.15, 0.95, 1] }
@@ -556,9 +701,11 @@ export const RoamingCompanion: React.FC = () => {
             cursor: 'pointer',
           }}
         >
-          {/* Animated SVG Character */}
+          {/* Animated SVG Character with horizontal flip on direction */}
           <div
             style={{
+              transform: `scaleX(${direction})`,
+              transition: 'transform 0.15s ease',
               filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.5))',
               userSelect: 'none',
             }}
@@ -588,6 +735,26 @@ export const RoamingCompanion: React.FC = () => {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Sparkles on Click (Compliment heart burst!) */}
+          {clickSparks.map((s) => (
+            <motion.div
+              key={s.id}
+              initial={{ x: 0, y: 0, opacity: 1, scale: 0.5 }}
+              animate={{ x: s.x, y: s.y, opacity: 0, scale: 1.4 }}
+              transition={{ duration: 1.2, ease: 'easeOut' }}
+              style={{
+                position: 'absolute',
+                top: '20px',
+                left: '50%',
+                fontSize: '1.4rem',
+                pointerEvents: 'none',
+                userSelect: 'none',
+              }}
+            >
+              {s.emoji}
+            </motion.div>
+          ))}
 
           {/* Splat Cream on Floor when dropped */}
           {isDropped && (
@@ -625,7 +792,7 @@ export const RoamingCompanion: React.FC = () => {
           ))}
         </motion.div>
 
-        {/* Mascot Name Badge & Drops Counter */}
+        {/* Mascot Name Badge & Drops Counter - NEVER MIRRORED! */}
         <div
           style={{
             marginTop: '4px',

@@ -1,14 +1,55 @@
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useRef, useState, useMemo, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, OrbitControls, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useExperienceStore } from '../../state/experienceStore';
-import { content } from '../../content/siteContent';
 import { soundManager } from '../../utils/audio';
 import { robotSpeaker } from '../../utils/speech';
 
-// 3D Gift Box Component with scaled-down dimensions & animated lid
+// Gift IDs
+type GiftChoiceId = 'teddy' | 'rose' | 'diamond' | 'chocolates';
+
+interface GiftChoice {
+  id: GiftChoiceId;
+  name: string;
+  emoji: string;
+  tag: string;
+  description: string;
+}
+
+const GIFTS: GiftChoice[] = [
+  {
+    id: 'teddy',
+    name: 'Plush Fluffy Teddy Bear',
+    emoji: '🧸',
+    tag: 'Soft Cuddles',
+    description: 'Ultra-soft honey plush bear with a ruby satin bowtie, hamesha aapko Harshit ki yaad dilayega!',
+  },
+  {
+    id: 'rose',
+    name: '100 Royal Red Velvet Roses',
+    emoji: '🌹',
+    tag: 'Eternal Romance',
+    description: 'Taaza mehkte laal gulaabon ka bouquet jo Sameeksha ki khubsurti jaisa hamesha mehke!',
+  },
+  {
+    id: 'diamond',
+    name: 'Diamond & Rose-Gold Eternity Heart',
+    emoji: '💎',
+    tag: 'Precious Gem',
+    description: 'Shining diamond center with orbital rose-gold halo ring — Harshit ke sachhe dil ki nishani!',
+  },
+  {
+    id: 'chocolates',
+    name: 'Belgian Royal Chocolate Truffles',
+    emoji: '🍫',
+    tag: 'Sweet Moments',
+    description: 'Handcrafted luxury chocolate truffles with edible gold leaf, bilkul aapki muskaan jaisi meethi!',
+  },
+];
+
+// 3D Gift Box Component with animated lid
 function GiftBox({ isOpen, onOpen }: { isOpen: boolean; onOpen: () => void }) {
   const boxGroupRef = useRef<THREE.Group>(null);
   const lidGroupRef = useRef<THREE.Group>(null);
@@ -19,9 +60,9 @@ function GiftBox({ isOpen, onOpen }: { isOpen: boolean; onOpen: () => void }) {
     }
     if (lidGroupRef.current) {
       if (isOpen) {
-        lidGroupRef.current.position.y = THREE.MathUtils.lerp(lidGroupRef.current.position.y, 2.2, 0.07);
-        lidGroupRef.current.position.z = THREE.MathUtils.lerp(lidGroupRef.current.position.z, -0.85, 0.07);
-        lidGroupRef.current.rotation.x = THREE.MathUtils.lerp(lidGroupRef.current.rotation.x, -0.85, 0.07);
+        lidGroupRef.current.position.y = THREE.MathUtils.lerp(lidGroupRef.current.position.y, 2.5, 0.08);
+        lidGroupRef.current.position.z = THREE.MathUtils.lerp(lidGroupRef.current.position.z, -0.9, 0.08);
+        lidGroupRef.current.rotation.x = THREE.MathUtils.lerp(lidGroupRef.current.rotation.x, -0.9, 0.08);
       } else {
         lidGroupRef.current.position.y = 0.6;
         lidGroupRef.current.position.z = 0;
@@ -31,7 +72,7 @@ function GiftBox({ isOpen, onOpen }: { isOpen: boolean; onOpen: () => void }) {
   });
 
   return (
-    <Float speed={1.2} rotationIntensity={0.08} floatIntensity={0.16}>
+    <Float speed={1.2} rotationIntensity={0.06} floatIntensity={0.14}>
       <group
         ref={boxGroupRef}
         position={[0, -0.4, 0]}
@@ -40,47 +81,34 @@ function GiftBox({ isOpen, onOpen }: { isOpen: boolean; onOpen: () => void }) {
           onOpen();
         }}
       >
-        {/* Base Box Outer - Scaled down */}
+        {/* Base Box Outer */}
         <mesh position={[0, 0, 0]} castShadow receiveShadow>
           <boxGeometry args={[1.2, 1.0, 1.2]} />
-          <meshStandardMaterial
-            color="#9d174d"
-            roughness={0.25}
-            metalness={0.4}
-            envMapIntensity={1}
-          />
+          <meshStandardMaterial color="#9d174d" roughness={0.25} metalness={0.4} />
         </mesh>
 
-        {/* Base Ribbon Cross - Vertical X */}
+        {/* Ribbons */}
         <mesh position={[0, 0, 0]}>
           <boxGeometry args={[0.22, 1.02, 1.22]} />
           <meshStandardMaterial color="#fbbf24" metalness={0.8} roughness={0.2} />
         </mesh>
-
-        {/* Base Ribbon Cross - Vertical Z */}
         <mesh position={[0, 0, 0]}>
           <boxGeometry args={[1.22, 1.02, 0.22]} />
           <meshStandardMaterial color="#fbbf24" metalness={0.8} roughness={0.2} />
         </mesh>
 
-        {/* Interior Velvet Display Cushion */}
+        {/* Velvet interior cushion */}
         <mesh position={[0, 0.35, 0]}>
           <boxGeometry args={[1.1, 0.22, 1.1]} />
           <meshStandardMaterial color="#4c0519" roughness={0.8} />
         </mesh>
 
-        {/* Lid Group */}
+        {/* Lid */}
         <group ref={lidGroupRef} position={[0, 0.6, 0]}>
           <mesh castShadow>
             <boxGeometry args={[1.28, 0.24, 1.28]} />
-            <meshStandardMaterial
-              color="#be185d"
-              roughness={0.2}
-              metalness={0.4}
-            />
+            <meshStandardMaterial color="#be185d" roughness={0.2} metalness={0.4} />
           </mesh>
-
-          {/* Lid Ribbon Cross */}
           <mesh position={[0, 0.02, 0]}>
             <boxGeometry args={[0.22, 0.26, 1.3]} />
             <meshStandardMaterial color="#fbbf24" metalness={0.8} roughness={0.2} />
@@ -89,8 +117,7 @@ function GiftBox({ isOpen, onOpen }: { isOpen: boolean; onOpen: () => void }) {
             <boxGeometry args={[1.3, 0.26, 0.22]} />
             <meshStandardMaterial color="#fbbf24" metalness={0.8} roughness={0.2} />
           </mesh>
-
-          {/* Golden Bow on top */}
+          {/* Bow */}
           <group position={[0, 0.2, 0]}>
             <mesh rotation={[0, 0, Math.PI / 4]}>
               <torusGeometry args={[0.16, 0.055, 16, 32]} />
@@ -107,7 +134,7 @@ function GiftBox({ isOpen, onOpen }: { isOpen: boolean; onOpen: () => void }) {
           </group>
         </group>
 
-        {/* Platform pedestal */}
+        {/* Pedestal */}
         <mesh position={[0, -0.6, 0]} receiveShadow>
           <cylinderGeometry args={[1.3, 1.45, 0.16, 32]} />
           <meshStandardMaterial color="#1e1035" metalness={0.5} roughness={0.4} />
@@ -117,33 +144,36 @@ function GiftBox({ isOpen, onOpen }: { isOpen: boolean; onOpen: () => void }) {
   );
 }
 
-// 3D Cute Plush Teddy Bear inside the gift
-function TeddyBear3D({ isOpen }: { isOpen: boolean }) {
+// 3D Teddy Bear Model
+function TeddyBear3D({
+  position,
+  scale,
+  isSolo,
+}: {
+  position: [number, number, number];
+  scale: number;
+  isSolo: boolean;
+}) {
   const teddyRef = useRef<THREE.Group>(null);
 
   useFrame(({ clock }) => {
     if (!teddyRef.current) return;
     const t = clock.getElapsedTime();
-    if (isOpen) {
-      teddyRef.current.position.y = THREE.MathUtils.lerp(teddyRef.current.position.y, 0.85, 0.06);
-      teddyRef.current.position.x = THREE.MathUtils.lerp(teddyRef.current.position.x, -0.75, 0.06);
-      teddyRef.current.scale.setScalar(THREE.MathUtils.lerp(teddyRef.current.scale.x, 0.55, 0.08));
-      teddyRef.current.rotation.y = Math.PI / 8 + Math.sin(t * 1.5) * 0.1;
-      teddyRef.current.rotation.z = Math.sin(t * 1.8) * 0.04;
+    teddyRef.current.position.y = position[1] + Math.sin(t * 1.8) * 0.06;
+    if (isSolo) {
+      teddyRef.current.rotation.y = t * 0.8;
     } else {
-      teddyRef.current.position.set(0, 0, 0);
-      teddyRef.current.scale.set(0, 0, 0);
+      teddyRef.current.rotation.y = Math.sin(t * 1.2) * 0.2;
     }
   });
 
   return (
-    <group ref={teddyRef} position={[0, -0.2, 0]} scale={[0.01, 0.01, 0.01]}>
+    <group ref={teddyRef} position={position} scale={[scale, scale, scale]}>
       {/* Body */}
       <mesh position={[0, 0.35, 0]}>
         <sphereGeometry args={[0.38, 20, 20]} />
         <meshStandardMaterial color="#b45309" roughness={0.8} />
       </mesh>
-      {/* Belly patch */}
       <mesh position={[0, 0.35, 0.28]}>
         <sphereGeometry args={[0.22, 16, 16]} />
         <meshStandardMaterial color="#fef3c7" roughness={0.9} />
@@ -153,12 +183,10 @@ function TeddyBear3D({ isOpen }: { isOpen: boolean }) {
         <sphereGeometry args={[0.32, 20, 20]} />
         <meshStandardMaterial color="#b45309" roughness={0.8} />
       </mesh>
-      {/* Snout */}
       <mesh position={[0, 0.76, 0.26]}>
         <sphereGeometry args={[0.13, 16, 16]} />
         <meshStandardMaterial color="#fef3c7" roughness={0.9} />
       </mesh>
-      {/* Nose */}
       <mesh position={[0, 0.82, 0.37]}>
         <sphereGeometry args={[0.04, 12, 12]} />
         <meshStandardMaterial color="#18181b" roughness={0.3} />
@@ -199,101 +227,97 @@ function TeddyBear3D({ isOpen }: { isOpen: boolean }) {
   );
 }
 
-// 3D Red Rose / Flower Bouquet inside the gift
-function RoseBouquet3D({ isOpen }: { isOpen: boolean }) {
+// 3D Rose Bouquet Model
+function RoseBouquet3D({
+  position,
+  scale,
+  isSolo,
+}: {
+  position: [number, number, number];
+  scale: number;
+  isSolo: boolean;
+}) {
   const roseRef = useRef<THREE.Group>(null);
 
   useFrame(({ clock }) => {
     if (!roseRef.current) return;
     const t = clock.getElapsedTime();
-    if (isOpen) {
-      roseRef.current.position.y = THREE.MathUtils.lerp(roseRef.current.position.y, 0.85, 0.06);
-      roseRef.current.position.x = THREE.MathUtils.lerp(roseRef.current.position.x, 0.75, 0.06);
-      roseRef.current.scale.setScalar(THREE.MathUtils.lerp(roseRef.current.scale.x, 0.55, 0.08));
-      roseRef.current.rotation.y = -Math.PI / 8 - Math.sin(t * 1.5) * 0.1;
-      roseRef.current.rotation.z = Math.cos(t * 1.6) * 0.05;
+    roseRef.current.position.y = position[1] + Math.sin(t * 1.6 + 1) * 0.06;
+    if (isSolo) {
+      roseRef.current.rotation.y = t * 0.8;
     } else {
-      roseRef.current.position.set(0, 0, 0);
-      roseRef.current.scale.set(0, 0, 0);
+      roseRef.current.rotation.y = -Math.sin(t * 1.2) * 0.2;
     }
   });
 
   return (
-    <group ref={roseRef} position={[0, -0.2, 0]} scale={[0.01, 0.01, 0.01]}>
-      {/* Central Red Rose Bloom */}
+    <group ref={roseRef} position={position} scale={[scale, scale, scale]}>
+      {/* Central Rose Bloom */}
       <group position={[0, 0.8, 0]}>
-        {/* Rose core */}
         <mesh>
-          <sphereGeometry args={[0.2, 16, 16]} />
+          <sphereGeometry args={[0.22, 16, 16]} />
           <meshStandardMaterial color="#dc2626" roughness={0.3} />
         </mesh>
-        {/* Rose Petal Shell 1 */}
         <mesh rotation={[0.4, 0.5, 0]}>
-          <cylinderGeometry args={[0.26, 0.18, 0.22, 16, 1, true]} />
+          <cylinderGeometry args={[0.28, 0.2, 0.24, 16, 1, true]} />
           <meshStandardMaterial color="#e11d48" roughness={0.3} side={THREE.DoubleSide} />
         </mesh>
-        {/* Rose Petal Shell 2 */}
         <mesh rotation={[-0.3, -0.6, 0.3]}>
-          <cylinderGeometry args={[0.32, 0.22, 0.26, 16, 1, true]} />
+          <cylinderGeometry args={[0.34, 0.24, 0.28, 16, 1, true]} />
           <meshStandardMaterial color="#f43f5e" roughness={0.3} side={THREE.DoubleSide} />
         </mesh>
       </group>
 
-      {/* Side Rosebud 1 */}
-      <group position={[-0.24, 0.65, 0.1]}>
+      {/* Side Roses */}
+      <group position={[-0.26, 0.68, 0.1]}>
         <mesh>
-          <sphereGeometry args={[0.13, 14, 14]} />
+          <sphereGeometry args={[0.15, 14, 14]} />
           <meshStandardMaterial color="#fb7185" roughness={0.3} />
         </mesh>
       </group>
-
-      {/* Side Rosebud 2 */}
-      <group position={[0.22, 0.65, 0.12]}>
+      <group position={[0.24, 0.68, 0.12]}>
         <mesh>
-          <sphereGeometry args={[0.13, 14, 14]} />
+          <sphereGeometry args={[0.15, 14, 14]} />
           <meshStandardMaterial color="#fb7185" roughness={0.3} />
         </mesh>
       </group>
 
       {/* Emerald Stems */}
-      <mesh position={[0, 0.25, 0]} rotation={[0, 0, 0.05]}>
-        <cylinderGeometry args={[0.035, 0.035, 0.7, 12]} />
+      <mesh position={[0, 0.25, 0]}>
+        <cylinderGeometry args={[0.04, 0.04, 0.75, 12]} />
         <meshStandardMaterial color="#15803d" roughness={0.5} />
       </mesh>
 
-      {/* Leaves */}
-      <mesh position={[0.14, 0.32, 0.08]} rotation={[0.5, 0.2, 0.6]}>
-        <coneGeometry args={[0.1, 0.24, 6]} />
-        <meshStandardMaterial color="#16a34a" roughness={0.4} />
-      </mesh>
-      <mesh position={[-0.14, 0.22, -0.05]} rotation={[-0.5, -0.2, -0.6]}>
-        <coneGeometry args={[0.1, 0.24, 6]} />
-        <meshStandardMaterial color="#16a34a" roughness={0.4} />
-      </mesh>
-
-      {/* Golden Floral Wrap Ribbon */}
+      {/* Golden Wrap Ribbon */}
       <mesh position={[0, 0.08, 0]}>
-        <cylinderGeometry args={[0.14, 0.08, 0.25, 16]} />
-        <meshStandardMaterial color="#fbbf24" metalness={0.7} roughness={0.2} />
+        <cylinderGeometry args={[0.16, 0.1, 0.26, 16]} />
+        <meshStandardMaterial color="#fbbf24" metalness={0.8} roughness={0.2} />
       </mesh>
     </group>
   );
 }
 
-// 3D Physical Gift Centerpiece: Diamond & Rose Gold Eternity Heart Pendant
-function PhysicalGift({ isOpen }: { isOpen: boolean }) {
+// 3D Diamond Heart Pendant Model
+function DiamondHeart3D({
+  position,
+  scale,
+  isSolo,
+}: {
+  position: [number, number, number];
+  scale: number;
+  isSolo: boolean;
+}) {
   const giftRef = useRef<THREE.Group>(null);
   const ringRef = useRef<THREE.Mesh>(null);
 
-  // Exact parametric heart shape
   const heartShape = useMemo(() => {
     const shape = new THREE.Shape();
     const N = 48;
-    const scale = 0.026;
+    const s = 0.028;
     for (let i = 0; i <= N; i++) {
       const t = (i / N) * Math.PI * 2;
-      const x = 16 * Math.pow(Math.sin(t), 3) * scale;
-      const y = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * scale;
+      const x = 16 * Math.pow(Math.sin(t), 3) * s;
+      const y = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * s;
       if (i === 0) shape.moveTo(x, y);
       else shape.lineTo(x, y);
     }
@@ -315,18 +339,12 @@ function PhysicalGift({ isOpen }: { isOpen: boolean }) {
   useFrame(({ clock }) => {
     if (!giftRef.current) return;
     const t = clock.getElapsedTime();
-
-    if (isOpen) {
-      giftRef.current.position.y = THREE.MathUtils.lerp(giftRef.current.position.y, 1.15, 0.06);
-      giftRef.current.scale.setScalar(THREE.MathUtils.lerp(giftRef.current.scale.x, 1.0, 0.08));
-      giftRef.current.rotation.y = t * 0.75;
-      giftRef.current.position.y += Math.sin(t * 2) * 0.003;
+    giftRef.current.position.y = position[1] + Math.sin(t * 2) * 0.06;
+    if (isSolo) {
+      giftRef.current.rotation.y = t * 0.9;
     } else {
-      giftRef.current.position.y = 0.15;
-      giftRef.current.rotation.y = 0;
-      giftRef.current.scale.set(0, 0, 0);
+      giftRef.current.rotation.y = t * 0.5;
     }
-
     if (ringRef.current) {
       ringRef.current.rotation.z = t * 0.8;
       ringRef.current.rotation.x = Math.PI / 4 + Math.sin(t) * 0.15;
@@ -334,7 +352,7 @@ function PhysicalGift({ isOpen }: { isOpen: boolean }) {
   });
 
   return (
-    <group ref={giftRef} position={[0, -0.2, 0]} scale={[0.01, 0.01, 0.01]}>
+    <group ref={giftRef} position={position} scale={[scale, scale, scale]}>
       {/* Rose Gold / Ruby Crystal Heart Pendant */}
       <mesh position={[0, 0.05, -0.07]}>
         <extrudeGeometry args={[heartShape, extrudeSettings]} />
@@ -346,14 +364,12 @@ function PhysicalGift({ isOpen }: { isOpen: boolean }) {
           metalness={0.4}
           clearcoat={1}
           clearcoatRoughness={0.1}
-          transmission={0.3}
-          reflectivity={0.9}
         />
       </mesh>
 
-      {/* Sparkling Brilliant Diamond at the Center */}
+      {/* Sparkling Brilliant Diamond */}
       <mesh position={[0, 0.06, 0.03]}>
-        <octahedronGeometry args={[0.16, 0]} />
+        <octahedronGeometry args={[0.18, 0]} />
         <meshPhysicalMaterial
           color="#ffffff"
           emissive="#fef08a"
@@ -364,76 +380,68 @@ function PhysicalGift({ isOpen }: { isOpen: boolean }) {
         />
       </mesh>
 
-      {/* Golden Bail */}
-      <mesh position={[0, 0.38, 0]}>
-        <torusGeometry args={[0.07, 0.02, 16, 32]} />
+      {/* Golden Bail & Halo */}
+      <mesh position={[0, 0.42, 0]}>
+        <torusGeometry args={[0.075, 0.02, 16, 32]} />
         <meshStandardMaterial color="#fbbf24" metalness={0.9} roughness={0.15} />
       </mesh>
-
-      {/* Golden Orbital Halo Ring */}
       <mesh ref={ringRef} position={[0, 0.06, 0]}>
-        <torusGeometry args={[0.62, 0.014, 16, 64]} />
+        <torusGeometry args={[0.66, 0.015, 16, 64]} />
         <meshStandardMaterial color="#fcd34d" metalness={0.95} roughness={0.1} />
       </mesh>
-
-      {/* Point lights */}
-      <pointLight color="#ff2d75" intensity={isOpen ? 3.0 : 0} distance={3.2} />
-      <pointLight color="#fbbf24" intensity={isOpen ? 2.2 : 0} distance={2.5} position={[0, 0.2, 0.3]} />
-
-      {isOpen && (
-        <Sparkles
-          count={40}
-          scale={1.8}
-          size={3.0}
-          speed={1.2}
-          color="#fda4af"
-        />
-      )}
+      <pointLight color="#ff2d75" intensity={2.8} distance={3.0} />
     </group>
   );
 }
 
-// Particles bursting from the open gift
-function GiftBurst() {
-  const count = 36;
-  const meshRefs = useRef<THREE.Mesh[]>([]);
+// 3D Belgian Chocolates Box
+function Chocolates3D({
+  position,
+  scale,
+  isSolo,
+}: {
+  position: [number, number, number];
+  scale: number;
+  isSolo: boolean;
+}) {
+  const chocoRef = useRef<THREE.Group>(null);
 
   useFrame(({ clock }) => {
+    if (!chocoRef.current) return;
     const t = clock.getElapsedTime();
-    meshRefs.current.forEach((mesh, i) => {
-      if (mesh) {
-        mesh.position.y += 0.018;
-        mesh.rotation.y = t * 2 + i;
-        mesh.rotation.x = t + i;
-      }
-    });
+    chocoRef.current.position.y = position[1] + Math.sin(t * 1.9 + 2) * 0.06;
+    if (isSolo) {
+      chocoRef.current.rotation.y = t * 0.8;
+    } else {
+      chocoRef.current.rotation.y = Math.sin(t * 1.4) * 0.2;
+    }
   });
 
   return (
-    <group position={[0, 0.8, 0]}>
-      {Array.from({ length: count }).map((_, i) => {
-        const angle = (i / count) * Math.PI * 2;
-        const radius = 0.5 + Math.random() * 1.3;
-        const x = Math.cos(angle) * radius;
-        const z = Math.sin(angle) * radius;
-        const y = Math.random() * 1.8;
-        return (
-          <mesh
-            key={i}
-            ref={(el) => {
-              if (el) meshRefs.current[i] = el;
-            }}
-            position={[x, y, z]}
-          >
-            <sphereGeometry args={[0.05 + Math.random() * 0.03, 8, 8]} />
-            <meshStandardMaterial
-              color={i % 3 === 0 ? '#ff6b9d' : i % 3 === 1 ? '#fbbf24' : '#a855f7'}
-              emissive={i % 3 === 0 ? '#ff1493' : '#f59e0b'}
-              emissiveIntensity={1.4}
-            />
-          </mesh>
-        );
-      })}
+    <group ref={chocoRef} position={position} scale={[scale, scale, scale]}>
+      {/* Heart-Shaped Gold Box */}
+      <mesh position={[0, 0.2, 0]}>
+        <cylinderGeometry args={[0.55, 0.55, 0.22, 24]} />
+        <meshStandardMaterial color="#d97706" metalness={0.8} roughness={0.2} />
+      </mesh>
+      {/* Red Velvet Ribbon */}
+      <mesh position={[0, 0.32, 0]}>
+        <cylinderGeometry args={[0.58, 0.58, 0.04, 24]} />
+        <meshStandardMaterial color="#ef4444" roughness={0.4} />
+      </mesh>
+      {/* 3 Chocolate Truffles */}
+      <mesh position={[-0.18, 0.36, -0.1]}>
+        <sphereGeometry args={[0.1, 14, 14]} />
+        <meshStandardMaterial color="#3e2723" roughness={0.3} />
+      </mesh>
+      <mesh position={[0.18, 0.36, -0.1]}>
+        <sphereGeometry args={[0.1, 14, 14]} />
+        <meshStandardMaterial color="#5d4037" roughness={0.3} />
+      </mesh>
+      <mesh position={[0, 0.36, 0.16]}>
+        <sphereGeometry args={[0.1, 14, 14]} />
+        <meshStandardMaterial color="#fbbf24" metalness={0.9} roughness={0.15} />
+      </mesh>
     </group>
   );
 }
@@ -442,7 +450,22 @@ const GiftScene: React.FC = () => {
   const nextScene = useExperienceStore((s) => s.nextScene);
   const giftOpened = useExperienceStore((s) => s.giftOpened);
   const setGiftOpened = useExperienceStore((s) => s.setGiftOpened);
+
   const [localOpened, setLocalOpened] = useState(giftOpened);
+  const [selectedGiftId, setSelectedGiftId] = useState<GiftChoiceId | null>(null);
+  const [sleighDelivered, setSleighDelivered] = useState(false);
+
+  // Santa Flying Sleigh Arrival Animation on Scene Load
+  useEffect(() => {
+    soundManager.playTwinkle();
+    const timer = setTimeout(() => {
+      setSleighDelivered(true);
+      soundManager.playPopperBurstSound();
+      robotSpeaker.speak('Ho Ho Ho! Santa ki magical delivery Sameeksha baby ke liye aayi hai! 🎅✨');
+    }, 2400);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleOpen = () => {
     if (!localOpened) {
@@ -450,30 +473,95 @@ const GiftScene: React.FC = () => {
       soundManager.playPopperBurstSound();
       setLocalOpened(true);
       setGiftOpened();
-      robotSpeaker.speak('Happy Birthday Sameeksha! Ye khas birthday gift hamper aapke liye hai! Teddy, Roses aur Diamond Heart! 🧸🌹💎');
+      soundManager.playTrack('theme-starlight');
+      robotSpeaker.speak('Happy Birthday Sameeksha! Gift box khul gaya! Apna manpasand gift choose kijiye! 🎁💖');
     }
   };
 
+  const handleSelectGift = (id: GiftChoiceId) => {
+    soundManager.playTwinkle();
+    setSelectedGiftId(id);
+    const chosen = GIFTS.find((g) => g.id === id);
+    if (chosen) {
+      robotSpeaker.speak(`Aapne choose kiya hai: ${chosen.name}! Ye gift aapko jald hi milega Harshit ki taraf se! 💖`);
+    }
+  };
+
+  const selectedGift = GIFTS.find((g) => g.id === selectedGiftId);
+
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
-      {/* 3D Canvas: Center view is scaled nicely to fit entire gift + teddy + flowers on screen */}
+      {/* 🎅 Magical Flying Santa Sleigh across the Sky before delivery */}
+      <AnimatePresence>
+        {!sleighDelivered && (
+          <motion.div
+            initial={{ x: '110vw', y: '10vh', scale: 0.7, opacity: 0 }}
+            animate={{
+              x: ['110vw', '50vw', '48vw'],
+              y: ['10vh', '35vh', '48vh'],
+              scale: [0.7, 1.1, 1],
+              opacity: [0, 1, 1],
+            }}
+            exit={{ x: '-120vw', y: '5vh', scale: 0.6, opacity: 0 }}
+            transition={{ duration: 2.3, ease: 'easeInOut' }}
+            style={{
+              position: 'fixed',
+              zIndex: 90,
+              pointerEvents: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              filter: 'drop-shadow(0 10px 25px rgba(251, 191, 36, 0.7))',
+            }}
+          >
+            <span style={{ fontSize: '3.6rem', transform: 'scaleX(-1)' }}>🦌🦌🛷</span>
+            <span style={{ fontSize: '2.8rem' }}>🎁</span>
+            <div
+              style={{
+                background: 'rgba(239, 68, 68, 0.9)',
+                color: '#fff',
+                padding: '4px 12px',
+                borderRadius: '16px',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                border: '1px solid #fbbf24',
+              }}
+            >
+              🎅 Santa's Special Delivery for Sameeksha! ✨
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 3D Canvas */}
       <div className="canvas-container" style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
-        <Canvas camera={{ position: [0, 1.1, 4.2], fov: 45 }} shadows>
+        <Canvas camera={{ position: [0, 1.1, 4.4], fov: 45 }} shadows>
           <ambientLight intensity={0.65} />
           <directionalLight position={[5, 8, 5]} intensity={1.5} castShadow />
           <pointLight position={[-4, 3, -2]} intensity={1.1} color="#ff6b9d" />
           <pointLight position={[3, -2, 2]} intensity={0.9} color="#fbbf24" />
-
           <Sparkles count={80} scale={5.5} size={2.4} speed={0.5} color="#fcd34d" />
-          <GiftBox isOpen={localOpened} onOpen={handleOpen} />
 
-          {/* GIFTS INSIDE ARE 100% CONCEALED until the user opens the box! */}
-          {localOpened && (
+          {/* Sealed present box shown before opening */}
+          {!localOpened && <GiftBox isOpen={false} onOpen={handleOpen} />}
+
+          {/* When opened and a specific gift is chosen: SOLO SPOTLIGHT in Center! */}
+          {localOpened && selectedGiftId && (
             <>
-              <TeddyBear3D isOpen={localOpened} />
-              <RoseBouquet3D isOpen={localOpened} />
-              <PhysicalGift isOpen={localOpened} />
-              <GiftBurst />
+              {selectedGiftId === 'teddy' && <TeddyBear3D position={[0, 0.4, 0]} scale={0.75} isSolo={true} />}
+              {selectedGiftId === 'rose' && <RoseBouquet3D position={[0, 0.3, 0]} scale={0.8} isSolo={true} />}
+              {selectedGiftId === 'diamond' && <DiamondHeart3D position={[0, 0.5, 0]} scale={1.25} isSolo={true} />}
+              {selectedGiftId === 'chocolates' && <Chocolates3D position={[0, 0.4, 0]} scale={1.1} isSolo={true} />}
+            </>
+          )}
+
+          {/* When opened and NO specific gift chosen yet: Show ALL 4 gifts cleanly arrayed! */}
+          {localOpened && !selectedGiftId && (
+            <>
+              <TeddyBear3D position={[-1.3, 0.5, 0]} scale={0.48} isSolo={false} />
+              <RoseBouquet3D position={[-0.45, 0.45, 0.2]} scale={0.52} isSolo={false} />
+              <DiamondHeart3D position={[0.45, 0.55, 0.2]} scale={0.75} isSolo={false} />
+              <Chocolates3D position={[1.3, 0.45, 0]} scale={0.7} isSolo={false} />
             </>
           )}
 
@@ -518,7 +606,7 @@ const GiftScene: React.FC = () => {
             letterSpacing: '1px',
           }}
         >
-          {content.gift.heading}
+          {localOpened ? 'Choose Your Birthday Gift' : 'Special Delivery for Sameeksha Baby'}
         </motion.h2>
 
         <div
@@ -533,7 +621,11 @@ const GiftScene: React.FC = () => {
             userSelect: 'none',
           }}
         >
-          {localOpened ? '👆 Drag to rotate 3D gifts 360° • Teddy, Rose & Diamond' : '🎁 Tap the gift box or button below to open!'}
+          {selectedGiftId
+            ? '✨ Spotlighting your selected gift in center 360°!'
+            : localOpened
+            ? '🎁 Tap any gift below to choose your favorite!'
+            : '🎁 Tap the gift box or button below to open!'}
         </div>
       </div>
 
@@ -562,44 +654,93 @@ const GiftScene: React.FC = () => {
               padding: '0.9rem 2.4rem',
             }}
           >
-            <span>{content.gift.button} 🎁 ✨</span>
+            <span>Open Your Surprise Gift 🎁 ✨</span>
           </motion.button>
         </div>
       )}
 
-      {/* Side Docked Card (After opened) */}
+      {/* 4 Chooseable Gifts Bar (When opened and no gift selected yet) */}
+      {localOpened && !selectedGiftId && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '22px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 50,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            maxWidth: '94vw',
+          }}
+        >
+          {GIFTS.map((g) => (
+            <motion.button
+              key={g.id}
+              onClick={() => handleSelectGift(g.id)}
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.95 }}
+              style={{
+                background: 'rgba(28, 16, 52, 0.92)',
+                backdropFilter: 'blur(12px)',
+                border: '1.5px solid rgba(251, 191, 36, 0.5)',
+                borderRadius: '18px',
+                padding: '8px 14px',
+                color: '#fff',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 18px rgba(0,0,0,0.6)',
+              }}
+            >
+              <span style={{ fontSize: '1.4rem' }}>{g.emoji}</span>
+              <div style={{ textAlign: 'left' }}>
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#fbbf24' }}>{g.name}</div>
+                <div style={{ fontSize: '0.68rem', color: '#fbcfe8' }}>Tap to select</div>
+              </div>
+            </motion.button>
+          ))}
+        </div>
+      )}
+
+      {/* Selected Gift Highlight Card with Harshit's Promise! */}
       <AnimatePresence>
-        {localOpened && (
+        {localOpened && selectedGift && (
           <motion.div
-            initial={{ opacity: 0, x: 40, scale: 0.95 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: 40 }}
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 30 }}
             transition={{ type: 'spring', damping: 16 }}
             style={{
               position: 'fixed',
-              right: '20px',
-              bottom: '24px',
-              zIndex: 50,
-              maxWidth: '360px',
-              width: 'calc(100vw - 40px)',
-              background: 'linear-gradient(135deg, rgba(28, 16, 52, 0.94), rgba(14, 10, 32, 0.96))',
-              border: '1px solid rgba(251, 191, 36, 0.45)',
-              borderRadius: '20px',
-              padding: '1rem 1.2rem',
-              boxShadow: '0 12px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(244, 63, 94, 0.25)',
-              backdropFilter: 'blur(16px)',
-              textAlign: 'left',
+              bottom: '20px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 60,
+              maxWidth: '480px',
+              width: 'calc(100vw - 32px)',
+              background: 'linear-gradient(135deg, rgba(28, 16, 52, 0.96), rgba(14, 10, 32, 0.98))',
+              border: '2px solid rgba(251, 191, 36, 0.65)',
+              borderRadius: '24px',
+              padding: '1.1rem 1.4rem',
+              boxShadow: '0 16px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(251, 191, 36, 0.3)',
+              backdropFilter: 'blur(20px)',
+              textAlign: 'center',
               color: '#fff',
             }}
           >
+            {/* Tag */}
             <div
               style={{
                 display: 'inline-block',
-                background: 'linear-gradient(135deg, rgba(244,63,94,0.3), rgba(251,191,36,0.3))',
-                border: '1px solid rgba(251, 191, 36, 0.6)',
+                background: 'linear-gradient(135deg, rgba(244,63,94,0.35), rgba(251,191,36,0.35))',
+                border: '1px solid rgba(251, 191, 36, 0.7)',
                 borderRadius: '16px',
-                padding: '3px 10px',
-                fontSize: '0.72rem',
+                padding: '3px 12px',
+                fontSize: '0.74rem',
                 fontWeight: 700,
                 letterSpacing: '1px',
                 color: '#fef08a',
@@ -607,51 +748,77 @@ const GiftScene: React.FC = () => {
                 textTransform: 'uppercase',
               }}
             >
-              💝 Birthday Hamper: Teddy, Roses & Diamond 💝
+              {selectedGift.emoji} {selectedGift.tag} • Selected Gift {selectedGift.emoji}
             </div>
 
             <h3
               style={{
-                fontSize: '1.02rem',
-                color: '#fff',
+                fontSize: '1.15rem',
                 margin: '0 0 0.35rem 0',
+                color: '#fff',
                 background: 'linear-gradient(135deg, #ffffff, #fcd34d, #fda4af)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 fontWeight: 700,
               }}
             >
-              ✨ For You Sameeksha Baby ✨
+              {selectedGift.name}
             </h3>
 
-            <p
-              style={{
-                fontSize: '0.82rem',
-                color: 'rgba(255, 255, 255, 0.9)',
-                lineHeight: 1.45,
-                margin: '0 0 0.8rem 0',
-                fontStyle: 'italic',
-              }}
-            >
-              "Ye pyara Teddy, taaza laal gulaab aur ye heere jaisa dil... sab aapki khushi ke liye hai. Aapki muskaan hi meri sabse badi daulat hai. Happy Birthday! 💖"
+            <p style={{ fontSize: '0.82rem', color: '#e2e8f0', margin: '0 0 0.6rem 0', lineHeight: 1.4 }}>
+              {selectedGift.description}
             </p>
 
-            <motion.button
-              className="magic-button"
-              onClick={nextScene}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-              aria-label="Step into memories"
+            {/* Harshit's Promised Gift Delivery Announcement! */}
+            <div
               style={{
-                width: '100%',
-                justifyContent: 'center',
-                padding: '0.7rem 1.2rem',
+                background: 'rgba(251, 191, 36, 0.15)',
+                border: '1px solid rgba(251, 191, 36, 0.5)',
+                borderRadius: '14px',
+                padding: '8px 12px',
+                color: '#fef08a',
                 fontSize: '0.88rem',
-                boxShadow: '0 4px 15px rgba(244, 63, 94, 0.4)',
+                fontWeight: 700,
+                margin: '0 0 0.9rem 0',
+                textShadow: '0 1px 8px rgba(0,0,0,0.6)',
               }}
             >
-              <span>Step Inside Your Memories 📸 ✨</span>
-            </motion.button>
+              ✨ "Ye gift aapko jald hi milega Harshit ki taraf se! 💖" ✨
+            </div>
+
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+              <button
+                type="button"
+                onClick={() => setSelectedGiftId(null)}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  borderRadius: '14px',
+                  padding: '7px 14px',
+                  color: '#fff',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                🔄 Choose Another Gift
+              </button>
+
+              <motion.button
+                className="magic-button"
+                onClick={nextScene}
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.96 }}
+                aria-label="Step into memories"
+                style={{
+                  padding: '0.7rem 1.3rem',
+                  fontSize: '0.86rem',
+                  boxShadow: '0 4px 15px rgba(244, 63, 94, 0.4)',
+                }}
+              >
+                <span>Step Inside Your Memories 📸 ✨</span>
+              </motion.button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

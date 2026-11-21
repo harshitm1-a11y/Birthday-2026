@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   LoadingScreen,
@@ -7,6 +7,7 @@ import {
   RoamingCompanion,
 } from './components';
 import { useExperienceStore } from './state/experienceStore';
+import { soundManager } from './utils/audio';
 
 import GalaxyScene from './scenes/GalaxyScene';
 import GiftScene from './scenes/GiftScene';
@@ -35,6 +36,33 @@ export default function App() {
   const handleLoadComplete = useCallback(() => {
     setLoaded(true);
   }, []);
+
+  // Automatic soundtrack transitions per scene as requested!
+  useEffect(() => {
+    if (!soundManager.isPlaying()) return;
+    switch (currentScene) {
+      case 0:
+        // Front page: Aaja Sanam Madhur Chandni
+        soundManager.playTrack('hindi-romantic');
+        break;
+      case 1:
+        // Gift scene: Starlight BGM
+        soundManager.playTrack('theme-starlight');
+        break;
+      case 2:
+        // Memories scene: Mundian To Bach Ke Punjabi
+        soundManager.playTrack('punjabi-bhangra');
+        break;
+      case 4:
+        // Cake cutting scene: Baar Baar Din Ye Aaye
+        soundManager.playTrack('bollywood-birthday');
+        break;
+      case 6:
+        // Finale celebration: Party groove
+        soundManager.playTrack('party-celebration');
+        break;
+    }
+  }, [currentScene]);
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback(

@@ -1,8 +1,8 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Stars, Float, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useExperienceStore } from '../../state/experienceStore';
 import { content } from '../../content/siteContent';
 import { soundManager } from '../../utils/audio';
@@ -151,6 +151,18 @@ const GalaxyScene: React.FC = () => {
   const nextScene = useExperienceStore((s) => s.nextScene);
   const audioEnabled = useExperienceStore((s) => s.audioEnabled);
   const toggleAudio = useExperienceStore((s) => s.toggleAudio);
+  const frontKissPopped = useExperienceStore((s) => s.frontKissPopped);
+  const setFrontKissPopped = useExperienceStore((s) => s.setFrontKissPopped);
+
+  // Safety fallback: if user waits more than 3.5s, reveal content automatically
+  useEffect(() => {
+    if (!frontKissPopped) {
+      const timer = setTimeout(() => {
+        setFrontKissPopped(true);
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [frontKissPopped, setFrontKissPopped]);
 
   const handleEnter = () => {
     soundManager.playTwinkle();
@@ -161,8 +173,18 @@ const GalaxyScene: React.FC = () => {
     nextScene();
   };
 
+  const handleSkipOrPop = () => {
+    if (!frontKissPopped) {
+      setFrontKissPopped(true);
+      soundManager.playPopperBurstSound();
+    }
+  };
+
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+    <div
+      onClick={handleSkipOrPop}
+      style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}
+    >
       {/* 3D Canvas Background with interactive mouse parallax & celestial elements */}
       <div className="canvas-container">
         <Canvas camera={{ position: [0, 0, 5], fov: 58 }}>
@@ -178,60 +200,94 @@ const GalaxyScene: React.FC = () => {
 
       {/* DOM Overlay */}
       <div className="scene-overlay">
-        <motion.div
-          className="scene-content"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: 'easeOut' }}
-        >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.3, duration: 1 }}
-          >
-            <div
+        <AnimatePresence mode="wait">
+          {frontKissPopped ? (
+            <motion.div
+              key="welcome-content"
+              className="scene-content"
+              initial={{ opacity: 0, scale: 0.88, y: 35 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: 'easeOut' }}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.1, duration: 0.8 }}
+              >
+                <div
+                  style={{
+                    fontSize: '1.2rem',
+                    letterSpacing: '4px',
+                    textTransform: 'uppercase',
+                    color: '#ff8fb3',
+                    marginBottom: '0.8rem',
+                    fontWeight: 500,
+                    textShadow: '0 0 12px rgba(255, 143, 179, 0.5)',
+                  }}
+                >
+                  23 November 2026
+                </div>
+                <h1 className="scene-heading" style={{ fontSize: 'clamp(2.5rem, 7vw, 4.2rem)' }}>
+                  {content.welcome.heading}
+                </h1>
+              </motion.div>
+
+              <motion.p
+                className="scene-subtext"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.35, duration: 0.8 }}
+                style={{ fontSize: 'clamp(1.1rem, 3.5vw, 1.4rem)' }}
+              >
+                {content.welcome.subtext}
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.6, type: 'spring', stiffness: 200 }}
+              >
+                <button
+                  className="magic-button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEnter();
+                  }}
+                  autoFocus
+                  aria-label="Enter Sameeksha's Universe"
+                >
+                  <span>{content.welcome.button}</span>
+                </button>
+              </motion.div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="waiting-kiss"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 0.85, y: 0 }}
+              exit={{ opacity: 0, scale: 1.1 }}
+              transition={{ duration: 0.5 }}
               style={{
-                fontSize: '1.2rem',
-                letterSpacing: '4px',
-                textTransform: 'uppercase',
-                color: '#ff8fb3',
-                marginBottom: '0.8rem',
-                fontWeight: 500,
-                textShadow: '0 0 12px rgba(255, 143, 179, 0.5)',
+                position: 'fixed',
+                bottom: '80px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                color: '#fbcfe8',
+                fontSize: '0.92rem',
+                letterSpacing: '1.5px',
+                textAlign: 'center',
+                textShadow: '0 0 10px rgba(251, 191, 36, 0.6)',
+                userSelect: 'none',
+                background: 'rgba(15, 12, 34, 0.7)',
+                padding: '6px 16px',
+                borderRadius: '20px',
+                border: '1px solid rgba(251, 191, 36, 0.3)',
               }}
             >
-              23 November 2026
-            </div>
-            <h1 className="scene-heading" style={{ fontSize: 'clamp(2.5rem, 7vw, 4.2rem)' }}>
-              {content.welcome.heading}
-            </h1>
-          </motion.div>
-
-          <motion.p
-            className="scene-subtext"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 1 }}
-            style={{ fontSize: 'clamp(1.1rem, 3.5vw, 1.4rem)' }}
-          >
-            {content.welcome.subtext}
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1.4, type: 'spring', stiffness: 200 }}
-          >
-            <button
-              className="magic-button"
-              onClick={handleEnter}
-              autoFocus
-              aria-label="Enter Sameeksha's Universe"
-            >
-              <span>{content.welcome.button}</span>
-            </button>
-          </motion.div>
-        </motion.div>
+              ✨ Companion se flying kiss aa rahi hai... (tap to reveal) 💋
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

@@ -13,7 +13,19 @@ export interface PlaylistTrack {
 }
 
 export const PLAYLIST_TRACKS: PlaylistTrack[] = [
-  // ========== PUNJABI REAL HITS (Mundian To Bach Ke is Default!) ==========
+  // ========== FRONT PAGE SOUNDTRACK ==========
+  {
+    id: 'hindi-romantic',
+    title: 'Aaja Sanam Madhur Chandni',
+    artist: 'Soulful Bollywood Romance Instrumental',
+    category: 'hindi',
+    type: 'file',
+    src: '/audio/hindi-romantic.mp3',
+    duration: '4:38',
+    description: 'Timeless Bollywood romantic acoustic melody with acoustic guitar and strings',
+  },
+
+  // ========== PUNJABI REAL HITS ==========
   {
     id: 'punjabi-bhangra',
     title: 'Mundian To Bach Ke',
@@ -85,16 +97,6 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
   },
 
   // ========== HINDI ROMANTIC SONGS ==========
-  {
-    id: 'hindi-romantic',
-    title: 'Aaja Sanam Madhur Chandni',
-    artist: 'Soulful Bollywood Romance Instrumental',
-    category: 'hindi',
-    type: 'file',
-    src: '/audio/hindi-romantic.mp3',
-    duration: '4:38',
-    description: 'Timeless Bollywood romantic acoustic melody with guitar and strings',
-  },
   {
     id: 'hindi-romance-synth',
     title: 'Tum Se Hi & Kesariya (Acoustic)',
