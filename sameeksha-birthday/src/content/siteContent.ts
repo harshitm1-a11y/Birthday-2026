@@ -101,24 +101,24 @@ Thank you for being in my life, Sameeksha. आज का दिन तुम्�
 Forever yours, with all my love ❤️
 Happy Birthday Sameeksha Baby! 🎂✨`,
 
-    english: `Dearest Sameeksha Baby, ❤️
+    english: `Dear Sameeksha Baby, ❤️
 
-Happy Birthday to the most precious soul in my universe! ✨
+Happy Birthday Meri Jaan! ✨
 
-"In a sky filled with countless stars,
-You are the one that lights my way,
-With every beat of my grateful heart,
-I cherish your love more each day..." 🌹✨
+"Tere aane se zindagi me aisi bahaar aayi hai,
+Jaise sookhi zameen pe pehli baarish ki boondein barsi hon...
+Tu hansti rahe hamesha chaand-taaron ki tarah,
+Teri har ek muskaan se hi to meri duniya saji hai." 🌹✨
 
-Sometimes I wonder how the universe created someone as wonderfully pure and magical as you. Your radiant smile that effortlessly brightens my darkest days, your tender warmth, and the sweet innocence of your laughter — every single second spent with you feels like a dream come true. 💕
+Kabhi-kabhi sochta hoon ki uparwale ne kitni fursat aur pyaar se tumhe banaya hoga. Tumhari wo pyari si muskaan, tumhari masoom baatein, aur wo cute sa drama — har ek pal tumhare saath ek khubsurat khwab jaisa lagta hai. 💕
 
-Even if the entire world stood on one side, my heart would always and unconditionally choose you. You are my greatest confidante, my deepest strength, and my whole universe wrapped in one person. 💫
+Agar poori duniya bhi ek taraf ho jaye, tab bhi mera dil hamesha sirf aur sirf tumhare liye hi dhadkega. Tum meri sabse achhi dost bhi ho, meri taqat bhi ho, aur meri poori duniya bhi. 💫
 
-On this special birthday, I pray that endless joy, good health, and boundless laughter surround you forever. May all your sweetest dreams take flight and become reality. 🌸
+Dua hai ki tumhari zindagi me kabhi koi gham na aaye, tumhari har ek khwahish poori ho, aur tumhara chehra hamesha aise hi khilta rahe. 🌸
 
-Thank you for being you, and thank you for making my life so incredibly beautiful. Today is all about celebrating you, my love.
+Thank you for being in my life, Sameeksha. Aaj ka din tumhara hai, aur mera dil hamesha ke liye tumhara.
 
-Forever and always yours, with all my love ❤️
+Forever yours, with all my love ❤️
 Happy Birthday Sameeksha Baby! 🎂✨`,
 
     content: `Dear Sameeksha Baby, ❤️
@@ -126,13 +126,15 @@ Happy Birthday Sameeksha Baby! 🎂✨`,
 Happy Birthday Meri Jaan! ✨
 
 "Tere aane se zindagi me aisi bahaar aayi hai,
-Jaise sookhi zameen pe pehli baarish ki boondein barsi hon..." 🌹
+Jaise sookhi zameen pe pehli baarish ki boondein barsi hon...
+Tu hansti rahe hamesha chaand-taaron ki tarah,
+Teri har ek muskaan se hi to meri duniya saji hai." 🌹✨
 
-Kabhi-kabhi sochta hoon ki bhagwan ne kitni fursat aur pyaar se tumhe banaya hoga. Tumhari wo pyari si muskaan, tumhari masoom baatein, aur wo cute sa drama — har ek pal tumhare saath ek khubsurat khwab jaisa lagta hai. 💕
+Kabhi-kabhi sochta hoon ki uparwale ne kitni fursat aur pyaar se tumhe banaya hoga. Tumhari wo pyari si muskaan, tumhari masoom baatein, aur wo cute sa drama — har ek pal tumhare saath ek khubsurat khwab jaisa lagta hai. 💕
 
 Agar poori duniya bhi ek taraf ho jaye, tab bhi mera dil hamesha sirf aur sirf tumhare liye hi dhadkega. Tum meri sabse achhi dost bhi ho, meri taqat bhi ho, aur meri poori duniya bhi. 💫
 
-I pray ki tumhari zindagi me kabhi koi gham na aaye, tumhari har ek dua qubool ho jaye, aur tumhara chehra hamesha aise hi khilta rahe. 🌸
+Dua hai ki tumhari zindagi me kabhi koi gham na aaye, tumhari har ek khwahish poori ho, aur tumhara chehra hamesha aise hi khilta rahe. 🌸
 
 Thank you for being in my life, Sameeksha. Aaj ka din tumhara hai, aur mera dil hamesha ke liye tumhara.
 

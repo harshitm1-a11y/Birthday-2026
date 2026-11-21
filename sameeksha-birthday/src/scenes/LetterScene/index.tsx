@@ -70,7 +70,7 @@ const LetterScene: React.FC = () => {
       setIsReadingVoice(false);
     } else {
       setIsReadingVoice(true);
-      robotSpeaker.speak(fullText);
+      robotSpeaker.speak(fullText, content.letter.hindi);
     }
   };
 
@@ -138,7 +138,7 @@ const LetterScene: React.FC = () => {
                   transition: 'all 0.2s',
                 }}
               >
-                🇮🇳 हिंदी (Hindi)
+                Hindi
               </button>
 
               <button
@@ -159,7 +159,7 @@ const LetterScene: React.FC = () => {
                   transition: 'all 0.2s',
                 }}
               >
-                🇬🇧 English
+                English
               </button>
             </div>
           </div>
