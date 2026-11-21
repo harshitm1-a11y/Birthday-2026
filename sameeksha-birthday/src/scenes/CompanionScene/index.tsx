@@ -5,7 +5,6 @@ import * as THREE from 'three';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useExperienceStore } from '../../state/experienceStore';
 import { content } from '../../content/siteContent';
-import HiddenHeart from '../../components/HiddenHeart';
 import { soundManager } from '../../utils/audio';
 import { robotSpeaker } from '../../utils/speech';
 
@@ -352,26 +351,8 @@ const CompanionScene: React.FC = () => {
               </motion.button>
             )}
           </div>
-          <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', marginTop: '0.8rem' }}>
-            ✨ Tip: Tap your companion to hear & talk!
-          </div>
         </motion.div>
       </div>
-
-      {/* Hidden Heart 3 */}
-      <HiddenHeart
-        heartId={3}
-        style={{
-          position: 'fixed',
-          top: '20%',
-          left: '3rem',
-          zIndex: 60,
-          background: 'none',
-          border: 'none',
-          fontSize: '1.8rem',
-          cursor: 'pointer',
-        }}
-      />
     </div>
   );
 };

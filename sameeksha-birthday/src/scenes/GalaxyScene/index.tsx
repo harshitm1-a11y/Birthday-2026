@@ -5,7 +5,6 @@ import * as THREE from 'three';
 import { motion } from 'framer-motion';
 import { useExperienceStore } from '../../state/experienceStore';
 import { content } from '../../content/siteContent';
-import HiddenHeart from '../../components/HiddenHeart';
 import { soundManager } from '../../utils/audio';
 
 // 3D Glowing Celestial Heart in the distance
@@ -193,21 +192,6 @@ const GalaxyScene: React.FC = () => {
           </motion.div>
         </motion.div>
       </div>
-
-      {/* Hidden Heart 0 */}
-      <HiddenHeart
-        heartId={0}
-        style={{
-          position: 'fixed',
-          bottom: '2.5rem',
-          left: '2rem',
-          zIndex: 60,
-          background: 'none',
-          border: 'none',
-          fontSize: '1.8rem',
-          cursor: 'pointer',
-        }}
-      />
     </div>
   );
 };

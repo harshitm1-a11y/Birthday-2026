@@ -3,11 +3,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   LoadingScreen,
   SceneNavigation,
-  HeartCounter,
   MusicPlaylist,
   RoamingCompanion,
-  SecretMessage,
-  SceneMenu,
 } from './components';
 import { useExperienceStore } from './state/experienceStore';
 
@@ -89,15 +86,10 @@ export default function App() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Global UI Overlays */}
-      <SceneMenu />
-      <HeartCounter />
+      {/* Global UI Overlays: Clean music player, bottom navigation, and funny roaming companion */}
       <MusicPlaylist />
       <RoamingCompanion />
       <SceneNavigation />
-
-      {/* Secret message modal */}
-      <SecretMessage />
     </div>
   );
 }

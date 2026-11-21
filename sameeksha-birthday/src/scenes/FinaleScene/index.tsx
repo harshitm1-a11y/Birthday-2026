@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useExperienceStore } from '../../state/experienceStore';
 import { content } from '../../content/siteContent';
 import Celebration from '../../components/Celebration';
-import HiddenHeart from '../../components/HiddenHeart';
 import { soundManager } from '../../utils/audio';
 import { RealisticPopper } from '../../components/RealisticPopper';
 
@@ -139,21 +138,6 @@ const FinaleScene: React.FC = () => {
           </div>
         </motion.div>
       </div>
-
-      {/* Hidden Heart 4 (5th and final heart!) */}
-      <HiddenHeart
-        heartId={4}
-        style={{
-          position: 'fixed',
-          top: '6rem',
-          left: '2rem',
-          zIndex: 60,
-          background: 'none',
-          border: 'none',
-          fontSize: '1.8rem',
-          cursor: 'pointer',
-        }}
-      />
     </div>
   );
 };

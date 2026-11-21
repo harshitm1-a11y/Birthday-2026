@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
 import { useExperienceStore } from '../../state/experienceStore';
 import { content } from '../../content/siteContent';
-import HiddenHeart from '../../components/HiddenHeart';
 import { soundManager } from '../../utils/audio';
 import { getAssetUrl } from '../../utils/assets';
 
@@ -574,21 +573,6 @@ const MemoriesScene: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Hidden Heart 2 */}
-      <HiddenHeart
-        heartId={2}
-        style={{
-          position: 'fixed',
-          bottom: '5.5rem',
-          right: '2rem',
-          zIndex: 60,
-          background: 'none',
-          border: 'none',
-          fontSize: '1.8rem',
-          cursor: 'pointer',
-        }}
-      />
     </div>
   );
 };
