@@ -16,39 +16,60 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
   {
     id: 'bollywood-birthday',
     title: 'Baar Baar Din Ye Aaye',
-    artist: 'Mohammed Rafi',
-    category: 'hindi',
+    artist: 'Mohammed Rafi (Farz)',
+    category: 'birthday',
     type: 'file',
     src: '/audio/bollywood-birthday.mp3',
     duration: '4:48',
-    description: 'Classic iconic Bollywood birthday anthem for Sameeksha baby',
+    description: 'Iconic classic Bollywood birthday anthem for Sameeksha baby',
   },
   {
-    id: 'hindi-romance',
-    title: 'Tum Se Hi & Kesariya (Acoustic)',
-    artist: 'Soulful Bollywood Romance',
+    id: 'hindi-romantic',
+    title: 'Aaja Sanam Madhur Chandni',
+    artist: 'Soulful Bollywood Romance Instrumental',
     category: 'hindi',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Soulful acoustic guitar, emotive strings, and warm romantic piano chords',
+    type: 'file',
+    src: '/audio/hindi-romantic.mp3',
+    duration: '4:38',
+    description: 'Timeless Bollywood romantic acoustic melody with acoustic guitar and strings',
   },
   {
     id: 'punjabi-bhangra',
-    title: 'Lover & Brown Munde (Dhol Mix)',
-    artist: 'Diljit & AP Dhillon Style Beats',
+    title: 'Mundian To Bach Ke',
+    artist: 'Panjabi MC & Labh Janjua',
     category: 'punjabi',
+    type: 'file',
+    src: '/audio/punjabi-bhangra.mp3',
+    duration: '3:55',
+    description: 'World-famous high-energy Punjabi Bhangra beat with heavy dhol and tumbi',
+  },
+  {
+    id: 'theme-lofi',
+    title: 'LoFi Chill Love Romance',
+    artist: 'Janevo Chillout BGM',
+    category: 'theme',
+    type: 'file',
+    src: '/audio/theme-lofi.mp3',
+    duration: '2:13',
+    description: 'Warm, cozy tape-saturated lo-fi guitar chords and ambient beats',
+  },
+  {
+    id: 'hindi-romance-synth',
+    title: 'Tum Se Hi & Kesariya (Acoustic Chords)',
+    artist: 'Soulful Acoustic Synth',
+    category: 'hindi',
     type: 'synth',
     duration: '∞ Loop',
-    description: 'Energetic Punjabi Dhol chaal, catchy tumbi hook, and punchy 808 bass',
+    description: 'Warm romantic piano and guitar chords with gentle harmonic shimmer',
   },
   {
     id: 'punjabi-soft',
     title: 'Kinna Chir & Tera Ban Jaunga',
-    artist: 'Punjabi Romantic Strings',
+    artist: 'Punjabi Romantic Flute & Strings',
     category: 'punjabi',
     type: 'synth',
     duration: '∞ Loop',
-    description: 'Heartfelt Punjabi romantic melody with soft flute and warm acoustic guitar',
+    description: 'Heartfelt Punjabi romantic melody with soft flute and warm chords',
   },
   {
     id: 'theme-starlight',
@@ -58,15 +79,6 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     type: 'synth',
     duration: '∞ Loop',
     description: 'Dreamy cinematic orchestral strings and gentle fairy-tale celeste',
-  },
-  {
-    id: 'theme-lofi',
-    title: 'Midnight Lo-Fi Love Chords',
-    artist: 'Chillout Romance BGM',
-    category: 'theme',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Cozy Rhodes electric piano chords, vinyl warmth, and relaxing ambient beats',
   },
   {
     id: 'birthday-acoustic',
@@ -589,6 +601,49 @@ class SoundManager {
       setTimeout(() => {
         this.playTwinkle();
       }, 70);
+    } catch {
+      // Ignored
+    }
+  }
+
+  public playCakeSliceSound() {
+    try {
+      this.initCtx();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+
+      // Realistic knife swoosh and crisp cutting sound
+      const bufferSize = this.ctx.sampleRate * 0.15;
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const output = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = (Math.random() * 2 - 1) * 0.5;
+      }
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = buffer;
+
+      const bandpass = this.ctx.createBiquadFilter();
+      bandpass.type = 'bandpass';
+      bandpass.frequency.setValueAtTime(3200, now);
+      bandpass.frequency.exponentialRampToValueAtTime(1200, now + 0.12);
+
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0.5, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+
+      noise.connect(bandpass);
+      bandpass.connect(gain);
+      gain.connect(this.ctx.destination);
+      noise.start(now);
+      noise.stop(now + 0.15);
+
+      // Cheerful chord chime right after slicing
+      const sliceChords = [523.25, 659.25, 783.99, 1046.5]; // C major glissando
+      sliceChords.forEach((freq, idx) => {
+        setTimeout(() => {
+          this.playTone(freq, 0.4, 'triangle', 0.22, 0.02);
+        }, 120 + idx * 70);
+      });
     } catch {
       // Ignored
     }

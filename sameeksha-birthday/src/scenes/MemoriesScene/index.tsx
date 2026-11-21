@@ -426,25 +426,43 @@ const MemoriesScene: React.FC = () => {
                   return (
                     <div
                       key={item.id || idx}
-                      className="cylinder-card"
                       style={{
+                        position: 'absolute',
+                        width: '125px',
+                        height: '155px',
+                        left: 0,
+                        top: 0,
                         transform: `rotateY(${angle}deg) translateZ(${radius}px) translateY(${yOffset}px)`,
+                        transformStyle: 'preserve-3d',
                       }}
-                      onClick={(e) => handleCardClick(idx, e)}
-                      role="button"
-                      tabIndex={0}
-                      aria-label="Open memory photo"
                     >
-                      <img
-                        src={resolvedSrc}
-                        alt="Sameeksha memory"
-                        loading="lazy"
-                        draggable={false}
-                        onError={(e) => handleImageError(e, item.src)}
-                      />
-                      <div className="cylinder-card-caption">
-                        {item.caption || '❤️'}
-                      </div>
+                      <motion.div
+                        className="cylinder-card"
+                        whileHover={{
+                          scale: 1.22,
+                          z: 50,
+                          boxShadow: '0 20px 45px rgba(244, 63, 94, 0.75), 0 0 30px rgba(251, 191, 36, 0.65)',
+                          borderColor: '#fbbf24',
+                        }}
+                        whileTap={{ scale: 0.94 }}
+                        transition={{ type: 'spring', damping: 14, stiffness: 300 }}
+                        onClick={(e) => handleCardClick(idx, e)}
+                        role="button"
+                        tabIndex={0}
+                        aria-label="Open memory photo"
+                        style={{ width: '100%', height: '100%', cursor: 'pointer' }}
+                      >
+                        <img
+                          src={resolvedSrc}
+                          alt="Sameeksha memory"
+                          loading="lazy"
+                          draggable={false}
+                          onError={(e) => handleImageError(e, item.src)}
+                        />
+                        <div className="cylinder-card-caption">
+                          {item.caption || '❤️'}
+                        </div>
+                      </motion.div>
                     </div>
                   );
                 })}

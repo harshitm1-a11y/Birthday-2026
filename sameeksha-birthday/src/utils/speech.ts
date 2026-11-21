@@ -13,8 +13,8 @@ class RobotSpeaker {
   private voices: SpeechSynthesisVoice[] = [];
   private selectedVoice: SpeechSynthesisVoice | null = null;
   private isHindiVoice = false;
-  private pitch = 1.05;
-  private rate = 0.92;
+  private pitch = 1.12;
+  private rate = 0.88;
 
   constructor() {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -29,41 +29,41 @@ class RobotSpeaker {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     this.voices = window.speechSynthesis.getVoices();
 
-    // Priority 1: Pure Hindi voices (Google हिन्दी, Microsoft Kalpana/Hemant/Heera, etc.)
-    const hindiVoice = this.voices.find(
+    // Priority 1: Soft Sweet Female Hindi voices (Swara, Kalpana, Heera, Google हिन्दी)
+    const sweetHindiVoice = this.voices.find(
       (v) =>
-        v.lang.toLowerCase().startsWith('hi') ||
-        v.name.toLowerCase().includes('hindi') ||
-        v.name.toLowerCase().includes('kalpana') ||
-        v.name.toLowerCase().includes('hemant')
+        (v.lang.toLowerCase().startsWith('hi') || v.name.toLowerCase().includes('hindi')) &&
+        (v.name.toLowerCase().includes('swara') ||
+          v.name.toLowerCase().includes('kalpana') ||
+          v.name.toLowerCase().includes('heera') ||
+          v.name.toLowerCase().includes('female') ||
+          v.name.toLowerCase().includes('google'))
     );
 
-    // Priority 2: Indian English voice (en-IN, Neerja, Ravi, Google Indian English)
+    const genericHindiVoice = this.voices.find(
+      (v) => v.lang.toLowerCase().startsWith('hi') || v.name.toLowerCase().includes('hindi')
+    );
+
+    // Priority 2: Soft Indian English voice (Neerja, Google Indian English)
     const indianEngVoice = this.voices.find(
       (v) =>
         v.lang.toLowerCase().includes('en-in') ||
-        v.lang.toLowerCase().includes('en_in') ||
-        v.name.toLowerCase().includes('india') ||
         v.name.toLowerCase().includes('neerja') ||
-        v.name.toLowerCase().includes('ravi')
+        v.name.toLowerCase().includes('india')
     );
 
-    // Priority 3: Soft natural voice
-    const naturalVoice = this.voices.find(
-      (v) =>
-        v.name.toLowerCase().includes('natural') ||
-        v.name.toLowerCase().includes('google') ||
-        v.name.toLowerCase().includes('samantha')
-    );
-
-    if (hindiVoice) {
-      this.selectedVoice = hindiVoice;
+    if (sweetHindiVoice) {
+      this.selectedVoice = sweetHindiVoice;
+      this.isHindiVoice = true;
+    } else if (genericHindiVoice) {
+      this.selectedVoice = genericHindiVoice;
       this.isHindiVoice = true;
     } else if (indianEngVoice) {
       this.selectedVoice = indianEngVoice;
       this.isHindiVoice = false;
     } else {
-      this.selectedVoice = naturalVoice || this.voices[0] || null;
+      const softVoice = this.voices.find((v) => v.name.toLowerCase().includes('natural') || v.name.toLowerCase().includes('female'));
+      this.selectedVoice = softVoice || this.voices[0] || null;
       this.isHindiVoice = false;
     }
   }
@@ -122,7 +122,7 @@ class RobotSpeaker {
 
     utterance.pitch = this.pitch;
     utterance.rate = this.rate;
-    utterance.volume = 1.0;
+    utterance.volume = 0.85; // Soft and sweet tone
 
     utterance.onstart = () => {
       // DUCK BACKGROUND AUDIO SMOOTHLY WHILE SPEAKING!

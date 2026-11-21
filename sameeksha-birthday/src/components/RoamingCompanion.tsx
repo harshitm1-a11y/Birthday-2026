@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useExperienceStore, COMPANIONS, type CompanionId } from '../state/experienceStore';
 import { soundManager } from '../utils/audio';
+import { robotSpeaker } from '../utils/speech';
 
 interface CreamParticle {
   id: number;
@@ -23,9 +24,8 @@ export const RoamingCompanion: React.FC = () => {
 
   const companion = COMPANIONS[selectedCompanionId] || COMPANIONS.robo;
 
-  // Position state (percentage across screen width: 8% to 90%, bottom distance: 74px to 180px)
-  const [posX, setPosX] = useState(25);
-  const [posY, setPosY] = useState(76);
+  // Grounded position state (fixed at ground level 74px, moves naturally along X)
+  const [posX, setPosX] = useState(20);
   const [direction, setDirection] = useState<1 | -1>(1); // 1 = facing right, -1 = facing left
   const [isMoving, setIsMoving] = useState(false);
   const [isDropped, setIsDropped] = useState(false);
@@ -35,9 +35,9 @@ export const RoamingCompanion: React.FC = () => {
   const [isChooserOpen, setIsChooserOpen] = useState(false);
   const [splatParticles, setSplatParticles] = useState<CreamParticle[]>([]);
 
-  const targetRef = useRef<{ x: number; y: number }>({ x: 25, y: 76 });
+  const targetXRef = useRef<number>(20);
 
-  // Mouse & Touch Tracking: Follow the cursor smoothly!
+  // Natural Horizontal Cursor Following (Grounded at bottom, stays offset from cursor tip)
   useEffect(() => {
     let rafId: number;
 
@@ -45,47 +45,38 @@ export const RoamingCompanion: React.FC = () => {
       if (isDropped || isFetchingNewCake) return;
 
       const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
-      const clientY = 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
 
       if (typeof window !== 'undefined') {
-        // Clamped target percentage along screen width
-        const pctX = Math.max(8, Math.min(88, (clientX / window.innerWidth) * 100));
-        // Vertical floating: follow cursor up to 180px above bottom
-        const fromBottom = window.innerHeight - clientY;
-        const btmY = Math.max(74, Math.min(180, fromBottom - 25));
-
-        targetRef.current = { x: pctX, y: btmY };
+        const rawPct = (clientX / window.innerWidth) * 100;
+        // Keep companion slightly trailing behind the cursor so it never sits right under the pointer tip
+        const offset = clientX > (window.innerWidth * posX) / 100 ? -4 : 4;
+        const clampedPct = Math.max(6, Math.min(88, rawPct + offset));
+        targetXRef.current = clampedPct;
       }
     };
 
     window.addEventListener('mousemove', handlePointerMove);
     window.addEventListener('touchmove', handlePointerMove);
 
-    // Smooth lerp follow loop
+    // Smooth easing follow loop
     const updatePosition = () => {
       if (!isDropped && !isFetchingNewCake) {
         if (currentScene === 4) {
-          // In Cake scene (Scene 4), move proudly to center (50%) to deliver!
-          setPosX((prev) => (Math.abs(50 - prev) > 0.5 ? prev + (50 - prev) * 0.1 : 50));
-          setPosY((prev) => (Math.abs(76 - prev) > 1 ? prev + (76 - prev) * 0.1 : 76));
+          // In Cake scene (Scene 4), move proudly to bottom-center (50%) to present the cake
+          setPosX((prev) => (Math.abs(50 - prev) > 0.4 ? prev + (50 - prev) * 0.08 : 50));
           setDirection(1);
           setIsMoving(false);
         } else {
           setPosX((prevX) => {
-            const dx = targetRef.current.x - prevX;
-            if (Math.abs(dx) > 0.4) {
+            const dx = targetXRef.current - prevX;
+            if (Math.abs(dx) > 0.3) {
               setDirection(dx > 0 ? 1 : -1);
               setIsMoving(true);
-              return prevX + dx * 0.1; // Smooth follow speed
+              return prevX + dx * 0.08; // Smooth, realistic walking pace
             } else {
               setIsMoving(false);
               return prevX;
             }
-          });
-
-          setPosY((prevY) => {
-            const dy = targetRef.current.y - prevY;
-            return Math.abs(dy) > 1 ? prevY + dy * 0.1 : prevY;
           });
         }
       }
@@ -99,26 +90,31 @@ export const RoamingCompanion: React.FC = () => {
       window.removeEventListener('touchmove', handlePointerMove);
       cancelAnimationFrame(rafId);
     };
-  }, [isDropped, isFetchingNewCake, currentScene]);
+  }, [isDropped, isFetchingNewCake, currentScene, posX]);
 
   // Cake Scene dialogue update
   useEffect(() => {
     if (currentScene === 4) {
-      setSpeechText('Lo Sameeksha baby, aapka special birthday cake hazir hai! 🎂✨');
+      const text = 'Lo Sameeksha baby, aapka special birthday cake hazir hai! 🎂✨';
+      setSpeechText(text);
       setIsSpeechOpen(true);
       setCakeDelivered(true);
+      robotSpeaker.speak(text);
     }
   }, [currentScene, setCakeDelivered]);
 
   // Click on companion: DROP THE CAKE!
-  const handleCompanionClick = () => {
+  const handleCompanionClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (isDropped || isFetchingNewCake) return;
 
     soundManager.playCakeSplatSound();
     dropCompanionCake();
     setIsDropped(true);
-    setSpeechText('Areyyy Baap Re! 😱 Cake gir gaya!');
+    const dropText = 'Arey Baap Re! 😱 Cake gir gaya!';
+    setSpeechText(dropText);
     setIsSpeechOpen(true);
+    robotSpeaker.speak(dropText);
 
     // Generate splat cream particles
     const colors = ['#f43f5e', '#fbbf24', '#fff1f2', '#fda4af', '#fef08a'];
@@ -136,7 +132,9 @@ export const RoamingCompanion: React.FC = () => {
     // Mascot panics and runs off to fetch a new cake
     setTimeout(() => {
       setIsFetchingNewCake(true);
-      setSpeechText('Rukiye rukiye! Main abhi aapke liye naya fresh cake leke aata hu! 🏃💨');
+      const rushText = 'Rukiye rukiye! Main abhi aapke liye naya fresh cake leke aata hu! 🏃💨';
+      setSpeechText(rushText);
+      robotSpeaker.speak(rushText);
     }, 1400);
 
     // Mascot returns with brand new cake
@@ -144,9 +142,11 @@ export const RoamingCompanion: React.FC = () => {
       soundManager.playCakeDeliverySound();
       setIsDropped(false);
       setIsFetchingNewCake(false);
-      setSpeechText('Ta-da! Naya fresh cake hazir hai aapke liye! 🎂✨');
+      const returnText = 'Ta-da! Naya fresh cake hazir hai aapke liye! 🎂✨';
+      setSpeechText(returnText);
+      robotSpeaker.speak(returnText);
       setSplatParticles([]);
-    }, 3200);
+    }, 3400);
 
     // Auto close bubble after 6s
     setTimeout(() => {
@@ -156,21 +156,19 @@ export const RoamingCompanion: React.FC = () => {
 
   return (
     <>
-      {/* Roaming Companion Container following cursor */}
+      {/* Grounded Roaming Companion Container: POINTER EVENTS NONE on container so it NEVER intercepts screen clicks! */}
       <div
         style={{
           position: 'fixed',
-          bottom: `${posY}px`,
+          bottom: '74px',
           left: `${posX}%`,
           transform: `translateX(-50%) scaleX(${direction})`,
           transition: isFetchingNewCake ? 'left 0.8s ease-in-out' : 'transform 0.15s ease',
           zIndex: 85,
-          pointerEvents: 'auto',
-          cursor: 'pointer',
+          pointerEvents: 'none',
         }}
-        onClick={handleCompanionClick}
       >
-        {/* Floating Dialogue Speech Bubble (Un-mirrored for readable text) */}
+        {/* Floating Dialogue Speech Bubble (Un-mirrored for readable text, non-blocking) */}
         <AnimatePresence>
           {isSpeechOpen && (
             <motion.div
@@ -181,7 +179,7 @@ export const RoamingCompanion: React.FC = () => {
                 position: 'absolute',
                 bottom: '100px',
                 left: '50%',
-                transform: `translateX(-50%) scaleX(${direction})`, // Keep text un-flipped
+                transform: `translateX(-50%) scaleX(${direction})`,
                 background: 'rgba(17, 12, 34, 0.92)',
                 backdropFilter: 'blur(12px)',
                 border: '1px solid rgba(251, 191, 36, 0.45)',
@@ -214,8 +212,9 @@ export const RoamingCompanion: React.FC = () => {
           )}
         </AnimatePresence>
 
-        {/* Mascot Avatar Body */}
+        {/* Mascot Avatar Body: ONLY THIS ELEMENT has pointerEvents: auto so clicks on it trigger cake drop */}
         <motion.div
+          onClick={handleCompanionClick}
           animate={
             isDropped
               ? { rotate: [0, -20, 20, -15, 0], scale: [1, 1.15, 0.95, 1] }
@@ -235,6 +234,8 @@ export const RoamingCompanion: React.FC = () => {
             flexDirection: 'column',
             alignItems: 'center',
             position: 'relative',
+            pointerEvents: 'auto',
+            cursor: 'pointer',
           }}
         >
           {/* Mascot Head & Face */}
