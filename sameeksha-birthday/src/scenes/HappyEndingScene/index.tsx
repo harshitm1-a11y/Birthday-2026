@@ -334,8 +334,8 @@ function Royal3DTeddy() {
 
 // Romantic Song List for the Grand Happy Ending
 const ROMANTIC_HITS = [
+  { id: 'hindi-channa-mereya', name: 'Channa Mereya (Accha Chalta Hoon)', artist: 'Arijit Singh', emoji: '🌟' },
   { id: 'hindi-tujh-mein-rab', name: 'Tujh Mein Rab Dikhta Hai', artist: 'Roop Kumar Rathod', emoji: '✨' },
-  { id: 'hindi-channa-mereya', name: 'Channa Mereya', artist: 'Arijit Singh', emoji: '🌸' },
   { id: 'hindi-dil-diyan-gallan', name: 'Dil Diyan Gallan', artist: 'Atif Aslam', emoji: '💖' },
   { id: 'hindi-raataan-lambiyan', name: 'Raataan Lambiyan', artist: 'Jubin Nautiyal & Asees', emoji: '🌙' },
   { id: 'hindi-tera-ban-jaunga', name: 'Tera Ban Jaunga', artist: 'Akhil Sachdeva & Tulsi', emoji: '🌹' },
@@ -345,11 +345,11 @@ const HappyEndingScene: React.FC = () => {
   const setScene = useExperienceStore((s) => s.setScene);
   const [releasedCount, setReleasedCount] = useState(1);
   const [extraLanterns, setExtraLanterns] = useState<Array<{ id: number; x: number; z: number; color: string }>>([]);
-  const [currentTrackId, setCurrentTrackId] = useState('hindi-tujh-mein-rab');
+  const [currentTrackId, setCurrentTrackId] = useState('hindi-channa-mereya');
 
-  // Play romantic anthem on mount
+  // Play romantic anthem on mount: Channa Mereya ("Accha chalta hoon, duaon mein yaad rakhna")
   useEffect(() => {
-    soundManager.playTrack('hindi-tujh-mein-rab');
+    soundManager.playTrack('hindi-channa-mereya');
     if (!soundManager.isPlaying()) {
       soundManager.startAmbient();
     }

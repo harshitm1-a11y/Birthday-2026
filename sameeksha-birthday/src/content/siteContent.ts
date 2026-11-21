@@ -155,10 +155,10 @@ Happy Birthday Sameeksha Baby! 🎂✨`,
   },
 
   happyEnding: {
-    badge: "Forever & Always ✨",
+    badge: "Accha Chalta Hoon... Duaon Mein Yaad Rakhna ✨",
     heading: "Happy 23rd Birthday, Sameeksha 💖",
-    subtext: "Every glowing sky lantern ascending into the cosmos carries a heartfelt wish for your boundless joy, peaceful moments, and radiant smile.\nOur story doesn't end here — every day with you is a beautiful new chapter. 🏮✨",
-    personalNote: "No matter how vast this celestial universe is, my favorite place will forever be right next to you.\nMay your life always be illuminated with starlight, warmth, and endless love.\nHappy 23rd Birthday, my precious one! With all my heart, Harshit. ❤️✨",
+    subtext: "Accha chalta hoon, duaon mein yaad rakhna... 🏮✨\nPar hamari dastaan yahan khatam nahi hoti — har naya din aapke sath aur bhi khoobsurat aur pyara hoga. Har ek sky lantern aapki khushi aur lambi umar ki dua lekar taaron me ja raha hai.",
+    personalNote: "\"Dil ke sandookon mein mere achhe kaam rakhna... Chitthi taaron mein bhi mera tu salaam rakhna.\"\nNo matter how vast this celestial universe is, my favorite place will forever be right next to you.\nMay your life always be illuminated with starlight, laughter, and infinite love.\nHappy 23rd Birthday, my precious one! With all my heart and forever, Harshit. ❤️✨",
     buttons: {
       releaseLantern: "Release a Sky Lantern 🏮✨",
       replay: "Replay From Beginning 🔄",

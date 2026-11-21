@@ -103,8 +103,8 @@ export default function App() {
         soundManager.playTrack('party-angreji-beat');
         break;
       case 6:
-        // Grand 3D Happy Ending: Tujh Mein Rab Dikhta Hai
-        soundManager.playTrack('hindi-tujh-mein-rab');
+        // Grand 3D Happy Ending: Channa Mereya (Accha Chalta Hoon, Duaon Mein Yaad Rakhna)
+        soundManager.playTrack('hindi-channa-mereya');
         break;
     }
   }, [currentScene]);
