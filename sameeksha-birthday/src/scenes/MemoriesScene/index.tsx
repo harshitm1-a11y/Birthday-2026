@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
 import { useExperienceStore } from '../../state/experienceStore';
 import { content } from '../../content/siteContent';
-import { soundManager, PHOTO_REEL_SOUNDTRACKS } from '../../utils/audio';
+import { soundManager } from '../../utils/audio';
+import { REEL_SONGS, getReelTrackForPhoto } from '../../utils/reelSongs';
 import { getAssetUrl } from '../../utils/assets';
 import { MathematicalFlower } from '../../components';
 
@@ -53,6 +54,7 @@ const MemoriesScene: React.FC = () => {
   const nextScene = useExperienceStore((s) => s.nextScene);
   const [showPrelude, setShowPrelude] = useState(true);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+  const [reelOffset, setReelOffset] = useState(0);
   const [viewMode, setViewMode] = useState<'cylinder' | 'grid'>('cylinder');
   const [isPaused, setIsPaused] = useState(false);
   const [rotation, setRotation] = useState(0);
@@ -87,7 +89,7 @@ const MemoriesScene: React.FC = () => {
   const count = allPhotos.length;
   const halfCount = Math.ceil(count / 2);
 
-  // Per-photo unique reel soundtrack (starts directly at the hook/chorus!)
+  // 70+ Unique Real Vocal Reel Soundtracks (Instant ~30s Chorus/Hook per photo!)
   const prevSoundtrackRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -95,22 +97,16 @@ const MemoriesScene: React.FC = () => {
       if (!prevSoundtrackRef.current) {
         prevSoundtrackRef.current = soundManager.getCurrentTrack().id;
       }
-      const reelTrack = PHOTO_REEL_SOUNDTRACKS[selectedIdx % PHOTO_REEL_SOUNDTRACKS.length];
-      soundManager.playTrack(reelTrack.trackId);
-      const timer = setTimeout(() => {
-        soundManager.seekTo(reelTrack.chorusStartTime);
-      }, 60);
-      if (!soundManager.isPlaying()) {
-        soundManager.startAmbient();
-      }
-      return () => clearTimeout(timer);
+      const reelTrack = getReelTrackForPhoto(selectedIdx + reelOffset);
+      soundManager.playReelAudio(reelTrack.src, reelTrack.streamUrl);
     } else {
       if (prevSoundtrackRef.current) {
-        soundManager.playTrack(prevSoundtrackRef.current);
+        soundManager.restoreTrack(prevSoundtrackRef.current);
         prevSoundtrackRef.current = null;
       }
+      setReelOffset(0);
     }
-  }, [selectedIdx]);
+  }, [selectedIdx, reelOffset]);
 
   // Responsive radius based on window width
   const [radius, setRadius] = useState(480);
@@ -796,32 +792,80 @@ const MemoriesScene: React.FC = () => {
                   </div>
                 )}
 
-                {/* Instagram Reel Audio Badge */}
+                {/* 70+ Real Vocal Bollywood & Punjabi Reel Soundtrack Bar */}
                 {selectedIdx !== null && (
-                  <div
-                    style={{
-                      marginTop: '8px',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      background: 'rgba(251, 191, 36, 0.18)',
-                      border: '1.5px solid rgba(251, 191, 36, 0.55)',
-                      borderRadius: '20px',
-                      padding: '4px 14px',
-                      fontSize: '0.78rem',
-                      color: '#fef08a',
-                      boxShadow: '0 4px 15px rgba(0,0,0,0.6)',
-                    }}
-                  >
-                    <span>🎵</span>
-                    <span style={{ fontWeight: 700 }}>
-                      {PHOTO_REEL_SOUNDTRACKS[selectedIdx % PHOTO_REEL_SOUNDTRACKS.length].songTitle}
-                    </span>
-                    <span style={{ opacity: 0.8 }}>
-                      • {PHOTO_REEL_SOUNDTRACKS[selectedIdx % PHOTO_REEL_SOUNDTRACKS.length].artist}
-                    </span>
-                    <span style={{ fontSize: '0.68rem', color: '#34d399', fontWeight: 600 }}>● Reel Hook</span>
-                  </div>
+                  (() => {
+                    const currentReel = getReelTrackForPhoto(selectedIdx + reelOffset);
+                    const reelNumber = ((selectedIdx + reelOffset) % REEL_SONGS.length) + 1;
+                    return (
+                      <div
+                        style={{
+                          marginTop: '10px',
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '10px',
+                          background: 'linear-gradient(135deg, rgba(28, 16, 52, 0.94), rgba(15, 10, 32, 0.96))',
+                          border: '1.5px solid rgba(251, 191, 36, 0.65)',
+                          borderRadius: '24px',
+                          padding: '6px 16px',
+                          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.7), 0 0 18px rgba(251, 191, 36, 0.25)',
+                          maxWidth: '92vw',
+                        }}
+                      >
+                        {/* Dancing Equalizer */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                          <span style={{ fontSize: '1.1rem' }}>🎵</span>
+                          <span className="reel-equalizer-bar" style={{ animationDelay: '0.1s' }} />
+                          <span className="reel-equalizer-bar" style={{ animationDelay: '0.3s' }} />
+                          <span className="reel-equalizer-bar" style={{ animationDelay: '0.45s' }} />
+                          <span className="reel-equalizer-bar" style={{ animationDelay: '0.2s' }} />
+                        </div>
+
+                        {/* Song Title & Real Vocal Artist */}
+                        <div style={{ textAlign: 'left' }}>
+                          <div style={{ fontSize: '0.84rem', fontWeight: 700, color: '#fef08a' }}>
+                            {currentReel.songTitle}
+                          </div>
+                          <div style={{ fontSize: '0.72rem', color: '#fda4af' }}>
+                            🎤 {currentReel.artist} • <span style={{ color: '#34d399', fontWeight: 600 }}>~30s Reel Vocal</span>
+                          </div>
+                        </div>
+
+                        {/* Switch To Next Reel Song Button (Browse all 70 real vocal songs!) */}
+                        <motion.button
+                          type="button"
+                          onClick={() => {
+                            soundManager.playTwinkle();
+                            setReelOffset((prev) => prev + 1);
+                          }}
+                          whileHover={{ scale: 1.07 }}
+                          whileTap={{ scale: 0.93 }}
+                          style={{
+                            background: 'linear-gradient(135deg, rgba(244, 63, 94, 0.45), rgba(251, 191, 36, 0.45))',
+                            border: '1.5px solid rgba(251, 191, 36, 0.7)',
+                            borderRadius: '16px',
+                            padding: '4px 12px',
+                            color: '#fff',
+                            fontSize: '0.74rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            boxShadow: '0 2px 10px rgba(0,0,0,0.5)',
+                          }}
+                          title="Switch to another real vocal song"
+                        >
+                          <span>🔀 Next Song</span>
+                          <span style={{ color: '#fef08a', fontSize: '0.68rem', fontWeight: 700 }}>
+                            ({reelNumber}/{REEL_SONGS.length})
+                          </span>
+                        </motion.button>
+                      </div>
+                    );
+                  })()
                 )}
               </div>
             </motion.div>

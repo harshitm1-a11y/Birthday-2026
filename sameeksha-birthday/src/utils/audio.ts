@@ -370,6 +370,42 @@ class SoundManager {
     }
   }
 
+  // Play a dedicated 30-second vocal reel audio for memory photo modals
+  public playReelAudio(src: string, streamUrl?: string) {
+    this.initCtx();
+    const assetUrl = getAssetUrl(src);
+    if (!this.audioElement) {
+      this.initAudioElement();
+    }
+    if (this.audioElement) {
+      this.audioElement.pause();
+      this.audioElement.src = assetUrl;
+      this.audioElement.currentTime = 0;
+      this.audioElement.loop = true;
+      this.audioElement.volume = this.baseVolume;
+      const playPromise = this.audioElement.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn('Reel local audio play failed, falling back to stream:', err);
+          if (streamUrl && this.audioElement) {
+            this.audioElement.src = streamUrl;
+            this.audioElement.play().catch(() => {});
+          }
+        });
+      }
+      this.isAudioPlaying = true;
+      this.notify();
+    }
+  }
+
+  public restoreTrack(trackId: string) {
+    const idx = PLAYLIST_TRACKS.findIndex((t) => t.id === trackId);
+    if (idx !== -1) {
+      this.currentTrackIndex = idx;
+    }
+    this.switchTrack();
+  }
+
   public nextTrack() {
     this.currentTrackIndex = (this.currentTrackIndex + 1) % PLAYLIST_TRACKS.length;
     this.switchTrack();

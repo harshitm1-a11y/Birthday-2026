@@ -933,3 +933,24 @@ html, body, #root {
   border-radius: 50%;
   animation: pulse 3s ease-in-out infinite;
 }
+
+/* Dancing Reel Equalizer Animation */
+.reel-equalizer-bar {
+  display: inline-block;
+  width: 3.5px;
+  height: 14px;
+  background: linear-gradient(180deg, #fef08a, #f43f5e);
+  border-radius: 2px;
+  animation: reelEqualizerBounce 0.65s ease-in-out infinite alternate;
+}
+
+@keyframes reelEqualizerBounce {
+  0% {
+    height: 4px;
+    opacity: 0.5;
+  }
+  100% {
+    height: 16px;
+    opacity: 1;
+  }
+}
