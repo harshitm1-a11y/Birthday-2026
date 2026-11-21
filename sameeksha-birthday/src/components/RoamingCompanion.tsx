@@ -474,8 +474,8 @@ export const RoamingCompanion: React.FC = () => {
       if (currentScene === 0) {
         // Comfortably positioned beside the title on desktop, or above on mobile!
         const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-        const targetX = isMobile ? 50 : 70;
-        const targetY = isMobile ? 22 : 46;
+        const targetX = isMobile ? 50 : 65;
+        const targetY = isMobile ? 20 : 42;
         setPosX((prev) => (Math.abs(targetX - prev) > 0.3 ? prev + (targetX - prev) * 0.1 : targetX));
         setPosY((prev) => (Math.abs(targetY - prev) > 0.3 ? prev + (targetY - prev) * 0.1 : targetY));
         setDirection(isMobile ? 1 : -1);
@@ -731,7 +731,7 @@ export const RoamingCompanion: React.FC = () => {
                 position: 'absolute',
                 bottom: '105px',
                 left: '50%',
-                transform: 'translateX(-50%)',
+                transform: posX > 60 ? 'translateX(-75%)' : posX < 40 ? 'translateX(-25%)' : 'translateX(-50%)',
                 background: 'rgba(17, 12, 34, 0.94)',
                 backdropFilter: 'blur(12px)',
                 border: '1px solid rgba(251, 191, 36, 0.45)',
@@ -741,7 +741,10 @@ export const RoamingCompanion: React.FC = () => {
                 color: '#fff',
                 fontSize: '0.82rem',
                 fontWeight: 600,
-                whiteSpace: 'nowrap',
+                maxWidth: 'min(78vw, 290px)',
+                whiteSpace: 'normal',
+                textAlign: 'center',
+                lineHeight: 1.35,
                 pointerEvents: 'none',
               }}
             >

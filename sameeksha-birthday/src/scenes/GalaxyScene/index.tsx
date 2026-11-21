@@ -103,21 +103,16 @@ function generateHeartPath(scale: number) {
 
 // 4 Concentric Nested Glowing Neon Hearts with 360° Rotating Light Sweep
 function NestedParametricNeonHearts() {
-  const path1 = useMemo(() => generateHeartPath(5.8), []); // Inner Core
-  const path2 = useMemo(() => generateHeartPath(8.2), []); // Mid-Inner
-  const path3 = useMemo(() => generateHeartPath(10.8), []); // Mid-Outer
-  const path4 = useMemo(() => generateHeartPath(13.4), []); // Grand Outer
+  const path1 = useMemo(() => generateHeartPath(6.8), []); // Core Inner Heart
+  const path2 = useMemo(() => generateHeartPath(10.0), []); // Mid-Inner
+  const path3 = useMemo(() => generateHeartPath(13.2), []); // Mid-Outer
+  const path4 = useMemo(() => generateHeartPath(16.8), []); // Grand Outer Frame
 
   return (
-    <motion.div
-      initial={{ scale: 0.9, opacity: 0 }}
-      animate={{ scale: [0.98, 1.03, 0.98], opacity: 1 }}
-      transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
+    <div
       style={{
         position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
+        inset: 0,
         pointerEvents: 'none',
         zIndex: 5, // Above canvas-container (zIndex: 2), and directly BEHIND text (scene-overlay is zIndex: 10)
         display: 'flex',
@@ -125,152 +120,164 @@ function NestedParametricNeonHearts() {
         justifyContent: 'center',
       }}
     >
-      <svg
-        width="560"
-        height="520"
-        viewBox="-240 -220 480 440"
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: [0.98, 1.025, 0.98], opacity: 1 }}
+        transition={{ duration: 3.0, repeat: Infinity, ease: 'easeInOut' }}
         style={{
-          width: 'min(94vw, 560px)',
-          height: 'min(88vw, 520px)',
-          overflow: 'visible',
-          filter: 'drop-shadow(0 0 35px rgba(255, 0, 127, 0.75)) drop-shadow(0 0 65px rgba(255, 20, 147, 0.45))',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transformOrigin: 'center center',
         }}
       >
-        <defs>
-          <filter id="neonBlurOuter" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="10" />
-          </filter>
-          <filter id="neonBlurMid" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="4.5" />
-          </filter>
-          <linearGradient id="rotatingBeamGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-            <stop offset="35%" stopColor="#fbbf24" stopOpacity="0.85" />
-            <stop offset="70%" stopColor="#ff007f" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="transparent" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-
-        {/* 1. Outer Neon Heart (Scale 13.4) */}
-        <motion.path
-          d={path4}
-          fill="none"
-          stroke="#ff007f"
-          strokeWidth="12"
-          strokeOpacity="0.25"
-          filter="url(#neonBlurOuter)"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 1.8, ease: 'easeInOut' }}
-        />
-        <motion.path
-          d={path4}
-          fill="none"
-          stroke="#ff007f"
-          strokeWidth="2.2"
-          strokeOpacity="0.65"
-          strokeLinecap="round"
-        />
-
-        {/* 2. Mid-Outer Neon Heart (Scale 10.8) */}
-        <motion.path
-          d={path3}
-          fill="none"
-          stroke="#ff1493"
-          strokeWidth="10"
-          strokeOpacity="0.3"
-          filter="url(#neonBlurMid)"
-        />
-        <motion.path
-          d={path3}
-          fill="none"
-          stroke="#ff3399"
-          strokeWidth="3.2"
-          strokeOpacity="0.85"
-          strokeLinecap="round"
-        />
-
-        {/* 3. Mid-Inner Neon Heart (Scale 8.2) */}
-        <motion.path
-          d={path2}
-          fill="none"
-          stroke="#fb7185"
-          strokeWidth="7"
-          strokeOpacity="0.4"
-          filter="url(#neonBlurMid)"
-        />
-        <motion.path
-          d={path2}
-          fill="none"
-          stroke="#f43f5e"
-          strokeWidth="3.0"
-          strokeOpacity="0.9"
-          strokeLinecap="round"
-        />
-
-        {/* 4. Core Inner Brilliant Heart (Scale 5.8) */}
-        <motion.path
-          d={path1}
-          fill="rgba(255, 0, 127, 0.04)"
-          stroke="#ffffff"
-          strokeWidth="3.2"
-          strokeOpacity="0.98"
-          strokeLinecap="round"
-          filter="url(#neonBlurMid)"
-        />
-        <motion.path
-          d={path1}
-          fill="none"
-          stroke="#fef08a"
-          strokeWidth="1.8"
-          strokeOpacity="1"
-          strokeLinecap="round"
-        />
-
-        {/* 5. Continuous 360° Rotating Light Beam Sweep Ray across all 4 concentric hearts */}
-        <motion.g
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 5.2, ease: 'linear' }}
-          style={{ originX: '0px', originY: '0px' }}
+        <svg
+          width="680"
+          height="620"
+          viewBox="-290 -260 580 520"
+          style={{
+            width: 'min(96vw, 680px)',
+            height: 'min(90vw, 620px)',
+            overflow: 'visible',
+            filter: 'drop-shadow(0 0 35px rgba(255, 0, 127, 0.75)) drop-shadow(0 0 65px rgba(255, 20, 147, 0.45))',
+          }}
         >
-          <line
-            x1="0"
-            y1="0"
-            x2="240"
-            y2="0"
-            stroke="url(#rotatingBeamGradient)"
-            strokeWidth="8"
+          <defs>
+            <filter id="neonBlurOuter" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="12" />
+            </filter>
+            <filter id="neonBlurMid" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="5.0" />
+            </filter>
+            <linearGradient id="rotatingBeamGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+              <stop offset="35%" stopColor="#fbbf24" stopOpacity="0.85" />
+              <stop offset="70%" stopColor="#ff007f" stopOpacity="0.45" />
+              <stop offset="100%" stopColor="transparent" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+
+          {/* 1. Outer Grand Neon Heart (Scale 16.8) */}
+          <motion.path
+            d={path4}
+            fill="none"
+            stroke="#ff007f"
+            strokeWidth="12"
+            strokeOpacity="0.25"
+            filter="url(#neonBlurOuter)"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.8, ease: 'easeInOut' }}
+          />
+          <motion.path
+            d={path4}
+            fill="none"
+            stroke="#ff007f"
+            strokeWidth="2.4"
+            strokeOpacity="0.65"
+            strokeLinecap="round"
+          />
+
+          {/* 2. Mid-Outer Neon Heart (Scale 13.2) */}
+          <motion.path
+            d={path3}
+            fill="none"
+            stroke="#ff1493"
+            strokeWidth="10"
+            strokeOpacity="0.3"
+            filter="url(#neonBlurMid)"
+          />
+          <motion.path
+            d={path3}
+            fill="none"
+            stroke="#ff3399"
+            strokeWidth="3.2"
+            strokeOpacity="0.85"
+            strokeLinecap="round"
+          />
+
+          {/* 3. Mid-Inner Neon Heart (Scale 10.0) */}
+          <motion.path
+            d={path2}
+            fill="none"
+            stroke="#fb7185"
+            strokeWidth="7"
+            strokeOpacity="0.4"
+            filter="url(#neonBlurMid)"
+          />
+          <motion.path
+            d={path2}
+            fill="none"
+            stroke="#f43f5e"
+            strokeWidth="3.0"
+            strokeOpacity="0.9"
+            strokeLinecap="round"
+          />
+
+          {/* 4. Core Inner Brilliant Heart (Scale 6.8) */}
+          <motion.path
+            d={path1}
+            fill="rgba(255, 0, 127, 0.04)"
+            stroke="#ffffff"
+            strokeWidth="3.4"
+            strokeOpacity="0.98"
             strokeLinecap="round"
             filter="url(#neonBlurMid)"
           />
-          <circle cx="215" cy="0" r="7" fill="#ffffff" filter="url(#neonBlurOuter)" />
-          <circle cx="170" cy="0" r="5" fill="#fcd34d" filter="url(#neonBlurMid)" />
-          <circle cx="125" cy="0" r="4.5" fill="#ff69b4" />
-          <circle cx="85" cy="0" r="3.5" fill="#ffffff" />
-        </motion.g>
-
-        {/* Orbiting Starlight Glitter Flares */}
-        {Array.from({ length: 18 }).map((_, i) => (
-          <motion.circle
-            key={i}
-            r="2.4"
-            fill="#ffffff"
-            initial={{ opacity: 0 }}
-            animate={{
-              opacity: [0.2, 1, 0.2],
-              scale: [0.8, 1.8, 0.8],
-            }}
-            transition={{
-              duration: 2.2,
-              delay: i * 0.12,
-              repeat: Infinity,
-            }}
-            cx={Math.sin((i / 18) * Math.PI * 2) * 165}
-            cy={Math.cos((i / 18) * Math.PI * 2) * 145}
+          <motion.path
+            d={path1}
+            fill="none"
+            stroke="#fef08a"
+            strokeWidth="2.0"
+            strokeOpacity="1"
+            strokeLinecap="round"
           />
-        ))}
-      </svg>
-    </motion.div>
+
+          {/* 5. Continuous 360° Rotating Light Beam Sweep Ray across all 4 concentric hearts */}
+          <motion.g
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 5.2, ease: 'linear' }}
+            style={{ originX: '0px', originY: '0px' }}
+          >
+            <line
+              x1="0"
+              y1="0"
+              x2="280"
+              y2="0"
+              stroke="url(#rotatingBeamGradient)"
+              strokeWidth="8"
+              strokeLinecap="round"
+              filter="url(#neonBlurMid)"
+            />
+            <circle cx="260" cy="0" r="7.5" fill="#ffffff" filter="url(#neonBlurOuter)" />
+            <circle cx="205" cy="0" r="5.5" fill="#fcd34d" filter="url(#neonBlurMid)" />
+            <circle cx="155" cy="0" r="4.8" fill="#ff69b4" />
+            <circle cx="105" cy="0" r="3.6" fill="#ffffff" />
+          </motion.g>
+
+          {/* Orbiting Starlight Glitter Flares */}
+          {Array.from({ length: 20 }).map((_, i) => (
+            <motion.circle
+              key={i}
+              r="2.5"
+              fill="#ffffff"
+              initial={{ opacity: 0 }}
+              animate={{
+                opacity: [0.2, 1, 0.2],
+                scale: [0.8, 1.8, 0.8],
+              }}
+              transition={{
+                duration: 2.2,
+                delay: i * 0.11,
+                repeat: Infinity,
+              }}
+              cx={Math.sin((i / 20) * Math.PI * 2) * 200}
+              cy={Math.cos((i / 20) * Math.PI * 2) * 175}
+            />
+          ))}
+        </svg>
+      </motion.div>
+    </div>
   );
 }
 
