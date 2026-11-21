@@ -142,7 +142,7 @@ export const MusicPlaylist: React.FC = () => {
           </div>
         </div>
 
-        {/* Quick Play/Pause Button */}
+                {/* Quick Play/Pause Button */}
         <button
           type="button"
           onClick={handleTogglePlay}
@@ -163,6 +163,35 @@ export const MusicPlaylist: React.FC = () => {
           aria-label={isPlaying ? 'Pause music' : 'Play music'}
         >
           {isPlaying ? '⏸' : '▶'}
+        </button>
+
+        {/* Quick Shuffle Random Button in Mini Pill */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            soundManager.playRandomTrack();
+            if (!soundManager.isPlaying()) {
+              soundManager.startAmbient();
+            }
+          }}
+          style={{
+            background: 'rgba(251, 191, 36, 0.2)',
+            border: '1px solid #fbbf24',
+            borderRadius: '50%',
+            width: '28px',
+            height: '28px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#fbbf24',
+            cursor: 'pointer',
+            fontSize: '0.75rem',
+          }}
+          title="Play Random Song"
+          aria-label="Play random song"
+        >
+          🔀
         </button>
       </motion.div>
 
@@ -421,6 +450,34 @@ export const MusicPlaylist: React.FC = () => {
                     title="Next Song"
                   >
                     ⏭
+                  </button>
+
+                  {/* Shuffle / Random Song Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundManager.playRandomTrack();
+                      if (!soundManager.isPlaying()) {
+                        soundManager.startAmbient();
+                      }
+                    }}
+                    style={{
+                      background: 'rgba(251, 191, 36, 0.18)',
+                      border: '1px solid rgba(251, 191, 36, 0.5)',
+                      borderRadius: '20px',
+                      padding: '6px 12px',
+                      color: '#fbbf24',
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                    }}
+                    title="Play Random Song"
+                  >
+                    <span>🔀</span>
+                    <span>Random</span>
                   </button>
 
                   {/* Shuffle / Random Song Button */}

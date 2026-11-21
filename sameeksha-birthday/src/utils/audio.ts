@@ -13,7 +13,7 @@ export interface PlaylistTrack {
 }
 
 export const PLAYLIST_TRACKS: PlaylistTrack[] = [
-  // ========== FRONT PAGE SOUNDTRACK ==========
+  // ========== 1. FRONT PAGE SOUNDTRACK ==========
   {
     id: 'hindi-romantic',
     title: 'Aaja Sanam Madhur Chandni',
@@ -22,10 +22,74 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     type: 'file',
     src: '/audio/hindi-romantic.mp3',
     duration: '4:38',
-    description: 'Timeless Bollywood romantic acoustic melody with acoustic guitar and strings',
+    description: 'Timeless Bollywood romantic acoustic melody with acoustic guitar and strings for Sameeksha',
   },
 
-  // ========== PUNJABI REAL HITS ==========
+  // ========== 2. HINDI ROMANTIC VOCAL HITS ==========
+  {
+    id: 'hindi-tum-hi-ho',
+    title: 'Tum Hi Ho',
+    artist: 'Arijit Singh (Aashiqui 2)',
+    category: 'hindi',
+    type: 'file',
+    src: '/audio/hindi-tum-hi-ho.mp3',
+    duration: '4:22',
+    description: 'Iconic heartfelt Bollywood romantic ballad with Arijit Singh vocals',
+  },
+  {
+    id: 'hindi-dil-diyan-gallan',
+    title: 'Dil Diyan Gallan',
+    artist: 'Atif Aslam',
+    category: 'hindi',
+    type: 'file',
+    src: '/audio/hindi-dil-diyan-gallan.mp3',
+    duration: '4:20',
+    description: 'Soulful romantic waltz celebrating true love and sweet moments',
+  },
+  {
+    id: 'hindi-raataan-lambiyan',
+    title: 'Raataan Lambiyan',
+    artist: 'Jubin Nautiyal & Asees Kaur (Shershaah)',
+    category: 'hindi',
+    type: 'file',
+    src: '/audio/hindi-raataan-lambiyan.mp3',
+    duration: '3:50',
+    description: 'Heart-touching romantic melody with magical male-female duet vocals',
+  },
+
+  // ========== 3. BIRTHDAY CELEBRATION HITS ==========
+  {
+    id: 'birthday-pop',
+    title: 'Happy Birthday Pop Celebration',
+    artist: 'Joyful Birthday Pop Ensemble',
+    category: 'birthday',
+    type: 'file',
+    src: '/audio/birthday-pop.mp3',
+    duration: '3:12',
+    description: 'Upbeat, modern, catchy celebration birthday song for cake cutting',
+  },
+  {
+    id: 'birthday-teddy',
+    title: 'Teddy Sings Happy Birthday',
+    artist: 'Cute Mascot Ensemble',
+    category: 'birthday',
+    type: 'file',
+    src: '/audio/birthday-teddy.mp3',
+    duration: '2:35',
+    description: 'Adorable mascot song celebrating Sameeksha\'s 23rd birthday',
+  },
+  {
+    id: 'bollywood-birthday',
+    title: 'Baar Baar Din Ye Aaye',
+    artist: 'Mohammed Rafi (Farz)',
+    category: 'birthday',
+    type: 'file',
+    src: '/audio/bollywood-birthday.mp3',
+    duration: '4:48',
+    description: 'All-time classic Bollywood birthday anthem for Sameeksha baby',
+  },
+
+  // ========== 4. PUNJABI REAL HITS ==========
   {
     id: 'punjabi-bhangra',
     title: 'Mundian To Bach Ke',
@@ -35,6 +99,26 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     src: '/audio/punjabi-bhangra.mp3',
     duration: '3:55',
     description: 'Iconic worldwide Punjabi anthem with heavy dhol, tumbi and energetic vocals',
+  },
+  {
+    id: 'party-angreji-beat',
+    title: 'Angreji Beat Te',
+    artist: 'Gippy Grewal & Yo Yo Honey Singh',
+    category: 'punjabi',
+    type: 'file',
+    src: '/audio/party-angreji-beat.mp3',
+    duration: '3:30',
+    description: 'Massive Punjabi party banger with energetic dhol and party rhythm',
+  },
+  {
+    id: 'punjabi-blue-eyes',
+    title: 'Blue Eyes',
+    artist: 'Yo Yo Honey Singh',
+    category: 'punjabi',
+    type: 'file',
+    src: '/audio/punjabi-blue-eyes.mp3',
+    duration: '3:40',
+    description: 'Chart-topping Punjabi dance pop hit for Sameeksha',
   },
   {
     id: 'punjabi-laung-gawacha',
@@ -57,205 +141,48 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     description: 'High voltage Punjabi Gidda dance celebration track',
   },
 
-  // ========== BIRTHDAY SONGS ==========
+  // ========== 5. PARTY DANCE BUSTERS ==========
   {
-    id: 'bollywood-birthday',
-    title: 'Baar Baar Din Ye Aaye',
-    artist: 'Mohammed Rafi (Farz)',
-    category: 'birthday',
+    id: 'party-brown-rang',
+    title: 'Brown Rang',
+    artist: 'Yo Yo Honey Singh',
+    category: 'party',
     type: 'file',
-    src: '/audio/bollywood-birthday.mp3',
-    duration: '4:48',
-    description: 'Iconic classic Bollywood birthday anthem for Sameeksha baby',
+    src: '/audio/party-brown-rang.mp3',
+    duration: '2:58',
+    description: 'Iconic dance party anthem that gets everyone moving',
   },
   {
-    id: 'birthday-acoustic',
-    title: 'Happy Birthday Music Box',
-    artist: 'Fairy Tale Ensemble',
-    category: 'birthday',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Sweet music box chimes playing the birthday melody',
+    id: 'party-dope-shope',
+    title: 'Dope Shope',
+    artist: 'Deep Money & Yo Yo Honey Singh',
+    category: 'party',
+    type: 'file',
+    src: '/audio/party-dope-shope.mp3',
+    duration: '3:10',
+    description: 'Super-hit party electronic club groove',
   },
   {
-    id: 'birthday-piano',
-    title: 'Happy Birthday Piano Waltz',
-    artist: 'Birthday Piano Lounge',
-    category: 'birthday',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Elegant piano rendition of the birthday tune with jazz chords',
-  },
-  {
-    id: 'birthday-orchestra',
-    title: 'Birthday Grand Orchestra',
-    artist: 'Cinematic Birthday Ensemble',
-    category: 'birthday',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Full orchestral fanfare arrangement of Happy Birthday',
+    id: 'party-love-dose',
+    title: 'Love Dose',
+    artist: 'Yo Yo Honey Singh',
+    category: 'party',
+    type: 'file',
+    src: '/audio/party-love-dose.mp3',
+    duration: '3:48',
+    description: 'Flirty, joyful party romance dance hit',
   },
 
-  // ========== HINDI ROMANTIC SONGS ==========
-  {
-    id: 'hindi-romance-synth',
-    title: 'Tum Se Hi & Kesariya (Acoustic)',
-    artist: 'Soulful Acoustic Synth',
-    category: 'hindi',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Warm romantic piano and guitar chords with gentle harmonic shimmer',
-  },
-  {
-    id: 'hindi-tum-hi-ho',
-    title: 'Tum Hi Ho Vibes',
-    artist: 'Aashiqui Romance Piano',
-    category: 'hindi',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Emotional piano melody inspired by the iconic Aashiqui 2 ballad',
-  },
-  {
-    id: 'hindi-kal-ho-naa-ho',
-    title: 'Kal Ho Naa Ho Strings',
-    artist: 'SRK Romantic Orchestra',
-    category: 'hindi',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Heartfelt violin and cello strings with sitar touches',
-  },
-  {
-    id: 'hindi-raabta',
-    title: 'Raabta & Pehla Nasha Fusion',
-    artist: 'Bollywood Dreamy Synths',
-    category: 'hindi',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Dreamy 90s Bollywood fusion with soft flute and guitar arpeggios',
-  },
-  {
-    id: 'hindi-channa-mereya',
-    title: 'Channa Mereya Acoustic',
-    artist: 'ADHM Acoustic Ensemble',
-    category: 'hindi',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Soulful acoustic guitar chords with haunting vocal-like synth pads',
-  },
-
-  // ========== OTHER PUNJABI SONGS ==========
-  {
-    id: 'punjabi-soft',
-    title: 'Kinna Chir & Tera Ban Jaunga',
-    artist: 'Punjabi Romantic Flute & Strings',
-    category: 'punjabi',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Heartfelt Punjabi romantic melody with soft flute and warm chords',
-  },
-  {
-    id: 'punjabi-laung-laachi',
-    title: 'Laung Laachi Acoustic',
-    artist: 'Punjabi Acoustic Vibes',
-    category: 'punjabi',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Sweet Punjabi folk melody with gentle dhol and acoustic guitar',
-  },
-  {
-    id: 'punjabi-ikk-kudi',
-    title: 'Ikk Kudi & Tera Yaar Hoon Main',
-    artist: 'Punjabi Soul Chords',
-    category: 'punjabi',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Soulful Punjabi ballad with harmonica and gentle percussion',
-  },
-
-  // ========== THEME / BGM ==========
+  // ========== 6. THEME / BGM ==========
   {
     id: 'theme-lofi',
-    title: 'LoFi Chill Love Romance',
-    artist: 'Janevo Chillout BGM',
+    title: 'Midnight Starlight Romance',
+    artist: 'Celestial Chill Romance BGM',
     category: 'theme',
     type: 'file',
     src: '/audio/theme-lofi.mp3',
     duration: '2:13',
     description: 'Warm, cozy tape-saturated lo-fi guitar chords and ambient beats',
-  },
-  {
-    id: 'theme-starlight',
-    title: 'Enchanted Starlight Symphony',
-    artist: 'Cinematic Romance Ensemble',
-    category: 'theme',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Dreamy cinematic orchestral strings and gentle fairy-tale celeste',
-  },
-  {
-    id: 'theme-midnight-lofi',
-    title: 'Midnight Lo-Fi Love',
-    artist: 'Lo-Fi Romance Chords',
-    category: 'theme',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Warm midnight lo-fi jazz chords with gentle vinyl crackle vibes',
-  },
-  {
-    id: 'theme-ocean-waves',
-    title: 'Ocean Breeze Ambient',
-    artist: 'Nature Calm BGM',
-    category: 'theme',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Calming ambient pads with gentle ocean wave textures',
-  },
-  {
-    id: 'theme-fairy-garden',
-    title: 'Fairy Garden Lullaby',
-    artist: 'Enchanted Music Box',
-    category: 'theme',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Magical celeste and harp melody from a fairy garden dreamscape',
-  },
-
-  // ========== PARTY SONGS ==========
-  {
-    id: 'party-celebration',
-    title: 'Celebration Confetti Groove',
-    artist: 'Birthday Club DJ',
-    category: 'party',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Upbeat funky bass, electronic dance drop, and joyful celebration vibes',
-  },
-  {
-    id: 'party-desi-beats',
-    title: 'Desi Party Beats',
-    artist: 'Bollywood DJ Remix',
-    category: 'party',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'High energy Bollywood party mashup with dhol, bass, and synth drops',
-  },
-  {
-    id: 'party-retro-disco',
-    title: 'Retro Disco Nights',
-    artist: 'Jimmy Jimmy Disco Vibes',
-    category: 'party',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Classic 80s Bollywood disco groove with funky bass and strings',
-  },
-  {
-    id: 'party-edm-drop',
-    title: 'Birthday EDM Drop',
-    artist: 'Festival DJ Bass',
-    category: 'party',
-    type: 'synth',
-    duration: '∞ Loop',
-    description: 'Modern EDM build-up and bass drop for the ultimate birthday party',
   },
 ];
 
@@ -389,6 +316,7 @@ class SoundManager {
   private switchTrack() {
     const track = PLAYLIST_TRACKS[this.currentTrackIndex];
     this.stopSynthPlayback();
+    this.initAudioElement();
 
     if (track.type === 'file' && track.src) {
       if (this.audioElement) {

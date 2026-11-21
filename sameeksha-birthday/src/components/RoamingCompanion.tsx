@@ -15,10 +15,18 @@ interface CreamParticle {
 }
 
 // 1. Ultra-Realistic & Adorable Animated Teddy Bear (Main & Star Companion!)
-const RealisticTeddy: React.FC<{ isMoving: boolean; hasKnife?: boolean; isCutting?: boolean }> = ({
+const RealisticTeddy: React.FC<{
+  isMoving: boolean;
+  hasKnife?: boolean;
+  isCutting?: boolean;
+  isClapping?: boolean;
+  isFeeding?: boolean;
+}> = ({
   isMoving,
   hasKnife,
   isCutting,
+  isClapping = false,
+  isFeeding = false,
 }) => (
   <svg width="88" height="100" viewBox="0 0 88 100" fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -62,6 +70,15 @@ const RealisticTeddy: React.FC<{ isMoving: boolean; hasKnife?: boolean; isCuttin
       <circle cx="66" cy="20" r="6" fill="#fef3c7" opacity="0.9" />
       <animateTransform attributeName="transform" type="rotate" values="0 66 22; 7 66 22; -5 66 22; 0 66 22" keyTimes="0; 0.9; 0.94; 0.98; 1" dur="4.2s" repeatCount="indefinite" />
     </g>
+
+    {/* Clapping Celebration Sparkles Above Head */}
+    {isClapping && (
+      <g transform="translate(44, 2)">
+        <text x="-18" y="0" fontSize="16">👏</text>
+        <text x="4" y="-3" fontSize="16">👏</text>
+        <text x="-6" y="-12" fontSize="14">✨</text>
+      </g>
+    )}
 
     {/* Rhythmic Breathing Body & Head Group */}
     <g style={{ transformOrigin: '44px 70px' }}>
@@ -119,10 +136,12 @@ const RealisticTeddy: React.FC<{ isMoving: boolean; hasKnife?: boolean; isCuttin
         </g>
       </g>
 
-      {/* Left Arm & Paw with Waving Animation when idle */}
+      {/* Left Arm & Paw (Waving / Clapping / Feeding) */}
       <g style={{ transformOrigin: '22px 60px' }}>
         <ellipse cx="21" cy="62" rx="7.5" ry="9.5" fill="url(#teddyFurGrad)" stroke="#92400e" strokeWidth="1.5">
-          {isMoving ? (
+          {isClapping ? (
+            <animateTransform attributeName="transform" type="rotate" values="0 22 60; 34 22 60; 0 22 60" dur="0.22s" repeatCount="indefinite" />
+          ) : isMoving ? (
             <animateTransform attributeName="transform" type="rotate" values="-15 22 60; 15 22 60; -15 22 60" dur="0.32s" repeatCount="indefinite" />
           ) : (
             <animateTransform attributeName="transform" type="rotate" values="0 22 60; -18 22 60; 5 22 60; -18 22 60; 0 22 60" keyTimes="0; 0.8; 0.85; 0.92; 1" dur="4.2s" repeatCount="indefinite" />
@@ -132,17 +151,22 @@ const RealisticTeddy: React.FC<{ isMoving: boolean; hasKnife?: boolean; isCuttin
         <circle cx="18" cy="64" r="2.2" fill="#fde68a" opacity="0.85" />
       </g>
 
-      {/* Right Arm & Paw (Holds Chef Knife if in Cake Scene) */}
+      {/* Right Arm & Paw (Chef Knife / Cutting / Clapping / Feeding) */}
       <g style={{ transformOrigin: '65px 60px' }}>
         <ellipse cx="66" cy="62" rx="7.5" ry="9.5" fill="url(#teddyFurGrad)" stroke="#92400e" strokeWidth="1.5">
-          {isMoving && <animateTransform attributeName="transform" type="rotate" values="15 65 60; -15 65 60; 15 65 60" dur="0.32s" repeatCount="indefinite" />}
-          {isCutting && <animateTransform attributeName="transform" type="rotate" values="0 65 60; -45 65 60; 30 65 60; 0 65 60" dur="0.4s" repeatCount="3" />}
+          {isClapping ? (
+            <animateTransform attributeName="transform" type="rotate" values="0 65 60; -34 65 60; 0 65 60" dur="0.22s" repeatCount="indefinite" />
+          ) : isMoving ? (
+            <animateTransform attributeName="transform" type="rotate" values="15 65 60; -15 65 60; 15 65 60" dur="0.32s" repeatCount="indefinite" />
+          ) : isCutting ? (
+            <animateTransform attributeName="transform" type="rotate" values="0 65 60; -50 65 60; 35 65 60; 0 65 60" dur="0.35s" repeatCount="indefinite" />
+          ) : null}
         </ellipse>
         {/* Paw Pad */}
         <circle cx="69" cy="64" r="2.2" fill="#fde68a" opacity="0.85" />
 
-        {/* 3D Chef Knife in Paw */}
-        {hasKnife && (
+        {/* 3D Chef Knife in Paw (Visible during knife phase) */}
+        {hasKnife && !isClapping && !isFeeding && (
           <g transform="translate(64, 42) rotate(25)">
             <polygon points="0,0 6,-30 14,-32 14,0" fill="#f8fafc" stroke="#94a3b8" strokeWidth="1" />
             <line x1="4" y1="-28" x2="12" y2="-2" stroke="#e2e8f0" strokeWidth="2" />
@@ -151,6 +175,20 @@ const RealisticTeddy: React.FC<{ isMoving: boolean; hasKnife?: boolean; isCuttin
           </g>
         )}
       </g>
+
+      {/* Cake Feeding Plate ("Lo cake khao!") */}
+      {isFeeding && (
+        <g transform="translate(44, 62)">
+          <ellipse cx="0" cy="9" rx="22" ry="6.5" fill="#fbbf24" stroke="#d97706" strokeWidth="1.5" />
+          <ellipse cx="0" cy="9" rx="17" ry="4.5" fill="#fef08a" />
+          <polygon points="-14,8 14,8 0,-6" fill="#f43f5e" stroke="#e11d48" strokeWidth="1" />
+          <polygon points="-14,8 14,8 0,1" fill="#fff1f2" />
+          <rect x="-1.5" y="-14" width="3" height="8" rx="1" fill="#fbbf24" />
+          <ellipse cx="0" cy="-17" rx="1.8" ry="3.2" fill="#f97316" />
+          <ellipse cx="0" cy="-16.5" rx="1" ry="1.8" fill="#fef08a" />
+          <text x="14" y="-8" fontSize="12">✨</text>
+        </g>
+      )}
     </g>
 
     {/* Walking Paws / Feet */}
@@ -383,6 +421,9 @@ export const RoamingCompanion: React.FC = () => {
   const [isKissFlying, setIsKissFlying] = useState(false);
   const [kissBurst, setKissBurst] = useState(false);
   const [clickSparks, setClickSparks] = useState<{ id: number; x: number; y: number; emoji: string }[]>([]);
+  const [isClapping, setIsClapping] = useState(false);
+  const [isFeeding, setIsFeeding] = useState(false);
+  const [isCuttingActive, setIsCuttingActive] = useState(false);
 
   const targetXRef = useRef<number>(25);
   const targetYRef = useRef<number>(72);
@@ -483,23 +524,66 @@ export const RoamingCompanion: React.FC = () => {
     };
   }, [isDropped, isFetchingNewCake, isCompanionCuttingCake, currentScene, posX, posY]);
 
-  // Cake Scene companion knife cut trigger!
+  // Cake Scene animated companion cake cutting & joyful clapping!
   useEffect(() => {
     if (isCompanionCuttingCake && !cakeCutDone) {
       soundManager.playTwinkle();
-      const cutAnnounce = `Make way everyone! ${companion.name} is slicing the birthday cake! 🔪🎂`;
+
+      // Phase 1: Companion runs straight to cake center
+      setPosX(50);
+      setPosY(46);
+      setDirection(1);
+      setIsMoving(true);
+      const cutAnnounce = `Make way! ${companion.name} is coming to cut the cake with you! 🎂🔪`;
       setSpeechText(cutAnnounce);
       setIsSpeechOpen(true);
+      robotSpeaker.speak(`${companion.name} is coming to cut the cake with you!`);
 
-      // Companion swings the knife and cuts cake
-      setTimeout(() => {
+      // Phase 2: Companion arrives, equips chef knife and performs animated cuts
+      const cutTimer = setTimeout(() => {
+        setIsMoving(false);
+        setIsCuttingActive(true);
+        soundManager.playCakeSliceSound();
+      }, 700);
+
+      const cutTimer2 = setTimeout(() => {
+        soundManager.playCakeSliceSound();
+      }, 1250);
+
+      // Phase 3: Slice slides out and Companion holds cake slice ("Lo cake khao!")
+      const feedTimer = setTimeout(() => {
+        setIsCuttingActive(false);
         soundManager.playCakeSliceSound();
         soundManager.playPopperBurstSound();
         finishCompanionCakeCut();
-        const successText = `Yay! The cake is sliced! Happy 23rd Birthday Sameeksha! 🎉🍰💖`;
-        setSpeechText(successText);
-        robotSpeaker.speak(successText);
-      }, 1200);
+        setIsFeeding(true);
+        const feedText = `Lo cake khao Sameeksha! Happy Birthday! 🍰💖`;
+        setSpeechText(feedText);
+        robotSpeaker.speak('Lo cake khao Sameeksha! Happy Birthday! 🍰💖');
+      }, 1900);
+
+      // Phase 4: Companion puts down slice and CLAPS joyfully with both paws!
+      const clapTimer = setTimeout(() => {
+        setIsFeeding(false);
+        setIsClapping(true);
+        soundManager.playPopperBurstSound();
+        const clapText = `Yay! Happy 23rd Birthday Sameeksha! 👏🎉🎂💖`;
+        setSpeechText(clapText);
+        robotSpeaker.speak('Yay! Happy 23rd Birthday Sameeksha! 👏🎉');
+      }, 4500);
+
+      // Phase 5: Conclude clapping loop
+      const doneTimer = setTimeout(() => {
+        setIsClapping(false);
+      }, 9200);
+
+      return () => {
+        clearTimeout(cutTimer);
+        clearTimeout(cutTimer2);
+        clearTimeout(feedTimer);
+        clearTimeout(clapTimer);
+        clearTimeout(doneTimer);
+      };
     }
   }, [isCompanionCuttingCake, cakeCutDone, finishCompanionCakeCut, companion.name]);
 
@@ -623,15 +707,23 @@ export const RoamingCompanion: React.FC = () => {
   };
 
   const renderAnimatedMascot = () => {
-    const hasKnife = currentScene === 4 && !cakeCutDone;
+    const hasKnife = currentScene === 4 && (!cakeCutDone || isCuttingActive || isFeeding);
     switch (selectedCompanionId) {
       case 'penguin':
-        return <RealisticPenguin isMoving={isMoving} hasKnife={hasKnife} isCutting={isCompanionCuttingCake} />;
+        return <RealisticPenguin isMoving={isMoving} hasKnife={hasKnife} isCutting={isCuttingActive || isCompanionCuttingCake} />;
       case 'robo':
-        return <RealisticRobot isMoving={isMoving} hasKnife={hasKnife} isCutting={isCompanionCuttingCake} />;
+        return <RealisticRobot isMoving={isMoving} hasKnife={hasKnife} isCutting={isCuttingActive || isCompanionCuttingCake} />;
       case 'teddy':
       default:
-        return <RealisticTeddy isMoving={isMoving} hasKnife={hasKnife} isCutting={isCompanionCuttingCake} />;
+        return (
+          <RealisticTeddy
+            isMoving={isMoving}
+            hasKnife={hasKnife}
+            isCutting={isCuttingActive}
+            isClapping={isClapping}
+            isFeeding={isFeeding}
+          />
+        );
     }
   };
 
@@ -644,7 +736,7 @@ export const RoamingCompanion: React.FC = () => {
             initial={{ left: '76vw', top: '70vh', scale: 0.6, opacity: 0 }}
             animate={{
               left: ['76vw', '63vw', '50vw'],
-              top: ['70vh', '55vh', '44vh'],
+              top: ['70vh', '58vh', '50vh'],
               scale: [0.6, 1.3, 1.8],
               opacity: [0, 1, 1],
               rotate: [0, -12, 12, 0],
@@ -679,7 +771,7 @@ export const RoamingCompanion: React.FC = () => {
             style={{
               position: 'fixed',
               left: '50vw',
-              top: '44vh',
+              top: '50vh',
               transform: 'translate(-50%, -50%)',
               zIndex: 99,
               pointerEvents: 'none',

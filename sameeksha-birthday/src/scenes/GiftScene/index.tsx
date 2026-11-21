@@ -16,6 +16,8 @@ interface GiftChoice {
   emoji: string;
   tag: string;
   description: string;
+  color: string;
+  ribbonColor: string;
 }
 
 const GIFTS: GiftChoice[] = [
@@ -24,47 +26,67 @@ const GIFTS: GiftChoice[] = [
     name: 'Plush Fluffy Teddy Bear',
     emoji: '🧸',
     tag: 'Soft Cuddles',
-    description: 'Ultra-soft honey plush bear with a ruby satin bowtie, to remind you of Harshit\'s warmth every single day!',
+    description: "Ultra-soft honey plush bear with a ruby satin bowtie, to remind you of Harshit's warmth and hugs every day!",
+    color: '#991b1b',
+    ribbonColor: '#fbbf24',
   },
   {
     id: 'rose',
     name: '100 Royal Red Velvet Roses',
     emoji: '🌹',
     tag: 'Eternal Romance',
-    description: '100 freshly bloomed velvet red roses radiating elegance and romance, just as radiant as Sameeksha!',
+    description: '100 freshly bloomed velvet red roses radiating elegance and romance, just as radiant and precious as Sameeksha!',
+    color: '#065f46',
+    ribbonColor: '#e11d48',
   },
   {
     id: 'diamond',
     name: 'Diamond & Rose-Gold Eternity Heart',
     emoji: '💎',
     tag: 'Precious Gem',
-    description: 'Shining brilliant diamond heart with an orbital rose-gold halo ring — a symbol of true love and timeless commitment.',
+    description: 'Shining brilliant diamond heart with an orbital rose-gold halo ring — a symbol of true love and timeless commitment from Harshit.',
+    color: '#1e3a8a',
+    ribbonColor: '#e2e8f0',
   },
   {
     id: 'chocolates',
     name: 'Belgian Royal Chocolate Truffles',
     emoji: '🍫',
     tag: 'Sweet Moments',
-    description: 'Handcrafted luxury Belgian chocolate truffles dusted with edible gold leaf, just as delightfully sweet as your smile!',
+    description: 'Handcrafted luxury Belgian chocolate truffles dusted with edible gold leaf, delightfully sweet just like Sameeksha!',
+    color: '#78350f',
+    ribbonColor: '#fb7185',
   },
 ];
 
-// 3D Gift Box Component with animated lid
-function GiftBox({ isOpen, onOpen }: { isOpen: boolean; onOpen: () => void }) {
+// Reusable 3D Individual Gift Box (Each gift opens individually!)
+function SingleGiftBox3D({
+  position,
+  color,
+  ribbonColor,
+  isOpen,
+  onOpen,
+}: {
+  position: [number, number, number];
+  color: string;
+  ribbonColor: string;
+  isOpen: boolean;
+  onOpen: () => void;
+}) {
   const boxGroupRef = useRef<THREE.Group>(null);
   const lidGroupRef = useRef<THREE.Group>(null);
 
   useFrame(({ clock }) => {
     if (boxGroupRef.current && !isOpen) {
-      boxGroupRef.current.rotation.y = clock.getElapsedTime() * 0.22;
+      boxGroupRef.current.position.y = position[1] + Math.sin(clock.getElapsedTime() * 2.2 + position[0]) * 0.035;
     }
     if (lidGroupRef.current) {
       if (isOpen) {
-        lidGroupRef.current.position.y = THREE.MathUtils.lerp(lidGroupRef.current.position.y, 2.5, 0.08);
-        lidGroupRef.current.position.z = THREE.MathUtils.lerp(lidGroupRef.current.position.z, -0.9, 0.08);
-        lidGroupRef.current.rotation.x = THREE.MathUtils.lerp(lidGroupRef.current.rotation.x, -0.9, 0.08);
+        lidGroupRef.current.position.y = THREE.MathUtils.lerp(lidGroupRef.current.position.y, 1.8, 0.08);
+        lidGroupRef.current.position.z = THREE.MathUtils.lerp(lidGroupRef.current.position.z, -0.7, 0.08);
+        lidGroupRef.current.rotation.x = THREE.MathUtils.lerp(lidGroupRef.current.rotation.x, -0.85, 0.08);
       } else {
-        lidGroupRef.current.position.y = 0.6;
+        lidGroupRef.current.position.y = 0.42;
         lidGroupRef.current.position.z = 0;
         lidGroupRef.current.rotation.x = 0;
       }
@@ -72,75 +94,61 @@ function GiftBox({ isOpen, onOpen }: { isOpen: boolean; onOpen: () => void }) {
   });
 
   return (
-    <Float speed={1.2} rotationIntensity={0.06} floatIntensity={0.14}>
-      <group
-        ref={boxGroupRef}
-        position={[0, -0.4, 0]}
-        onClick={(e) => {
-          e.stopPropagation();
-          onOpen();
-        }}
-      >
-        {/* Base Box Outer */}
-        <mesh position={[0, 0, 0]} castShadow receiveShadow>
-          <boxGeometry args={[1.2, 1.0, 1.2]} />
-          <meshStandardMaterial color="#9d174d" roughness={0.25} metalness={0.4} />
-        </mesh>
+    <group
+      ref={boxGroupRef}
+      position={position}
+      onClick={(e) => {
+        e.stopPropagation();
+        onOpen();
+      }}
+    >
+      {/* Base Box Outer */}
+      <mesh position={[0, 0, 0]} castShadow receiveShadow>
+        <boxGeometry args={[0.72, 0.62, 0.72]} />
+        <meshStandardMaterial color={color} roughness={0.25} metalness={0.35} />
+      </mesh>
 
-        {/* Ribbons */}
-        <mesh position={[0, 0, 0]}>
-          <boxGeometry args={[0.22, 1.02, 1.22]} />
-          <meshStandardMaterial color="#fbbf24" metalness={0.8} roughness={0.2} />
-        </mesh>
-        <mesh position={[0, 0, 0]}>
-          <boxGeometry args={[1.22, 1.02, 0.22]} />
-          <meshStandardMaterial color="#fbbf24" metalness={0.8} roughness={0.2} />
-        </mesh>
+      {/* Ribbons */}
+      <mesh position={[0, 0, 0]}>
+        <boxGeometry args={[0.14, 0.63, 0.73]} />
+        <meshStandardMaterial color={ribbonColor} metalness={0.8} roughness={0.2} />
+      </mesh>
+      <mesh position={[0, 0, 0]}>
+        <boxGeometry args={[0.73, 0.63, 0.14]} />
+        <meshStandardMaterial color={ribbonColor} metalness={0.8} roughness={0.2} />
+      </mesh>
 
-        {/* Velvet interior cushion */}
-        <mesh position={[0, 0.35, 0]}>
-          <boxGeometry args={[1.1, 0.22, 1.1]} />
-          <meshStandardMaterial color="#4c0519" roughness={0.8} />
+      {/* Lid */}
+      <group ref={lidGroupRef} position={[0, 0.42, 0]}>
+        <mesh castShadow>
+          <boxGeometry args={[0.76, 0.16, 0.76]} />
+          <meshStandardMaterial color={color} roughness={0.2} metalness={0.35} />
         </mesh>
-
-        {/* Lid */}
-        <group ref={lidGroupRef} position={[0, 0.6, 0]}>
-          <mesh castShadow>
-            <boxGeometry args={[1.28, 0.24, 1.28]} />
-            <meshStandardMaterial color="#be185d" roughness={0.2} metalness={0.4} />
+        <mesh position={[0, 0.01, 0]}>
+          <boxGeometry args={[0.14, 0.17, 0.77]} />
+          <meshStandardMaterial color={ribbonColor} metalness={0.8} roughness={0.2} />
+        </mesh>
+        <mesh position={[0, 0.01, 0]}>
+          <boxGeometry args={[0.77, 0.17, 0.14]} />
+          <meshStandardMaterial color={ribbonColor} metalness={0.8} roughness={0.2} />
+        </mesh>
+        {/* Bow */}
+        <group position={[0, 0.13, 0]}>
+          <mesh rotation={[0, 0, Math.PI / 4]}>
+            <torusGeometry args={[0.1, 0.035, 16, 24]} />
+            <meshStandardMaterial color={ribbonColor} metalness={0.9} roughness={0.15} />
           </mesh>
-          <mesh position={[0, 0.02, 0]}>
-            <boxGeometry args={[0.22, 0.26, 1.3]} />
-            <meshStandardMaterial color="#fbbf24" metalness={0.8} roughness={0.2} />
+          <mesh rotation={[0, 0, -Math.PI / 4]}>
+            <torusGeometry args={[0.1, 0.035, 16, 24]} />
+            <meshStandardMaterial color={ribbonColor} metalness={0.9} roughness={0.15} />
           </mesh>
-          <mesh position={[0, 0.02, 0]}>
-            <boxGeometry args={[1.3, 0.26, 0.22]} />
-            <meshStandardMaterial color="#fbbf24" metalness={0.8} roughness={0.2} />
+          <mesh position={[0, 0, 0]}>
+            <sphereGeometry args={[0.05, 14, 14]} />
+            <meshStandardMaterial color={ribbonColor} metalness={0.95} roughness={0.1} />
           </mesh>
-          {/* Bow */}
-          <group position={[0, 0.2, 0]}>
-            <mesh rotation={[0, 0, Math.PI / 4]}>
-              <torusGeometry args={[0.16, 0.055, 16, 32]} />
-              <meshStandardMaterial color="#fbbf24" metalness={0.9} roughness={0.15} />
-            </mesh>
-            <mesh rotation={[0, 0, -Math.PI / 4]}>
-              <torusGeometry args={[0.16, 0.055, 16, 32]} />
-              <meshStandardMaterial color="#fbbf24" metalness={0.9} roughness={0.15} />
-            </mesh>
-            <mesh position={[0, 0, 0]}>
-              <sphereGeometry args={[0.08, 16, 16]} />
-              <meshStandardMaterial color="#fcd34d" metalness={0.9} roughness={0.1} />
-            </mesh>
-          </group>
         </group>
-
-        {/* Pedestal */}
-        <mesh position={[0, -0.6, 0]} receiveShadow>
-          <cylinderGeometry args={[1.3, 1.45, 0.16, 32]} />
-          <meshStandardMaterial color="#1e1035" metalness={0.5} roughness={0.4} />
-        </mesh>
       </group>
-    </Float>
+    </group>
   );
 }
 
@@ -149,10 +157,12 @@ function TeddyBear3D({
   position,
   scale,
   isSolo,
+  onClick,
 }: {
   position: [number, number, number];
   scale: number;
   isSolo: boolean;
+  onClick?: () => void;
 }) {
   const teddyRef = useRef<THREE.Group>(null);
 
@@ -168,7 +178,17 @@ function TeddyBear3D({
   });
 
   return (
-    <group ref={teddyRef} position={position} scale={[scale, scale, scale]}>
+    <group
+      ref={teddyRef}
+      position={position}
+      scale={[scale, scale, scale]}
+      onClick={(e) => {
+        if (onClick) {
+          e.stopPropagation();
+          onClick();
+        }
+      }}
+    >
       {/* Body */}
       <mesh position={[0, 0.35, 0]}>
         <sphereGeometry args={[0.38, 20, 20]} />
@@ -232,10 +252,12 @@ function RoseBouquet3D({
   position,
   scale,
   isSolo,
+  onClick,
 }: {
   position: [number, number, number];
   scale: number;
   isSolo: boolean;
+  onClick?: () => void;
 }) {
   const roseRef = useRef<THREE.Group>(null);
 
@@ -251,8 +273,17 @@ function RoseBouquet3D({
   });
 
   return (
-    <group ref={roseRef} position={position} scale={[scale, scale, scale]}>
-      {/* Central Rose Bloom */}
+    <group
+      ref={roseRef}
+      position={position}
+      scale={[scale, scale, scale]}
+      onClick={(e) => {
+        if (onClick) {
+          e.stopPropagation();
+          onClick();
+        }
+      }}
+    >
       <group position={[0, 0.8, 0]}>
         <mesh>
           <sphereGeometry args={[0.22, 16, 16]} />
@@ -267,8 +298,6 @@ function RoseBouquet3D({
           <meshStandardMaterial color="#f43f5e" roughness={0.3} side={THREE.DoubleSide} />
         </mesh>
       </group>
-
-      {/* Side Roses */}
       <group position={[-0.26, 0.68, 0.1]}>
         <mesh>
           <sphereGeometry args={[0.15, 14, 14]} />
@@ -281,14 +310,10 @@ function RoseBouquet3D({
           <meshStandardMaterial color="#fb7185" roughness={0.3} />
         </mesh>
       </group>
-
-      {/* Emerald Stems */}
       <mesh position={[0, 0.25, 0]}>
         <cylinderGeometry args={[0.04, 0.04, 0.75, 12]} />
         <meshStandardMaterial color="#15803d" roughness={0.5} />
       </mesh>
-
-      {/* Golden Wrap Ribbon */}
       <mesh position={[0, 0.08, 0]}>
         <cylinderGeometry args={[0.16, 0.1, 0.26, 16]} />
         <meshStandardMaterial color="#fbbf24" metalness={0.8} roughness={0.2} />
@@ -302,10 +327,12 @@ function DiamondHeart3D({
   position,
   scale,
   isSolo,
+  onClick,
 }: {
   position: [number, number, number];
   scale: number;
   isSolo: boolean;
+  onClick?: () => void;
 }) {
   const giftRef = useRef<THREE.Group>(null);
   const ringRef = useRef<THREE.Mesh>(null);
@@ -352,8 +379,17 @@ function DiamondHeart3D({
   });
 
   return (
-    <group ref={giftRef} position={position} scale={[scale, scale, scale]}>
-      {/* Rose Gold / Ruby Crystal Heart Pendant */}
+    <group
+      ref={giftRef}
+      position={position}
+      scale={[scale, scale, scale]}
+      onClick={(e) => {
+        if (onClick) {
+          e.stopPropagation();
+          onClick();
+        }
+      }}
+    >
       <mesh position={[0, 0.05, -0.07]}>
         <extrudeGeometry args={[heartShape, extrudeSettings]} />
         <meshPhysicalMaterial
@@ -366,8 +402,6 @@ function DiamondHeart3D({
           clearcoatRoughness={0.1}
         />
       </mesh>
-
-      {/* Sparkling Brilliant Diamond */}
       <mesh position={[0, 0.06, 0.03]}>
         <octahedronGeometry args={[0.18, 0]} />
         <meshPhysicalMaterial
@@ -379,8 +413,6 @@ function DiamondHeart3D({
           clearcoat={1}
         />
       </mesh>
-
-      {/* Golden Bail & Halo */}
       <mesh position={[0, 0.42, 0]}>
         <torusGeometry args={[0.075, 0.02, 16, 32]} />
         <meshStandardMaterial color="#fbbf24" metalness={0.9} roughness={0.15} />
@@ -399,10 +431,12 @@ function Chocolates3D({
   position,
   scale,
   isSolo,
+  onClick,
 }: {
   position: [number, number, number];
   scale: number;
   isSolo: boolean;
+  onClick?: () => void;
 }) {
   const chocoRef = useRef<THREE.Group>(null);
 
@@ -418,18 +452,25 @@ function Chocolates3D({
   });
 
   return (
-    <group ref={chocoRef} position={position} scale={[scale, scale, scale]}>
-      {/* Heart-Shaped Gold Box */}
+    <group
+      ref={chocoRef}
+      position={position}
+      scale={[scale, scale, scale]}
+      onClick={(e) => {
+        if (onClick) {
+          e.stopPropagation();
+          onClick();
+        }
+      }}
+    >
       <mesh position={[0, 0.2, 0]}>
         <cylinderGeometry args={[0.55, 0.55, 0.22, 24]} />
         <meshStandardMaterial color="#d97706" metalness={0.8} roughness={0.2} />
       </mesh>
-      {/* Red Velvet Ribbon */}
       <mesh position={[0, 0.32, 0]}>
         <cylinderGeometry args={[0.58, 0.58, 0.04, 24]} />
         <meshStandardMaterial color="#ef4444" roughness={0.4} />
       </mesh>
-      {/* 3 Chocolate Truffles */}
       <mesh position={[-0.18, 0.36, -0.1]}>
         <sphereGeometry args={[0.1, 14, 14]} />
         <meshStandardMaterial color="#3e2723" roughness={0.3} />
@@ -446,123 +487,379 @@ function Chocolates3D({
   );
 }
 
+// 3D Delivery Drop Zone Pedestal with Target Glyphs
+function LandingPedestalDropZone({ isDelivered }: { isDelivered: boolean }) {
+  const ringRef = useRef<THREE.Mesh>(null);
+  const beaconRef = useRef<THREE.Mesh>(null);
+
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+    if (ringRef.current) {
+      ringRef.current.rotation.z = t * 0.6;
+    }
+    if (beaconRef.current && !isDelivered) {
+      const beaconMesh = beaconRef.current as any;
+      if (beaconMesh.material) {
+        beaconMesh.material.opacity = 0.25 + Math.sin(t * 3.5) * 0.15;
+      }
+    }
+  });
+
+  return (
+    <group position={[0, -0.65, 0]}>
+      {/* Base Marble Pedestal */}
+      <mesh receiveShadow position={[0, 0, 0]}>
+        <cylinderGeometry args={[2.5, 2.7, 0.24, 48]} />
+        <meshStandardMaterial color="#1a1236" metalness={0.6} roughness={0.3} />
+      </mesh>
+
+      {/* Golden Outer Rim */}
+      <mesh position={[0, 0.13, 0]}>
+        <torusGeometry args={[2.5, 0.035, 16, 48]} />
+        <meshStandardMaterial color="#fbbf24" metalness={0.9} roughness={0.15} />
+      </mesh>
+
+      {/* Rotating Neon Targeting Ring */}
+      <mesh ref={ringRef} position={[0, 0.14, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[1.6, 1.72, 32]} />
+        <meshBasicMaterial color="#ff007f" transparent opacity={0.6} side={THREE.DoubleSide} />
+      </mesh>
+
+      {/* Inner Golden Target Pad */}
+      <mesh position={[0, 0.135, 0]}>
+        <cylinderGeometry args={[0.9, 0.9, 0.02, 32]} />
+        <meshStandardMaterial color="#3b1d5a" roughness={0.4} />
+      </mesh>
+
+      {/* Light Beacon Pillar (Before delivery arrives) */}
+      {!isDelivered && (
+        <mesh ref={beaconRef} position={[0, 1.8, 0]}>
+          <cylinderGeometry args={[0.85, 0.85, 3.5, 32, 1, true]} />
+          <meshBasicMaterial color="#fbbf24" transparent opacity={0.3} side={THREE.DoubleSide} />
+        </mesh>
+      )}
+    </group>
+  );
+}
+
 const GiftScene: React.FC = () => {
   const nextScene = useExperienceStore((s) => s.nextScene);
   const giftOpened = useExperienceStore((s) => s.giftOpened);
   const setGiftOpened = useExperienceStore((s) => s.setGiftOpened);
 
-  const [localOpened, setLocalOpened] = useState(giftOpened);
-  const [selectedGiftId, setSelectedGiftId] = useState<GiftChoiceId | null>(null);
-  const [sleighDelivered, setSleighDelivered] = useState(false);
+  // Delivery Stages: 'approaching' -> 'unloading' -> 'departing' -> 'delivered'
+  const [deliveryStage, setDeliveryStage] = useState<'approaching' | 'unloading' | 'departing' | 'delivered'>('approaching');
 
-  // Santa Flying Sleigh Arrival Animation on Scene Load
+  // Individual opened gifts set (user opens each gift one by one!)
+  const [openedGiftIds, setOpenedGiftIds] = useState<Set<GiftChoiceId>>(new Set(giftOpened ? ['teddy', 'rose', 'diamond', 'chocolates'] : []));
+  const [selectedGiftId, setSelectedGiftId] = useState<GiftChoiceId | null>(null);
+
+  // Cinematic Video-like Delivery Kart Sequence
   useEffect(() => {
     soundManager.playTwinkle();
-    const timer = setTimeout(() => {
-      setSleighDelivered(true);
+    robotSpeaker.speak('Look Sameeksha! Harshit has sent a magical surprise delivery cart just for you! ✨');
+
+    // Stage 1: Arrive from left to center
+    const arriveTimer = setTimeout(() => {
+      setDeliveryStage('unloading');
       soundManager.playPopperBurstSound();
-      robotSpeaker.speak('Ho Ho Ho! Santa ki magical delivery Sameeksha baby ke liye aayi hai! 🎅✨');
+      soundManager.playTwinkle();
+      robotSpeaker.speak('Here come Harshit\'s surprise gifts landing on your platform! 🎁✨');
     }, 2400);
 
-    return () => clearTimeout(timer);
+    // Stage 2: Unload gifts, then depart to right
+    const departTimer = setTimeout(() => {
+      setDeliveryStage('departing');
+      soundManager.playTwinkle();
+    }, 4500);
+
+    // Stage 3: Delivery Complete
+    const completeTimer = setTimeout(() => {
+      setDeliveryStage('delivered');
+      robotSpeaker.speak('All gifts delivered with love from Harshit! Open them one by one! 💖');
+    }, 6000);
+
+    return () => {
+      clearTimeout(arriveTimer);
+      clearTimeout(departTimer);
+      clearTimeout(completeTimer);
+    };
   }, []);
 
-  const handleOpen = () => {
-    if (!localOpened) {
-      soundManager.playTwinkle();
-      soundManager.playPopperBurstSound();
-      setLocalOpened(true);
-      setGiftOpened();
-      soundManager.playTrack('theme-starlight');
-      robotSpeaker.speak('Happy Birthday Sameeksha! Gift box khul gaya! Apna manpasand gift choose kijiye! 🎁💖');
+  // Skip video cutscene
+  const handleSkipDelivery = () => {
+    setDeliveryStage('delivered');
+    soundManager.playPopperBurstSound();
+    robotSpeaker.speak('Gifts ready from Harshit! Tap each box to open! 🎁');
+  };
+
+  // Open an individual gift box
+  const handleOpenIndividualGift = (id: GiftChoiceId) => {
+    soundManager.playPopperBurstSound();
+    soundManager.playTwinkle();
+    setOpenedGiftIds((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+    setGiftOpened();
+    setSelectedGiftId(id);
+    const chosen = GIFTS.find((g) => g.id === id);
+    if (chosen) {
+      robotSpeaker.speak(`Wow! You opened: ${chosen.name}! Tap to choose this special gift from Harshit! 💖`);
     }
   };
 
+  // Select a gift to confirm delivery promise from Harshit
   const handleSelectGift = (id: GiftChoiceId) => {
     soundManager.playTwinkle();
     setSelectedGiftId(id);
     const chosen = GIFTS.find((g) => g.id === id);
     if (chosen) {
-      robotSpeaker.speak(`Aapne choose kiya hai: ${chosen.name}! Ye gift aapko jald hi milega Harshit ki taraf se! 💖`);
+      robotSpeaker.speak(`You chose ${chosen.name}! Ye gift aapko jald hi milega Harshit ki taraf se! 💖`);
     }
   };
 
   const selectedGift = GIFTS.find((g) => g.id === selectedGiftId);
+  const isDelivered = deliveryStage === 'delivered';
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
-      {/* 🎅 Magical Flying Santa Sleigh across the Sky before delivery */}
+      {/* 🚀 Harshit's Cinematic Flying Surprise Kart Cutscene */}
       <AnimatePresence>
-        {!sleighDelivered && (
-          <motion.div
-            initial={{ x: '110vw', y: '10vh', scale: 0.7, opacity: 0 }}
-            animate={{
-              x: ['110vw', '50vw', '48vw'],
-              y: ['10vh', '35vh', '48vh'],
-              scale: [0.7, 1.1, 1],
-              opacity: [0, 1, 1],
-            }}
-            exit={{ x: '-120vw', y: '5vh', scale: 0.6, opacity: 0 }}
-            transition={{ duration: 2.3, ease: 'easeInOut' }}
-            style={{
-              position: 'fixed',
-              zIndex: 90,
-              pointerEvents: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              filter: 'drop-shadow(0 10px 25px rgba(251, 191, 36, 0.7))',
-            }}
-          >
-            <span style={{ fontSize: '3.6rem', transform: 'scaleX(-1)' }}>🦌🦌🛷</span>
-            <span style={{ fontSize: '2.8rem' }}>🎁</span>
-            <div
+        {!isDelivered && (
+          <>
+            {/* Delivery Kart flying in an arc */}
+            <motion.div
+              initial={{ left: '-35vw', top: '12vh', scale: 0.65, rotate: 10, opacity: 0 }}
+              animate={
+                deliveryStage === 'approaching'
+                  ? {
+                      left: ['-35vw', '12vw', '50vw'],
+                      top: ['12vh', '26vh', '48vh'],
+                      scale: [0.65, 1.15, 1.0],
+                      rotate: [10, 14, 0],
+                      opacity: [0, 1, 1],
+                    }
+                  : deliveryStage === 'unloading'
+                  ? {
+                      left: '50vw',
+                      top: '48vh',
+                      scale: [1, 1.06, 1],
+                      rotate: [0, -2, 2, 0],
+                      opacity: 1,
+                    }
+                  : {
+                      left: ['50vw', '75vw', '125vw'],
+                      top: ['48vh', '28vh', '8vh'],
+                      scale: [1, 1.1, 0.6],
+                      rotate: [0, -8, -16],
+                      opacity: [1, 1, 0],
+                    }
+              }
+              transition={
+                deliveryStage === 'approaching'
+                  ? { duration: 2.4, ease: 'easeOut' }
+                  : deliveryStage === 'unloading'
+                  ? { duration: 2.0, repeat: Infinity, ease: 'easeInOut' }
+                  : { duration: 1.5, ease: 'easeIn' }
+              }
               style={{
-                background: 'rgba(239, 68, 68, 0.9)',
-                color: '#fff',
-                padding: '4px 12px',
-                borderRadius: '16px',
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                border: '1px solid #fbbf24',
+                position: 'fixed',
+                transform: 'translate(-50%, -50%)',
+                zIndex: 95,
+                pointerEvents: 'none',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                filter: 'drop-shadow(0 12px 30px rgba(251, 191, 36, 0.85))',
               }}
             >
-              🎅 Santa's Special Delivery for Sameeksha! ✨
-            </div>
-          </motion.div>
+              {/* Flying Kart Avatar */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontSize: '3.6rem', transform: 'scaleX(-1)' }}>✨🛷</span>
+                <span style={{ fontSize: '2.8rem' }}>🎁</span>
+                <span style={{ fontSize: '2.4rem' }}>🧸</span>
+                <span style={{ fontSize: '2.6rem' }}>🌹</span>
+              </div>
+
+              {/* Banner on Kart */}
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, rgba(225, 29, 72, 0.95), rgba(217, 119, 6, 0.95))',
+                  color: '#fff',
+                  padding: '5px 16px',
+                  borderRadius: '20px',
+                  fontSize: '0.86rem',
+                  fontWeight: 700,
+                  border: '1.5px solid #fde047',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.6)',
+                  letterSpacing: '0.5px',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                💌 Harshit's Surprise Delivery for Sameeksha! ✨
+              </div>
+
+              {/* Beaming Gifts Downward during Unloading */}
+              {deliveryStage === 'unloading' && (
+                <motion.div
+                  initial={{ opacity: 0, scaleY: 0 }}
+                  animate={{ opacity: [0.6, 1, 0.7], scaleY: 1 }}
+                  transition={{ duration: 0.8, repeat: Infinity }}
+                  style={{
+                    width: '120px',
+                    height: '140px',
+                    background: 'linear-gradient(180deg, rgba(251, 191, 36, 0.6), rgba(255, 0, 127, 0.1))',
+                    borderRadius: '50%',
+                    filter: 'blur(8px)',
+                    marginTop: '4px',
+                  }}
+                />
+              )}
+            </motion.div>
+
+            {/* Skip Video Cutscene Pill */}
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={handleSkipDelivery}
+              style={{
+                position: 'fixed',
+                top: '75px',
+                right: '20px',
+                zIndex: 100,
+                background: 'rgba(15, 12, 34, 0.85)',
+                border: '1px solid rgba(251, 191, 36, 0.5)',
+                borderRadius: '20px',
+                padding: '6px 14px',
+                color: '#fbbf24',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                backdropFilter: 'blur(8px)',
+              }}
+            >
+              Skip Delivery Video ▶
+            </motion.button>
+          </>
         )}
       </AnimatePresence>
 
       {/* 3D Canvas */}
       <div className="canvas-container" style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
-        <Canvas camera={{ position: [0, 1.1, 4.4], fov: 45 }} shadows>
+        <Canvas camera={{ position: [0, 1.2, 4.4], fov: 46 }} shadows>
           <ambientLight intensity={0.65} />
           <directionalLight position={[5, 8, 5]} intensity={1.5} castShadow />
           <pointLight position={[-4, 3, -2]} intensity={1.1} color="#ff6b9d" />
           <pointLight position={[3, -2, 2]} intensity={0.9} color="#fbbf24" />
-          <Sparkles count={80} scale={5.5} size={2.4} speed={0.5} color="#fcd34d" />
+          <Sparkles count={80} scale={6.0} size={2.4} speed={0.5} color="#fcd34d" />
 
-          {/* Sealed present box shown before opening */}
-          {!localOpened && <GiftBox isOpen={false} onOpen={handleOpen} />}
+          {/* Landing Target Drop Zone Platform */}
+          <LandingPedestalDropZone isDelivered={isDelivered} />
 
-          {/* When opened and a specific gift is chosen: SOLO SPOTLIGHT in Center! */}
-          {localOpened && selectedGiftId && (
-            <>
-              {selectedGiftId === 'teddy' && <TeddyBear3D position={[0, 0.4, 0]} scale={0.75} isSolo={true} />}
-              {selectedGiftId === 'rose' && <RoseBouquet3D position={[0, 0.3, 0]} scale={0.8} isSolo={true} />}
-              {selectedGiftId === 'diamond' && <DiamondHeart3D position={[0, 0.5, 0]} scale={1.25} isSolo={true} />}
-              {selectedGiftId === 'chocolates' && <Chocolates3D position={[0, 0.4, 0]} scale={1.1} isSolo={true} />}
-            </>
+          {/* SOLO SPOTLIGHT VIEW when a specific opened gift is clicked */}
+          {selectedGiftId && (
+            <Float speed={1.2} rotationIntensity={0.08} floatIntensity={0.15}>
+              {selectedGiftId === 'teddy' && (
+                <TeddyBear3D position={[0, 0.45, 0]} scale={0.75} isSolo={true} />
+              )}
+              {selectedGiftId === 'rose' && (
+                <RoseBouquet3D position={[0, 0.35, 0]} scale={0.8} isSolo={true} />
+              )}
+              {selectedGiftId === 'diamond' && (
+                <DiamondHeart3D position={[0, 0.55, 0]} scale={1.25} isSolo={true} />
+              )}
+              {selectedGiftId === 'chocolates' && (
+                <Chocolates3D position={[0, 0.45, 0]} scale={1.1} isSolo={true} />
+              )}
+            </Float>
           )}
 
-          {/* When opened and NO specific gift chosen yet: Show ALL 4 gifts cleanly arrayed! */}
-          {localOpened && !selectedGiftId && (
-            <>
-              <TeddyBear3D position={[-1.3, 0.5, 0]} scale={0.48} isSolo={false} />
-              <RoseBouquet3D position={[-0.45, 0.45, 0.2]} scale={0.52} isSolo={false} />
-              <DiamondHeart3D position={[0.45, 0.55, 0.2]} scale={0.75} isSolo={false} />
-              <Chocolates3D position={[1.3, 0.45, 0]} scale={0.7} isSolo={false} />
-            </>
+          {/* 4 INDIVIDUAL GIFTS (Each opens individually!) Shown when not in solo spotlight */}
+          {isDelivered && !selectedGiftId && (
+            <group position={[0, 0, 0]}>
+              {/* Gift 1: Teddy Bear */}
+              <group position={[-1.25, 0.1, 0.2]}>
+                {!openedGiftIds.has('teddy') ? (
+                  <SingleGiftBox3D
+                    position={[0, 0, 0]}
+                    color="#991b1b"
+                    ribbonColor="#fbbf24"
+                    isOpen={false}
+                    onOpen={() => handleOpenIndividualGift('teddy')}
+                  />
+                ) : (
+                  <TeddyBear3D
+                    position={[0, 0.35, 0]}
+                    scale={0.46}
+                    isSolo={false}
+                    onClick={() => handleSelectGift('teddy')}
+                  />
+                )}
+              </group>
+
+              {/* Gift 2: 100 Red Roses */}
+              <group position={[-0.42, 0.1, 0.4]}>
+                {!openedGiftIds.has('rose') ? (
+                  <SingleGiftBox3D
+                    position={[0, 0, 0]}
+                    color="#065f46"
+                    ribbonColor="#e11d48"
+                    isOpen={false}
+                    onOpen={() => handleOpenIndividualGift('rose')}
+                  />
+                ) : (
+                  <RoseBouquet3D
+                    position={[0, 0.3, 0]}
+                    scale={0.5}
+                    isSolo={false}
+                    onClick={() => handleSelectGift('rose')}
+                  />
+                )}
+              </group>
+
+              {/* Gift 3: Diamond Heart */}
+              <group position={[0.42, 0.1, 0.4]}>
+                {!openedGiftIds.has('diamond') ? (
+                  <SingleGiftBox3D
+                    position={[0, 0, 0]}
+                    color="#1e3a8a"
+                    ribbonColor="#e2e8f0"
+                    isOpen={false}
+                    onOpen={() => handleOpenIndividualGift('diamond')}
+                  />
+                ) : (
+                  <DiamondHeart3D
+                    position={[0, 0.42, 0]}
+                    scale={0.72}
+                    isSolo={false}
+                    onClick={() => handleSelectGift('diamond')}
+                  />
+                )}
+              </group>
+
+              {/* Gift 4: Belgian Chocolates */}
+              <group position={[1.25, 0.1, 0.2]}>
+                {!openedGiftIds.has('chocolates') ? (
+                  <SingleGiftBox3D
+                    position={[0, 0, 0]}
+                    color="#78350f"
+                    ribbonColor="#fb7185"
+                    isOpen={false}
+                    onOpen={() => handleOpenIndividualGift('chocolates')}
+                  />
+                ) : (
+                  <Chocolates3D
+                    position={[0, 0.35, 0]}
+                    scale={0.68}
+                    isSolo={false}
+                    onClick={() => handleSelectGift('chocolates')}
+                  />
+                )}
+              </group>
+            </group>
           )}
 
           <OrbitControls
@@ -606,7 +903,7 @@ const GiftScene: React.FC = () => {
             letterSpacing: '1px',
           }}
         >
-          {localOpened ? 'Choose Your Birthday Gift' : 'Special Delivery for Sameeksha Baby'}
+          {isDelivered ? "Harshit's Special Surprise Gifts" : "Special Delivery for Sameeksha Baby"}
         </motion.h2>
 
         <div
@@ -621,46 +918,16 @@ const GiftScene: React.FC = () => {
             userSelect: 'none',
           }}
         >
-          {selectedGiftId
-            ? '✨ Spotlighting your selected gift in center 360°!'
-            : localOpened
-            ? '🎁 Tap any gift below to choose your favorite!'
-            : '🎁 Tap the gift box or button below to open!'}
+          {!isDelivered
+            ? "✨ Harshit's delivery kart is arriving at the landing platform..."
+            : selectedGiftId
+            ? "✨ Spotlighting your selected gift in 360°!"
+            : "🎁 Tap each gift box below to unwrap individually!"}
         </div>
       </div>
 
-      {/* Bottom Center Trigger (Before opened) */}
-      {!localOpened && (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: '26px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 45,
-            pointerEvents: 'none',
-          }}
-        >
-          <motion.button
-            className="magic-button"
-            onClick={handleOpen}
-            whileHover={{ scale: 1.06 }}
-            whileTap={{ scale: 0.95 }}
-            aria-label="Open your birthday gift"
-            style={{
-              pointerEvents: 'auto',
-              boxShadow: '0 8px 30px rgba(244, 63, 94, 0.5)',
-              fontSize: '1.05rem',
-              padding: '0.9rem 2.4rem',
-            }}
-          >
-            <span>Open Your Surprise Gift 🎁 ✨</span>
-          </motion.button>
-        </div>
-      )}
-
-      {/* 4 Chooseable Gifts Bar (When opened and no gift selected yet) */}
-      {localOpened && !selectedGiftId && (
+      {/* 4 Chooseable / Unwrap Buttons Bar (When delivered and not in modal) */}
+      {isDelivered && !selectedGiftId && (
         <div
           style={{
             position: 'fixed',
@@ -670,45 +937,64 @@ const GiftScene: React.FC = () => {
             zIndex: 50,
             display: 'flex',
             alignItems: 'center',
-            gap: '10px',
+            gap: '8px',
             flexWrap: 'wrap',
             justifyContent: 'center',
-            maxWidth: '94vw',
+            maxWidth: '96vw',
           }}
         >
-          {GIFTS.map((g) => (
-            <motion.button
-              key={g.id}
-              onClick={() => handleSelectGift(g.id)}
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.95 }}
-              style={{
-                background: 'rgba(28, 16, 52, 0.92)',
-                backdropFilter: 'blur(12px)',
-                border: '1.5px solid rgba(251, 191, 36, 0.5)',
-                borderRadius: '18px',
-                padding: '8px 14px',
-                color: '#fff',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                boxShadow: '0 4px 18px rgba(0,0,0,0.6)',
-              }}
-            >
-              <span style={{ fontSize: '1.4rem' }}>{g.emoji}</span>
-              <div style={{ textAlign: 'left' }}>
-                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#fbbf24' }}>{g.name}</div>
-                <div style={{ fontSize: '0.68rem', color: '#fbcfe8' }}>Tap to select</div>
-              </div>
-            </motion.button>
-          ))}
+          {GIFTS.map((g) => {
+            const isOpen = openedGiftIds.has(g.id);
+            return (
+              <motion.button
+                key={g.id}
+                onClick={() => {
+                  if (!isOpen) {
+                    handleOpenIndividualGift(g.id);
+                  } else {
+                    handleSelectGift(g.id);
+                  }
+                }}
+                whileHover={{ scale: 1.07 }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  background: isOpen
+                    ? 'rgba(30, 20, 60, 0.94)'
+                    : 'rgba(18, 12, 38, 0.94)',
+                  backdropFilter: 'blur(12px)',
+                  border: isOpen
+                    ? '1.5px solid #fbbf24'
+                    : '1.5px solid rgba(255, 255, 255, 0.25)',
+                  borderRadius: '16px',
+                  padding: '8px 14px',
+                  color: '#fff',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  boxShadow: isOpen
+                    ? '0 4px 18px rgba(251, 191, 36, 0.35)'
+                    : '0 4px 14px rgba(0,0,0,0.5)',
+                }}
+              >
+                <span style={{ fontSize: '1.35rem' }}>{isOpen ? g.emoji : '🎁'}</span>
+                <div style={{ textAlign: 'left' }}>
+                  <div style={{ fontSize: '0.8rem', fontWeight: 700, color: isOpen ? '#fbbf24' : '#fff' }}>
+                    {g.name}
+                  </div>
+                  <div style={{ fontSize: '0.66rem', color: isOpen ? '#a7f3d0' : '#fbcfe8' }}>
+                    {isOpen ? '✨ Opened (Tap to view)' : '🔒 Tap to unwrap'}
+                  </div>
+                </div>
+              </motion.button>
+            );
+          })}
         </div>
       )}
 
       {/* Selected Gift Highlight Card with Harshit's Promise! */}
       <AnimatePresence>
-        {localOpened && selectedGift && (
+        {selectedGift && (
           <motion.div
             initial={{ opacity: 0, y: 30, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -748,7 +1034,7 @@ const GiftScene: React.FC = () => {
                 textTransform: 'uppercase',
               }}
             >
-              {selectedGift.emoji} {selectedGift.tag} • Selected Gift {selectedGift.emoji}
+              {selectedGift.emoji} {selectedGift.tag} • Harshit's Gift {selectedGift.emoji}
             </div>
 
             <h3
@@ -804,7 +1090,7 @@ const GiftScene: React.FC = () => {
                   cursor: 'pointer',
                 }}
               >
-                🔄 Choose Another Gift
+                🔄 View All Gifts
               </button>
 
               <motion.button

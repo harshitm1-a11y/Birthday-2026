@@ -56,24 +56,32 @@ export default function App() {
     if (!soundManager.isPlaying()) return;
     switch (currentScene) {
       case 0:
-        // Front page: Aaja Sanam Madhur Chandni
+        // Front page: Aaja Sanam Madhur Chandni instrumental
         soundManager.playTrack('hindi-romantic');
         break;
       case 1:
-        // Gift scene: Starlight BGM
-        soundManager.playTrack('theme-starlight');
+        // Gift scene: Raataan Lambiyan
+        soundManager.playTrack('hindi-raataan-lambiyan');
         break;
       case 2:
         // Memories scene: Mundian To Bach Ke Punjabi
         soundManager.playTrack('punjabi-bhangra');
         break;
+      case 3:
+        // Companion scene: Tum Hi Ho
+        soundManager.playTrack('hindi-tum-hi-ho');
+        break;
       case 4:
-        // Cake cutting scene: Baar Baar Din Ye Aaye
-        soundManager.playTrack('bollywood-birthday');
+        // Cake cutting scene: Happy Birthday Pop Celebration
+        soundManager.playTrack('birthday-pop');
+        break;
+      case 5:
+        // Letter scene: Dil Diyan Gallan
+        soundManager.playTrack('hindi-dil-diyan-gallan');
         break;
       case 6:
-        // Finale celebration: Party groove
-        soundManager.playTrack('party-celebration');
+        // Finale celebration: Angreji Beat Punjabi party banger
+        soundManager.playTrack('party-angreji-beat');
         break;
     }
   }, [currentScene]);
