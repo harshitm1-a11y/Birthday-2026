@@ -1,4 +1,4 @@
-// Natural Speech Synthesis Utility with Pure Hindi Phonation and Auto Audio-Ducking
+// Natural Speech Synthesis Utility with Soft Male Hindi Phonation and Auto Audio-Ducking
 import { soundManager } from './audio';
 
 export interface SpeechSettings {
@@ -13,7 +13,7 @@ class RobotSpeaker {
   private voices: SpeechSynthesisVoice[] = [];
   private selectedVoice: SpeechSynthesisVoice | null = null;
   private isHindiVoice = false;
-  private pitch = 1.12;
+  private pitch = 0.92; // Lower pitch for male voice
   private rate = 0.88;
 
   constructor() {
@@ -29,14 +29,13 @@ class RobotSpeaker {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     this.voices = window.speechSynthesis.getVoices();
 
-    // Priority 1: Soft Sweet Female Hindi voices (Swara, Kalpana, Heera, Google हिन्दी)
-    const sweetHindiVoice = this.voices.find(
+    // Priority 1: Soft Sweet Male Hindi voices (Madhur, Hemant, Male, Google Hindi)
+    const maleHindiVoice = this.voices.find(
       (v) =>
         (v.lang.toLowerCase().startsWith('hi') || v.name.toLowerCase().includes('hindi')) &&
-        (v.name.toLowerCase().includes('swara') ||
-          v.name.toLowerCase().includes('kalpana') ||
-          v.name.toLowerCase().includes('heera') ||
-          v.name.toLowerCase().includes('female') ||
+        (v.name.toLowerCase().includes('madhur') ||
+          v.name.toLowerCase().includes('hemant') ||
+          v.name.toLowerCase().includes('male') ||
           v.name.toLowerCase().includes('google'))
     );
 
@@ -44,26 +43,36 @@ class RobotSpeaker {
       (v) => v.lang.toLowerCase().startsWith('hi') || v.name.toLowerCase().includes('hindi')
     );
 
-    // Priority 2: Soft Indian English voice (Neerja, Google Indian English)
+    // Priority 2: Male Indian English voice (Rishi, Google Indian English)
+    const maleIndianEngVoice = this.voices.find(
+      (v) =>
+        (v.lang.toLowerCase().includes('en-in') ||
+          v.name.toLowerCase().includes('india')) &&
+        (v.name.toLowerCase().includes('rishi') ||
+          v.name.toLowerCase().includes('male'))
+    );
+
     const indianEngVoice = this.voices.find(
       (v) =>
         v.lang.toLowerCase().includes('en-in') ||
-        v.name.toLowerCase().includes('neerja') ||
         v.name.toLowerCase().includes('india')
     );
 
-    if (sweetHindiVoice) {
-      this.selectedVoice = sweetHindiVoice;
+    if (maleHindiVoice) {
+      this.selectedVoice = maleHindiVoice;
       this.isHindiVoice = true;
     } else if (genericHindiVoice) {
       this.selectedVoice = genericHindiVoice;
       this.isHindiVoice = true;
+    } else if (maleIndianEngVoice) {
+      this.selectedVoice = maleIndianEngVoice;
+      this.isHindiVoice = false;
     } else if (indianEngVoice) {
       this.selectedVoice = indianEngVoice;
       this.isHindiVoice = false;
     } else {
-      const softVoice = this.voices.find((v) => v.name.toLowerCase().includes('natural') || v.name.toLowerCase().includes('female'));
-      this.selectedVoice = softVoice || this.voices[0] || null;
+      const maleVoice = this.voices.find((v) => v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('natural'));
+      this.selectedVoice = maleVoice || this.voices[0] || null;
       this.isHindiVoice = false;
     }
   }
@@ -81,7 +90,7 @@ class RobotSpeaker {
       .replace(/&/g, 'aur')
       .replace(/\+/g, 'aur')
       // Remove punctuation that causes letter-by-letter pause
-      .replace(/[•\-_~#*\/\\|\[\]{}()<>]/g, ' ')
+      .replace(/[•\-_~#*\/\\|[\]{}()<>]/g, ' ')
       .replace(/\.{2,}/g, ', ')
       // Strip emojis
       .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '')
@@ -99,7 +108,7 @@ class RobotSpeaker {
 
     this.stop();
 
-    // Prefer native Hindi spoken text if available (ensures crystal clear natural pronunciation)
+    // Prefer native Hindi spoken text if available
     const textToSpeak = spokenHindiAlternative
       ? this.sanitizeForSpeech(spokenHindiAlternative)
       : this.sanitizeForSpeech(textToDisplay);

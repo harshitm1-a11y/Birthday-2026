@@ -12,72 +12,41 @@ interface MemoryPhoto {
   isCustom?: boolean;
 }
 
-interface PhotoAnimationVariant {
-  badge: string;
-  flash: boolean;
-  initial: any;
-  animate: any;
-  exit: any;
-  transition: any;
-}
-
-// 6 Distinct, exciting animation variants for clicking photos
-const PHOTO_ANIMATIONS: PhotoAnimationVariant[] = [
-  // 0: Polaroid Flash Snap
-  {
-    badge: '📸 Polaroid Flash Snap',
-    flash: true,
-    initial: { scale: 0.15, rotate: -14, opacity: 0, y: 70 },
-    animate: { scale: 1, rotate: [-14, 4, 0], opacity: 1, y: 0 },
-    exit: { scale: 0.2, rotate: 12, opacity: 0 },
-    transition: { type: 'spring', damping: 16, stiffness: 240 },
+// File opening and closing animation configurations
+// Like a cherished memory folder expanding open from card to full view, and collapsing back identically on exit!
+const fileOpenVariants: any = {
+  initial: {
+    scale: 0.18,
+    opacity: 0,
+    y: 50,
+    rotateX: -20,
+    filter: 'blur(8px)',
   },
-  // 1: 3D Heart Bloom Unfold
-  {
-    badge: '💖 Romantic Heart Bloom',
-    flash: false,
-    initial: { scale: 0.1, rotateY: 90, opacity: 0 },
-    animate: { scale: [0.1, 1.12, 1], rotateY: [90, -8, 0], opacity: 1 },
-    exit: { scale: 0.2, rotateY: 90, opacity: 0 },
-    transition: { type: 'spring', damping: 18, stiffness: 220 },
+  animate: {
+    scale: 1,
+    opacity: 1,
+    y: 0,
+    rotateX: 0,
+    filter: 'blur(0px)',
+    transition: {
+      type: 'spring',
+      damping: 22,
+      stiffness: 280,
+      mass: 0.8,
+    },
   },
-  // 2: Cosmic Nebula Spiral
-  {
-    badge: '🌌 Cosmic Portal Swirl',
-    flash: false,
-    initial: { scale: 0, rotate: 180, opacity: 0, filter: 'blur(16px)' },
-    animate: { scale: 1, rotate: [180, -6, 0], opacity: 1, filter: 'blur(0px)' },
-    exit: { scale: 0, rotate: -180, opacity: 0 },
-    transition: { duration: 0.55, ease: [0.34, 1.56, 0.64, 1] },
+  exit: {
+    scale: 0.18,
+    opacity: 0,
+    y: 50,
+    rotateX: -20,
+    filter: 'blur(8px)',
+    transition: {
+      duration: 0.28,
+      ease: [0.32, 0, 0.67, 0],
+    },
   },
-  // 3: Cinematic Shutter Drop
-  {
-    badge: '🎬 Cinematic Shutter Drop',
-    flash: false,
-    initial: { y: -180, rotateX: -60, scale: 0.5, opacity: 0 },
-    animate: { y: 0, rotateX: 0, scale: 1, opacity: 1 },
-    exit: { y: 180, opacity: 0 },
-    transition: { type: 'spring', damping: 15, stiffness: 250 },
-  },
-  // 4: Starlight Angelic Float
-  {
-    badge: '✨ Starlight Angelic Float',
-    flash: false,
-    initial: { y: 150, scale: 0.35, opacity: 0, borderRadius: '40px' },
-    animate: { y: [150, -10, 0], scale: 1, opacity: 1, borderRadius: '16px' },
-    exit: { y: -80, scale: 0.4, opacity: 0 },
-    transition: { type: 'spring', damping: 20, stiffness: 200 },
-  },
-  // 5: Origami Diagonal Unfold
-  {
-    badge: '💌 Origami Corner Unfold',
-    flash: false,
-    initial: { x: 140, y: 60, rotateZ: 25, scale: 0.2, opacity: 0 },
-    animate: { x: 0, y: 0, rotateZ: 0, scale: 1, opacity: 1 },
-    exit: { x: -140, scale: 0.2, opacity: 0 },
-    transition: { type: 'spring', damping: 17, stiffness: 230 },
-  },
-];
+};
 
 const MemoriesScene: React.FC = () => {
   const nextScene = useExperienceStore((s) => s.nextScene);
@@ -86,7 +55,7 @@ const MemoriesScene: React.FC = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [speedMultiplier, setSpeedMultiplier] = useState(0.035); // 4x slower and elegant!
+  const [speedMultiplier, setSpeedMultiplier] = useState(0.035);
 
   // Custom uploaded photos state persisted in localStorage
   const [customPhotos, setCustomPhotos] = useState<MemoryPhoto[]>(() => {
@@ -170,12 +139,18 @@ const MemoriesScene: React.FC = () => {
     isDraggingRef.current = false;
   };
 
+  // Unified close handler for both backdrop click and X button
+  const handleCloseModal = () => {
+    soundManager.playTwinkle();
+    setSelectedIdx(null);
+  };
+
   // Keyboard navigation for modal
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (selectedIdx === null) return;
       if (e.key === 'Escape') {
-        setSelectedIdx(null);
+        handleCloseModal();
       } else if (e.key === 'ArrowRight') {
         setSelectedIdx((prev) => (prev !== null ? (prev + 1) % allPhotos.length : 0));
       } else if (e.key === 'ArrowLeft') {
@@ -237,13 +212,12 @@ const MemoriesScene: React.FC = () => {
       reader.readAsDataURL(file);
     });
 
-    // Reset input value so same file can be re-uploaded if desired
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
 
-  // Delete a custom uploaded photo
+  // Delete custom photo
   const handleDeleteCustomPhoto = (idx: number, e: React.MouseEvent) => {
     e.stopPropagation();
     const photo = allPhotos[idx];
@@ -258,7 +232,7 @@ const MemoriesScene: React.FC = () => {
       }
       return updated;
     });
-    setSelectedIdx(null);
+    handleCloseModal();
   };
 
   const currentPhoto = selectedIdx !== null ? allPhotos[selectedIdx] : null;
@@ -393,7 +367,6 @@ const MemoriesScene: React.FC = () => {
               </>
             )}
 
-            {/* Clean Hint without numbers or counters */}
             <span style={{ fontSize: '0.82rem', color: '#fbcfe8', fontWeight: 500 }}>
               ✨ Tap any photo to open & enjoy!
             </span>
@@ -525,186 +498,169 @@ const MemoriesScene: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* Fullscreen Photo Modal with Dynamic Unique Animations per Photo */}
-      <AnimatePresence mode="wait">
-        {selectedIdx !== null && currentPhoto && (() => {
-          const anim = PHOTO_ANIMATIONS[selectedIdx % PHOTO_ANIMATIONS.length];
-          return (
+      {/* Fullscreen Photo Modal with File-Opening and Identical Exit Animations */}
+      <AnimatePresence>
+        {selectedIdx !== null && currentPhoto && (
+          <motion.div
+            key="gallery-modal-backdrop"
+            className="gallery-modal"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            onClick={handleCloseModal}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 140,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(5, 5, 18, 0.9)',
+              backdropFilter: 'blur(18px)',
+              padding: '16px',
+            }}
+          >
             <motion.div
-              key="gallery-modal-backdrop"
-              className="gallery-modal"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              onClick={() => setSelectedIdx(null)}
+              key={`modal-card-${selectedIdx}`}
+              className="gallery-modal-content"
+              variants={fileOpenVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
               style={{
-                position: 'fixed',
-                inset: 0,
-                zIndex: 140,
+                position: 'relative',
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
-                background: 'rgba(5, 5, 18, 0.9)',
-                backdropFilter: 'blur(18px)',
-                padding: '16px',
+                willChange: 'transform, opacity',
+                maxWidth: '92vw',
+                transformOrigin: 'center center',
               }}
+              onClick={(e) => e.stopPropagation()}
             >
-              {/* Simulated camera flash on Polaroid animation variant */}
-              {anim.flash && (
-                <motion.div
-                  initial={{ opacity: 0.9 }}
-                  animate={{ opacity: 0 }}
-                  transition={{ duration: 0.4, ease: 'easeOut' }}
-                  style={{
-                    position: 'fixed',
-                    inset: 0,
-                    background: '#ffffff',
-                    pointerEvents: 'none',
-                    zIndex: 220,
-                  }}
-                />
-              )}
-
-              <motion.div
-                key={`modal-card-${selectedIdx}`}
-                className="gallery-modal-content"
-                initial={anim.initial}
-                animate={anim.animate}
-                exit={anim.exit}
-                transition={anim.transition}
+              {/* File Folder Style Badge */}
+              <div
                 style={{
-                  position: 'relative',
+                  marginBottom: '8px',
+                  background: 'rgba(251, 191, 36, 0.18)',
+                  border: '1px solid rgba(251, 191, 36, 0.5)',
+                  color: '#fef08a',
+                  borderRadius: '20px',
+                  padding: '3px 14px',
+                  fontSize: '0.76rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.5px',
                   display: 'flex',
-                  flexDirection: 'column',
                   alignItems: 'center',
-                  willChange: 'transform, opacity',
-                  maxWidth: '92vw',
+                  gap: '6px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
                 }}
-                onClick={(e) => e.stopPropagation()}
               >
-                {/* Animation Type Pill */}
-                <div
-                  style={{
-                    marginBottom: '8px',
-                    background: 'rgba(251, 191, 36, 0.16)',
-                    border: '1px solid rgba(251, 191, 36, 0.45)',
-                    color: '#fef08a',
-                    borderRadius: '20px',
-                    padding: '3px 12px',
-                    fontSize: '0.74rem',
-                    fontWeight: 600,
-                    letterSpacing: '0.5px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
-                  }}
-                >
-                  <span>{anim.badge}</span>
-                </div>
+                <span>📂 Memory File #{selectedIdx + 1}</span>
+              </div>
 
-                <button
-                  className="gallery-modal-close"
-                  onClick={() => setSelectedIdx(null)}
-                  aria-label="Close photo preview"
-                >
-                  ✕
-                </button>
+              {/* Close Button: Triggers exact same handleCloseModal animation */}
+              <button
+                className="gallery-modal-close"
+                onClick={handleCloseModal}
+                aria-label="Close photo preview"
+              >
+                ✕
+              </button>
 
-                <button
-                  className="gallery-modal-nav prev"
-                  onClick={() => {
-                    soundManager.playTwinkle();
-                    setSelectedIdx((prev) =>
-                      prev !== null ? (prev - 1 + allPhotos.length) % allPhotos.length : 0
-                    );
-                  }}
-                  aria-label="Previous photo"
-                >
-                  ‹
-                </button>
+              <button
+                className="gallery-modal-nav prev"
+                onClick={() => {
+                  soundManager.playTwinkle();
+                  setSelectedIdx((prev) =>
+                    prev !== null ? (prev - 1 + allPhotos.length) % allPhotos.length : 0
+                  );
+                }}
+                aria-label="Previous photo"
+              >
+                ‹
+              </button>
 
-                <img
-                  src={
-                    currentPhoto.src.startsWith('data:')
-                      ? currentPhoto.src
-                      : getAssetUrl(currentPhoto.src)
-                  }
-                  alt="Sameeksha photo full view"
-                  onError={(e) => handleImageError(e, currentPhoto.src)}
-                  style={{
-                    maxHeight: '68vh',
-                    maxWidth: '85vw',
-                    objectFit: 'contain',
-                    borderRadius: '14px',
-                    boxShadow: '0 12px 45px rgba(0,0,0,0.85), 0 0 35px rgba(255, 107, 157, 0.45)',
-                    border: '2px solid rgba(255, 255, 255, 0.35)',
-                  }}
-                />
+              <img
+                src={
+                  currentPhoto.src.startsWith('data:')
+                    ? currentPhoto.src
+                    : getAssetUrl(currentPhoto.src)
+                }
+                alt="Sameeksha photo full view"
+                onError={(e) => handleImageError(e, currentPhoto.src)}
+                style={{
+                  maxHeight: '68vh',
+                  maxWidth: '85vw',
+                  objectFit: 'contain',
+                  borderRadius: '14px',
+                  boxShadow: '0 12px 45px rgba(0,0,0,0.85), 0 0 35px rgba(255, 107, 157, 0.45)',
+                  border: '2px solid rgba(255, 255, 255, 0.35)',
+                }}
+              />
 
-                <button
-                  className="gallery-modal-nav next"
-                  onClick={() => {
-                    soundManager.playTwinkle();
-                    setSelectedIdx((prev) => (prev !== null ? (prev + 1) % allPhotos.length : 0));
-                  }}
-                  aria-label="Next photo"
-                >
-                  ›
-                </button>
+              <button
+                className="gallery-modal-nav next"
+                onClick={() => {
+                  soundManager.playTwinkle();
+                  setSelectedIdx((prev) => (prev !== null ? (prev + 1) % allPhotos.length : 0));
+                }}
+                aria-label="Next photo"
+              >
+                ›
+              </button>
 
-                <div className="gallery-modal-caption">
-                  {currentPhoto.isCustom && (
-                    <div
+              <div className="gallery-modal-caption">
+                {currentPhoto.isCustom && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      marginBottom: '0.4rem',
+                    }}
+                  >
+                    <span
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '8px',
-                        marginBottom: '0.4rem',
+                        color: '#34d399',
+                        fontSize: '0.76rem',
+                        background: 'rgba(52, 211, 153, 0.15)',
+                        padding: '2px 8px',
+                        borderRadius: '10px',
+                        border: '1px solid rgba(52, 211, 153, 0.3)',
                       }}
                     >
-                      <span
-                        style={{
-                          color: '#34d399',
-                          fontSize: '0.76rem',
-                          background: 'rgba(52, 211, 153, 0.15)',
-                          padding: '2px 8px',
-                          borderRadius: '10px',
-                          border: '1px solid rgba(52, 211, 153, 0.3)',
-                        }}
-                      >
-                        ✨ Uploaded Memory
-                      </span>
-                      <button
-                        type="button"
-                        onClick={(e) => handleDeleteCustomPhoto(selectedIdx, e)}
-                        style={{
-                          background: 'rgba(239, 68, 68, 0.2)',
-                          border: '1px solid #ef4444',
-                          color: '#f87171',
-                          borderRadius: '8px',
-                          padding: '2px 8px',
-                          fontSize: '0.74rem',
-                          cursor: 'pointer',
-                        }}
-                        title="Delete this uploaded photo"
-                      >
-                        🗑️ Delete
-                      </button>
-                    </div>
-                  )}
-                  {currentPhoto.caption && (
-                    <div style={{ color: '#ff8fb3', fontStyle: 'italic', fontSize: '0.96rem', fontWeight: 500 }}>
-                      "{currentPhoto.caption}"
-                    </div>
-                  )}
-                </div>
-              </motion.div>
+                      ✨ Uploaded Memory
+                    </span>
+                    <button
+                      type="button"
+                      onClick={(e) => handleDeleteCustomPhoto(selectedIdx, e)}
+                      style={{
+                        background: 'rgba(239, 68, 68, 0.2)',
+                        border: '1px solid #ef4444',
+                        color: '#f87171',
+                        borderRadius: '8px',
+                        padding: '2px 8px',
+                        fontSize: '0.74rem',
+                        cursor: 'pointer',
+                      }}
+                      title="Delete this uploaded photo"
+                    >
+                      🗑️ Delete
+                    </button>
+                  </div>
+                )}
+                {currentPhoto.caption && (
+                  <div style={{ color: '#ff8fb3', fontStyle: 'italic', fontSize: '0.96rem', fontWeight: 500 }}>
+                    "{currentPhoto.caption}"
+                  </div>
+                )}
+              </div>
             </motion.div>
-          );
-        })()}
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );

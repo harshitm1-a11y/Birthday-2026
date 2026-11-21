@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo, Suspense } from 'react';
+import React, { useRef, useState, useMemo, Suspense, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, Sparkles, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -9,23 +9,23 @@ import Celebration from '../../components/Celebration';
 import { soundManager } from '../../utils/audio';
 import { robotSpeaker } from '../../utils/speech';
 
-// Realistic 3D Smoke Wisps drifting after blowing out
+// Realistic 3D Smoke Wisps drifting gently after blowing out
 function CandleSmoke({ position }: { position: [number, number, number] }) {
   const smokeRef = useRef<THREE.Group>(null);
-  const count = 12;
+  const count = 10;
 
   useFrame(({ clock }) => {
     if (!smokeRef.current) return;
     const t = clock.getElapsedTime();
     smokeRef.current.children.forEach((child, i) => {
       const mesh = child as THREE.Mesh;
-      mesh.position.y += 0.006 + (i % 3) * 0.002;
+      mesh.position.y += 0.007 + (i % 3) * 0.002;
       mesh.position.x += Math.sin(t * 2 + i) * 0.002;
-      mesh.scale.multiplyScalar(1.008);
+      mesh.scale.multiplyScalar(1.006);
       if (mesh.material instanceof THREE.Material) {
-        mesh.material.opacity = Math.max(0, 0.6 - mesh.position.y * 0.4);
+        mesh.material.opacity = Math.max(0, 0.5 - mesh.position.y * 0.35);
       }
-      if (mesh.position.y > 1.4) {
+      if (mesh.position.y > 1.2) {
         mesh.position.y = 0;
         mesh.scale.set(0.04, 0.04, 0.04);
       }
@@ -35,16 +35,16 @@ function CandleSmoke({ position }: { position: [number, number, number] }) {
   return (
     <group ref={smokeRef} position={[position[0], position[1] + 0.6, position[2]]}>
       {Array.from({ length: count }).map((_, i) => (
-        <mesh key={i} position={[(Math.random() - 0.5) * 0.04, Math.random() * 0.4, (Math.random() - 0.5) * 0.04]}>
+        <mesh key={i} position={[(Math.random() - 0.5) * 0.04, Math.random() * 0.35, (Math.random() - 0.5) * 0.04]}>
           <sphereGeometry args={[0.03, 8, 8]} />
-          <meshBasicMaterial color="#e5e7eb" transparent opacity={0.35} />
+          <meshBasicMaterial color="#e2e8f0" transparent opacity={0.35} />
         </mesh>
       ))}
     </group>
   );
 }
 
-// Hyper-Realistic 3D Candle with Teardrop Flame & Melting Wax Drips
+// Hyper-Realistic 3D Candle with Wax Rim, Drips & Teardrop Flame
 function RealisticCandle({
   position,
   blown,
@@ -54,109 +54,142 @@ function RealisticCandle({
 }) {
   const flameOuterRef = useRef<THREE.Mesh>(null);
   const flameInnerRef = useRef<THREE.Mesh>(null);
+  const flameHaloRef = useRef<THREE.Mesh>(null);
   const lightRef = useRef<THREE.PointLight>(null);
 
-  // Teardrop flame geometry
+  // Teardrop flame geometry created with LatheGeometry for authentic candle flame curve
   const flameGeometry = useMemo(() => {
-    const geom = new THREE.ConeGeometry(0.065, 0.22, 16);
-    geom.translate(0, 0.11, 0);
-    return geom;
+    const points: THREE.Vector2[] = [];
+    const count = 18;
+    for (let i = 0; i <= count; i++) {
+      const u = i / count;
+      // Flame profile curve: tapered at wick, bulbous belly, sharp tip
+      const radius = Math.sin(u * Math.PI) * 0.065 * (1 - u * 0.25);
+      const y = u * 0.24;
+      points.push(new THREE.Vector2(radius, y));
+    }
+    return new THREE.LatheGeometry(points, 16);
   }, []);
 
   useFrame(({ clock }) => {
     if (!blown) {
-      const t = clock.getElapsedTime() * 18;
-      const flicker = 1 + Math.sin(t) * 0.14 + Math.cos(t * 1.7) * 0.09;
-      const swayX = Math.sin(t * 0.8) * 0.08;
-      const swayZ = Math.cos(t * 0.6) * 0.06;
+      const t = clock.getElapsedTime() * 14;
+      const flicker = 1 + Math.sin(t) * 0.12 + Math.cos(t * 2.3) * 0.08;
+      const swayX = Math.sin(t * 0.8) * 0.07;
+      const swayZ = Math.cos(t * 0.6) * 0.05;
 
       if (flameOuterRef.current) {
-        flameOuterRef.current.scale.set(flicker, flicker * 1.2, flicker);
+        flameOuterRef.current.scale.set(flicker, flicker * 1.15, flicker);
         flameOuterRef.current.rotation.x = swayX;
         flameOuterRef.current.rotation.z = swayZ;
       }
       if (flameInnerRef.current) {
-        flameInnerRef.current.scale.set(flicker * 0.75, flicker * 1.05, flicker * 0.75);
+        flameInnerRef.current.scale.set(flicker * 0.7, flicker * 0.95, flicker * 0.7);
+        flameInnerRef.current.rotation.x = swayX * 0.8;
+      }
+      if (flameHaloRef.current) {
+        flameHaloRef.current.scale.set(flicker * 1.3, flicker * 1.3, flicker * 1.3);
       }
       if (lightRef.current) {
-        lightRef.current.intensity = 1.6 + Math.sin(t * 1.5) * 0.4;
+        lightRef.current.intensity = 1.6 + Math.sin(t * 1.8) * 0.45;
       }
     } else {
       if (flameOuterRef.current) flameOuterRef.current.scale.set(0, 0, 0);
       if (flameInnerRef.current) flameInnerRef.current.scale.set(0, 0, 0);
+      if (flameHaloRef.current) flameHaloRef.current.scale.set(0, 0, 0);
       if (lightRef.current) lightRef.current.intensity = 0;
     }
   });
 
   return (
     <group position={position}>
-      {/* Translucent Wax Candle Body */}
-      <mesh position={[0, 0.28, 0]}>
-        <cylinderGeometry args={[0.045, 0.045, 0.56, 24]} />
+      {/* Wax Candle Body */}
+      <mesh position={[0, 0.26, 0]}>
+        <cylinderGeometry args={[0.048, 0.052, 0.52, 24]} />
         <meshStandardMaterial
-          color="#fffbeb"
-          roughness={0.2}
-          metalness={0.05}
+          color="#fef3c7"
+          roughness={0.18}
+          metalness={0.02}
         />
       </mesh>
 
-      {/* Wax Drips on Side */}
-      <mesh position={[0.038, 0.35, 0.02]} scale={[0.02, 0.08, 0.02]}>
-        <sphereGeometry args={[1, 12, 12]} />
-        <meshStandardMaterial color="#fef3c7" roughness={0.3} />
-      </mesh>
-      <mesh position={[-0.035, 0.22, -0.02]} scale={[0.022, 0.09, 0.022]}>
-        <sphereGeometry args={[1, 12, 12]} />
-        <meshStandardMaterial color="#fef3c7" roughness={0.3} />
+      {/* Melted Wax Rim Lip at Top */}
+      <mesh position={[0, 0.52, 0]}>
+        <torusGeometry args={[0.046, 0.012, 12, 24]} />
+        <meshStandardMaterial color="#fffbeb" roughness={0.25} />
       </mesh>
 
-      {/* Carbonized Twisted Cotton Wick */}
-      <mesh position={[0, 0.58, 0]}>
-        <cylinderGeometry args={[0.007, 0.009, 0.08, 8]} />
-        <meshStandardMaterial color="#111827" roughness={0.9} />
+      {/* Wax Drips running down */}
+      <mesh position={[0.042, 0.36, 0.02]} scale={[0.018, 0.08, 0.018]}>
+        <sphereGeometry args={[1, 12, 12]} />
+        <meshStandardMaterial color="#fef9c3" roughness={0.3} />
+      </mesh>
+      <mesh position={[-0.04, 0.24, -0.025]} scale={[0.02, 0.09, 0.02]}>
+        <sphereGeometry args={[1, 12, 12]} />
+        <meshStandardMaterial color="#fef9c3" roughness={0.3} />
+      </mesh>
+
+      {/* Carbonized Cotton Wick with slight natural curve */}
+      <mesh position={[0.004, 0.55, 0]} rotation={[0, 0, -0.1]}>
+        <cylinderGeometry args={[0.007, 0.009, 0.07, 8]} />
+        <meshStandardMaterial color="#18181b" roughness={0.9} />
       </mesh>
 
       {/* Realistic Multi-Layer Teardrop Flame */}
       {!blown ? (
-        <group position={[0, 0.62, 0]}>
+        <group position={[0, 0.58, 0]}>
           {/* Outer Warm Amber Flame */}
           <mesh ref={flameOuterRef} geometry={flameGeometry}>
             <meshStandardMaterial
               color="#fbbf24"
               emissive="#f97316"
-              emissiveIntensity={3.5}
+              emissiveIntensity={3.6}
               transparent
-              opacity={0.92}
+              opacity={0.94}
             />
           </mesh>
 
           {/* Inner Hot Blue/White Core */}
-          <mesh ref={flameInnerRef} geometry={flameGeometry} position={[0, -0.02, 0]}>
+          <mesh ref={flameInnerRef} geometry={flameGeometry} position={[0, -0.015, 0]}>
             <meshStandardMaterial
               color="#ffffff"
-              emissive="#60a5fa"
+              emissive="#38bdf8"
               emissiveIntensity={4.8}
             />
           </mesh>
 
-          <pointLight ref={lightRef} color="#f97316" intensity={1.8} distance={2.8} />
+          {/* Soft outer glow halo */}
+          <mesh ref={flameHaloRef} position={[0, 0.1, 0]}>
+            <sphereGeometry args={[0.16, 12, 12]} />
+            <meshBasicMaterial color="#f59e0b" transparent opacity={0.16} />
+          </mesh>
+
+          <pointLight ref={lightRef} color="#f97316" intensity={1.8} distance={2.5} />
         </group>
       ) : (
-        <CandleSmoke position={[0, 0.58, 0]} />
+        <CandleSmoke position={[0, 0.55, 0]} />
       )}
     </group>
   );
 }
 
-// 3D Stainless Steel & Gold Birthday Chef's Knife
+// Interactive 3D Knife with User Drag-to-Cut Support
 function CakeKnife3D({
   isCutting,
   isCut,
-  onCutClick,
+  cutProgress,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
+  onKnifeClick,
 }: {
   isCutting: boolean;
   isCut: boolean;
-  onCutClick: () => void;
+  cutProgress: number; // 0 (top hover) to 1 (full cut through)
+  onPointerDown: (e: any) => void;
+  onPointerMove: (e: any) => void;
+  onPointerUp: (e: any) => void;
+  onKnifeClick: () => void;
 }) {
   const knifeRef = useRef<THREE.Group>(null);
 
@@ -164,73 +197,70 @@ function CakeKnife3D({
     if (!knifeRef.current) return;
     const t = clock.getElapsedTime();
 
-    if (isCutting) {
-      // Slicing animation: lifts up, angles over cake, and drives down smoothly!
-      knifeRef.current.position.x = THREE.MathUtils.lerp(knifeRef.current.position.x, 0.5, 0.1);
-      knifeRef.current.position.y = THREE.MathUtils.lerp(knifeRef.current.position.y, 0.25, 0.12);
-      knifeRef.current.position.z = THREE.MathUtils.lerp(knifeRef.current.position.z, 0.5, 0.1);
-      knifeRef.current.rotation.x = -Math.PI / 4;
-      knifeRef.current.rotation.z = Math.PI / 6;
-    } else if (isCut) {
-      // Resting gracefully on the side of the cake plate
-      knifeRef.current.position.x = 2.1;
-      knifeRef.current.position.y = -0.3;
-      knifeRef.current.position.z = 0.8;
-      knifeRef.current.rotation.x = 0;
-      knifeRef.current.rotation.y = 0.4;
-      knifeRef.current.rotation.z = Math.PI / 2;
+    if (isCut) {
+      // Placed resting beside the cake stand
+      knifeRef.current.position.set(1.9, -0.4, 0.8);
+      knifeRef.current.rotation.set(0, 0.4, Math.PI / 2);
+    } else if (isCutting || cutProgress > 0) {
+      // Knife follows user's cut progress down through the cake!
+      const startY = 1.35;
+      const endY = 0.05;
+      const curY = THREE.MathUtils.lerp(startY, endY, cutProgress);
+      knifeRef.current.position.set(0.45, curY, 0.45);
+      knifeRef.current.rotation.set(-Math.PI / 4, 0, Math.PI / 6);
     } else {
-      // Hovering invitingly beside the cake with gentle bobbing
-      knifeRef.current.position.x = 1.85 + Math.sin(t * 1.5) * 0.05;
-      knifeRef.current.position.y = 0.8 + Math.cos(t * 1.5) * 0.08;
+      // Hovering beside cake waiting for user touch/drag
+      knifeRef.current.position.x = 1.75 + Math.sin(t * 1.5) * 0.05;
+      knifeRef.current.position.y = 0.85 + Math.cos(t * 1.5) * 0.06;
       knifeRef.current.position.z = 0.6;
-      knifeRef.current.rotation.x = -Math.PI / 6;
-      knifeRef.current.rotation.y = Math.PI / 8;
-      knifeRef.current.rotation.z = Math.sin(t * 1.2) * 0.08;
+      knifeRef.current.rotation.set(-Math.PI / 6, Math.PI / 8, Math.sin(t * 1.2) * 0.06);
     }
   });
 
   return (
     <group
       ref={knifeRef}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
       onClick={(e) => {
         e.stopPropagation();
-        onCutClick();
+        onKnifeClick();
       }}
     >
-      {/* Knife Blade: Sharp stainless steel with chrome finish */}
+      {/* Blade - Polished Steel */}
       <mesh position={[0, 0.55, 0]}>
         <boxGeometry args={[0.035, 1.1, 0.18]} />
         <meshStandardMaterial
-          color="#f3f4f6"
-          metalness={0.95}
-          roughness={0.1}
-          envMapIntensity={1.5}
+          color="#f8fafc"
+          metalness={0.96}
+          roughness={0.08}
+          envMapIntensity={1.8}
         />
       </mesh>
 
-      {/* Knife Bolster / Guard (Gold Accent) */}
+      {/* Golden Guard */}
       <mesh position={[0, 0.02, 0]}>
         <cylinderGeometry args={[0.07, 0.07, 0.06, 16]} />
-        <meshStandardMaterial color="#fbbf24" metalness={0.9} roughness={0.2} />
+        <meshStandardMaterial color="#fbbf24" metalness={0.92} roughness={0.15} />
       </mesh>
 
-      {/* Knife Handle (Rosewood / Premium Velvet Finish) */}
+      {/* Premium Velvet Handle */}
       <mesh position={[0, -0.35, 0]}>
         <cylinderGeometry args={[0.055, 0.048, 0.7, 16]} />
-        <meshStandardMaterial color="#3b0764" roughness={0.4} metalness={0.3} />
+        <meshStandardMaterial color="#3b0764" roughness={0.4} metalness={0.25} />
       </mesh>
 
-      {/* Handle End Cap (Gold) */}
+      {/* Golden Handle End Cap */}
       <mesh position={[0, -0.72, 0]}>
         <sphereGeometry args={[0.06, 16, 16]} />
-        <meshStandardMaterial color="#fbbf24" metalness={0.95} roughness={0.15} />
+        <meshStandardMaterial color="#fbbf24" metalness={0.95} roughness={0.12} />
       </mesh>
     </group>
   );
 }
 
-// 3D Gourmet Custom Birthday Cake with Dynamic Slicing Piece
+// 3D Gourmet Custom Birthday Cake with Slide-Out Cut Wedge
 function GourmetCake({
   blown,
   isCut,
@@ -244,7 +274,7 @@ function GourmetCake({
   const sliceGroup = useRef<THREE.Group>(null);
   const theme = CAKE_THEMES[themeId] || CAKE_THEMES.strawberry;
 
-  // Calculate 5 candle positions
+  // 5 candle positions
   const candlePositions = useMemo(() => {
     const positions: [number, number, number][] = [];
     const count = 5;
@@ -285,14 +315,14 @@ function GourmetCake({
   // Smooth slide out of the cut slice!
   useFrame(() => {
     if (sliceGroup.current) {
-      const targetOffset = isCut ? 0.42 : 0;
+      const targetOffset = isCut ? 0.44 : 0;
       sliceGroup.current.position.x = THREE.MathUtils.lerp(sliceGroup.current.position.x, targetOffset, 0.08);
       sliceGroup.current.position.z = THREE.MathUtils.lerp(sliceGroup.current.position.z, targetOffset, 0.08);
     }
   });
 
   return (
-    <Float speed={0.8} rotationIntensity={0.06} floatIntensity={0.12}>
+    <Float speed={0.8} rotationIntensity={0.05} floatIntensity={0.1}>
       <group ref={cakeGroup} position={[0, -0.6, 0]}>
         {/* Ornate Cake Stand */}
         <mesh position={[0, -0.15, 0]}>
@@ -309,7 +339,6 @@ function GourmetCake({
           <cylinderGeometry args={[1.9, 1.9, 0.9, 36]} />
           <meshStandardMaterial color={theme.spongeColor} roughness={0.3} metalness={0.1} />
         </mesh>
-        {/* Tier 1 Frosting Crown & Drips */}
         <mesh position={[0, 0.8, 0]}>
           <cylinderGeometry args={[1.96, 1.96, 0.12, 36]} />
           <meshStandardMaterial color={theme.frostingColor} roughness={0.35} />
@@ -324,27 +353,23 @@ function GourmetCake({
           <cylinderGeometry args={[1.2, 1.2, 0.7, 36]} />
           <meshStandardMaterial color={theme.spongeColor} roughness={0.3} metalness={0.1} />
         </mesh>
-        {/* Tier 2 Frosting Crown */}
         <mesh position={[0, 1.5, 0]}>
           <cylinderGeometry args={[1.26, 1.26, 0.1, 36]} />
           <meshStandardMaterial color={theme.frostingColor} roughness={0.35} />
         </mesh>
 
-        {/* Cut Slice Wedge (Slides forward when cut!) */}
+        {/* Cut Slice Wedge */}
         <group ref={sliceGroup} position={[0, 0, 0]}>
           {isCut && (
             <>
-              {/* Sliced Piece Cake Stand / Gold Plate */}
               <mesh position={[0.7, -0.1, 0.7]}>
                 <cylinderGeometry args={[0.65, 0.65, 0.04, 24]} />
                 <meshStandardMaterial color="#fbbf24" metalness={0.8} roughness={0.2} />
               </mesh>
-              {/* Sliced Wedge Mesh */}
               <mesh position={[0.7, 0.75, 0.7]} rotation={[0, Math.PI / 4, 0]}>
                 <cylinderGeometry args={[0.45, 0.45, 0.7, 16, 1, false, 0, Math.PI / 3]} />
                 <meshStandardMaterial color={theme.spongeColor} roughness={0.35} />
               </mesh>
-              {/* Slice Frosting */}
               <mesh position={[0.7, 1.12, 0.7]} rotation={[0, Math.PI / 4, 0]}>
                 <cylinderGeometry args={[0.48, 0.48, 0.08, 16, 1, false, 0, Math.PI / 3]} />
                 <meshStandardMaterial color={theme.frostingColor} roughness={0.3} />
@@ -378,35 +403,104 @@ const CakeScene: React.FC = () => {
   const [blown, setBlown] = useState(candlesBlown);
   const [isCut, setIsCut] = useState(false);
   const [isCutting, setIsCutting] = useState(false);
+  const [cutProgress, setCutProgress] = useState(0); // 0 to 1
   const [isShopOpen, setIsShopOpen] = useState(false);
+  const [isDraggingKnife, setIsDraggingKnife] = useState(false);
+
+  // Drag tracking refs
+  const dragStartYRef = useRef(0);
 
   const handleBlow = () => {
     if (!blown) {
       setBlown(true);
       setCandlesBlown();
       soundManager.playPopperBurstSound();
-      robotSpeaker.speak('Happy Birthday Sameeksha! Ab cake cut karne ki baari hai! 🎂🔪');
+      robotSpeaker.speak('Happy Birthday Sameeksha! Ab cake cut karne ki baari hai! Knife ko cake pr drag kijiye! 🎂🔪');
     }
   };
 
-  const handleCutCake = () => {
-    if (isCutting || isCut) return;
+  const completeCut = () => {
+    if (isCut) return;
+    setIsCutting(false);
+    setIsCut(true);
+    setCutProgress(1);
+    setIsDraggingKnife(false);
+    soundManager.playCakeSliceSound();
+    soundManager.playPopperBurstSound();
+    robotSpeaker.speak('Wah! Sameeksha baby ka birthday cake cut ho gaya! Happy Birthday Meri Jaan! 🎉🍰');
+  };
+
+  // Direct trigger via button or click
+  const handleCutClick = () => {
+    if (isCut || isCutting) return;
     setIsCutting(true);
     soundManager.playCakeSliceSound();
 
-    setTimeout(() => {
-      setIsCutting(false);
-      setIsCut(true);
-      soundManager.playPopperBurstSound();
-      robotSpeaker.speak('Wah! Sameeksha baby ka birthday cake cut ho gaya! Happy Birthday Meri Jaan! 🎉🍰');
-    }, 1200);
+    let p = 0;
+    const interval = setInterval(() => {
+      p += 0.12;
+      setCutProgress(Math.min(1, p));
+      if (p >= 1) {
+        clearInterval(interval);
+        completeCut();
+      }
+    }, 60);
   };
+
+  // User Drag to Cut Knife interaction
+  const handleKnifePointerDown = (e: any) => {
+    e.stopPropagation();
+    if (isCut) return;
+    setIsDraggingKnife(true);
+    dragStartYRef.current = e.clientY || (e.touches && e.touches[0]?.clientY) || 0;
+    soundManager.playTwinkle();
+  };
+
+  useEffect(() => {
+    const handleGlobalPointerMove = (e: PointerEvent | MouseEvent | TouchEvent) => {
+      if (!isDraggingKnife || isCut) return;
+      const clientY = 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
+      const deltaY = clientY - dragStartYRef.current;
+      // 180px downward drag completes the cut
+      const progress = Math.max(0, Math.min(1, deltaY / 180));
+      setCutProgress(progress);
+
+      if (progress >= 0.85) {
+        completeCut();
+      }
+    };
+
+    const handleGlobalPointerUp = () => {
+      if (isDraggingKnife && !isCut) {
+        if (cutProgress > 0.4) {
+          // Finish cut automatically if user dragged past 40%
+          handleCutClick();
+        } else {
+          // Snap back
+          setCutProgress(0);
+        }
+        setIsDraggingKnife(false);
+      }
+    };
+
+    window.addEventListener('pointermove', handleGlobalPointerMove);
+    window.addEventListener('touchmove', handleGlobalPointerMove);
+    window.addEventListener('pointerup', handleGlobalPointerUp);
+    window.addEventListener('touchend', handleGlobalPointerUp);
+
+    return () => {
+      window.removeEventListener('pointermove', handleGlobalPointerMove);
+      window.removeEventListener('touchmove', handleGlobalPointerMove);
+      window.removeEventListener('pointerup', handleGlobalPointerUp);
+      window.removeEventListener('touchend', handleGlobalPointerUp);
+    };
+  }, [isDraggingKnife, isCut, cutProgress]);
 
   const currentCakeTheme = CAKE_THEMES[selectedTheme] || CAKE_THEMES.strawberry;
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
-      {/* 3D Interactive Canvas: User has UNHINDERED 360° Drag & Zoom Rotation! */}
+      {/* 3D Interactive Canvas: Stops autoRotate when knife is touched or cake is cut */}
       <div className="canvas-container" style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
         <Canvas camera={{ position: [0, 1.4, 5.0], fov: 46 }}>
           <ambientLight intensity={0.75} />
@@ -415,21 +509,29 @@ const CakeScene: React.FC = () => {
           <pointLight position={[3, -2, -2]} intensity={0.8} color="#fbbf24" />
           <Sparkles count={75} scale={6} size={2.8} speed={0.4} color="#fbbf24" />
 
-          {/* User can freely drag & rotate the cake in 3D 360 degrees without any DOM interception! */}
+          {/* User has 360° Drag & Zoom Rotation. Auto-rotate pauses when touching knife or cutting */}
           <OrbitControls
             enableRotate
             enablePan={false}
             enableZoom
             minDistance={3.2}
             maxDistance={7.5}
-            autoRotate={!blown && !isCut}
+            autoRotate={!blown && !isCut && !isDraggingKnife && !isCutting}
             autoRotateSpeed={0.5}
             maxPolarAngle={Math.PI / 2 + 0.1}
           />
 
           <Suspense fallback={null}>
             <GourmetCake blown={blown} isCut={isCut} themeId={selectedTheme} />
-            <CakeKnife3D isCutting={isCutting} isCut={isCut} onCutClick={handleCutCake} />
+            <CakeKnife3D
+              isCutting={isCutting}
+              isCut={isCut}
+              cutProgress={cutProgress}
+              onPointerDown={handleKnifePointerDown}
+              onPointerMove={() => {}}
+              onPointerUp={() => setIsDraggingKnife(false)}
+              onKnifeClick={handleCutClick}
+            />
           </Suspense>
         </Canvas>
       </div>
@@ -437,7 +539,7 @@ const CakeScene: React.FC = () => {
       {/* Fullscreen Celebration Canvas */}
       <Celebration active={blown || isCut} />
 
-      {/* Top Header Bar (Non-blocking, docked to top) */}
+      {/* Top Header Bar */}
       <div
         style={{
           position: 'fixed',
@@ -451,7 +553,7 @@ const CakeScene: React.FC = () => {
           gap: '6px',
           pointerEvents: 'none',
           textAlign: 'center',
-          maxWidth: '90vw',
+          maxWidth: '92vw',
         }}
       >
         <motion.h2
@@ -460,7 +562,7 @@ const CakeScene: React.FC = () => {
           style={{
             margin: 0,
             fontFamily: 'Playfair Display, serif',
-            fontSize: 'clamp(1.5rem, 4vw, 2.4rem)',
+            fontSize: 'clamp(1.4rem, 4vw, 2.3rem)',
             color: '#fff',
             textShadow: '0 2px 20px rgba(251, 191, 36, 0.6), 0 0 10px rgba(244, 63, 94, 0.4)',
             letterSpacing: '1px',
@@ -469,10 +571,10 @@ const CakeScene: React.FC = () => {
           {content.cake.heading}
         </motion.h2>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
           <div
             style={{
-              background: 'rgba(15, 12, 34, 0.8)',
+              background: 'rgba(15, 12, 34, 0.85)',
               backdropFilter: 'blur(10px)',
               border: '1px solid rgba(251, 191, 36, 0.35)',
               borderRadius: '20px',
@@ -482,7 +584,11 @@ const CakeScene: React.FC = () => {
               userSelect: 'none',
             }}
           >
-            👆 Drag anywhere to spin cake 360° • Zoom in/out
+            {isCut
+              ? '✨ Cake is cut! Enjoy the celebration!'
+              : blown
+              ? '🔪 Drag knife down into cake or tap button to cut!'
+              : '👆 Drag to spin cake 360° • Zoom in/out'}
           </div>
 
           {/* 🎂 Cake Shop Button */}
@@ -513,87 +619,99 @@ const CakeScene: React.FC = () => {
         </div>
       </div>
 
-      {/* Floating Action Controls Docked at Bottom: Completely leaves center open for 360° cake inspection! */}
+      {/* Prominently Positioned Floating Action Controls at Bottom */}
       <div
         style={{
           position: 'fixed',
           bottom: '24px',
           left: '50%',
           transform: 'translateX(-50%)',
-          zIndex: 45,
+          zIndex: 80,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           gap: '10px',
-          pointerEvents: 'none',
+          pointerEvents: 'auto',
+          width: 'max-content',
+          maxWidth: '92vw',
         }}
       >
-        <div style={{ pointerEvents: 'auto' }}>
-          {!blown ? (
+        {!blown ? (
+          <motion.button
+            className="magic-button"
+            onClick={handleBlow}
+            whileHover={{ scale: 1.06 }}
+            whileTap={{ scale: 0.95 }}
+            aria-label="Blow the birthday candles"
+            style={{
+              boxShadow: '0 8px 30px rgba(245, 158, 11, 0.6), 0 0 20px rgba(251, 191, 36, 0.4)',
+              fontSize: '1.05rem',
+              padding: '0.9rem 2.2rem',
+              border: '1.5px solid rgba(251, 191, 36, 0.7)',
+              background: 'linear-gradient(135deg, #f59e0b, #ef4444)',
+            }}
+          >
+            <span>Blow the Candles 🎂 💨</span>
+          </motion.button>
+        ) : !isCut ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
             <motion.button
               className="magic-button"
-              onClick={handleBlow}
-              whileHover={{ scale: 1.06 }}
-              whileTap={{ scale: 0.95 }}
-              aria-label="Blow the birthday candles"
-              style={{
-                boxShadow: '0 8px 30px rgba(245, 158, 11, 0.5)',
-                fontSize: '1.05rem',
-                padding: '0.9rem 2.2rem',
-              }}
-            >
-              <span>Blow the Candles 🎂 💨</span>
-            </motion.button>
-          ) : !isCut ? (
-            <motion.button
-              className="magic-button"
-              onClick={handleCutCake}
+              onClick={handleCutClick}
               whileHover={{ scale: 1.06 }}
               whileTap={{ scale: 0.95 }}
               aria-label="Cut the birthday cake with knife"
               style={{
                 background: 'linear-gradient(135deg, #10b981, #6366f1)',
-                boxShadow: '0 8px 30px rgba(16, 185, 129, 0.5)',
+                boxShadow: '0 8px 30px rgba(16, 185, 129, 0.6)',
                 fontSize: '1.05rem',
                 padding: '0.9rem 2.2rem',
+                border: '1.5px solid rgba(52, 211, 153, 0.7)',
               }}
             >
               <span>Cut the Cake 🔪 🎂</span>
             </motion.button>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: 'spring', damping: 14 }}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}
+            <span style={{ fontSize: '0.74rem', color: '#fbbf24', background: 'rgba(0,0,0,0.6)', padding: '2px 10px', borderRadius: '12px' }}>
+              💡 Or touch & drag the knife downward directly!
+            </span>
+          </div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: 'spring', damping: 14 }}
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}
+          >
+            <div
+              style={{
+                background: 'rgba(15, 12, 34, 0.9)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(251, 191, 36, 0.6)',
+                borderRadius: '20px',
+                padding: '6px 18px',
+                color: '#fbbf24',
+                fontSize: '0.92rem',
+                fontWeight: 600,
+                boxShadow: '0 4px 15px rgba(0,0,0,0.6)',
+              }}
             >
-              <div
-                style={{
-                  background: 'rgba(15, 12, 34, 0.85)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(251, 191, 36, 0.5)',
-                  borderRadius: '20px',
-                  padding: '6px 18px',
-                  color: '#fbbf24',
-                  fontSize: '0.92rem',
-                  fontWeight: 600,
-                  boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
-                }}
-              >
-                🎉 Cake is Cut! Happy Birthday Sameeksha Baby! 🍰 ✨
-              </div>
-              <motion.button
-                className="magic-button"
-                onClick={nextScene}
-                whileHover={{ scale: 1.06 }}
-                whileTap={{ scale: 0.95 }}
-                aria-label="Read your birthday letter"
-              >
-                <span>Read Your Birthday Letter 💌 ✨</span>
-              </motion.button>
-            </motion.div>
-          )}
-        </div>
+              🎉 Cake is Cut! Happy Birthday Sameeksha Baby! 🍰 ✨
+            </div>
+            <motion.button
+              className="magic-button"
+              onClick={nextScene}
+              whileHover={{ scale: 1.06 }}
+              whileTap={{ scale: 0.95 }}
+              aria-label="Read your birthday letter"
+              style={{
+                boxShadow: '0 8px 30px rgba(236, 72, 153, 0.6)',
+                padding: '0.85rem 2rem',
+              }}
+            >
+              <span>Read Your Birthday Letter 💌 ✨</span>
+            </motion.button>
+          </motion.div>
+        )}
       </div>
 
       {/* 🎂 Cake Shop Modal */}
