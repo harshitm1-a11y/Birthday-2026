@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "npm --prefix sameeksha-birthday run dev",
     "build": "npm --prefix sameeksha-birthday run build",
-    "preview": "npm --prefix sameeksha-birthday run preview"
+    "preview": "npm --prefix sameeksha-birthday run preview",
+    "deploy:vercel": "npx vercel",
+    "deploy:netlify": "npx netlify deploy --prod --dir=sameeksha-birthday/dist",
+    "deploy:surge": "npx surge sameeksha-birthday/dist"
   }
 }
