@@ -4,6 +4,7 @@ import { useExperienceStore } from '../../state/experienceStore';
 import { content } from '../../content/siteContent';
 import { soundManager } from '../../utils/audio';
 import { getAssetUrl } from '../../utils/assets';
+import { MathematicalFlower } from '../../components';
 
 interface MemoryPhoto {
   src: string;
@@ -50,6 +51,7 @@ const fileOpenVariants: any = {
 
 const MemoriesScene: React.FC = () => {
   const nextScene = useExperienceStore((s) => s.nextScene);
+  const [showPrelude, setShowPrelude] = useState(true);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<'cylinder' | 'grid'>('cylinder');
   const [isPaused, setIsPaused] = useState(false);
@@ -239,6 +241,117 @@ const MemoriesScene: React.FC = () => {
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+      {/* Chapter 2: Cherished Memories Prelude Intro Card */}
+      <AnimatePresence>
+        {showPrelude && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            transition={{ duration: 0.55 }}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 110,
+              background: 'radial-gradient(ellipse at center, rgba(14, 10, 32, 0.98) 0%, rgba(4, 3, 10, 0.99) 85%)',
+              backdropFilter: 'blur(20px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '24px',
+              textAlign: 'center',
+              color: '#fff',
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.88, y: 30, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              transition={{ delay: 0.15, type: 'spring', damping: 18 }}
+              style={{
+                maxWidth: '560px',
+                width: '100%',
+                background: 'linear-gradient(135deg, rgba(28, 16, 52, 0.92), rgba(15, 10, 30, 0.96))',
+                border: '1.5px solid rgba(251, 191, 36, 0.45)',
+                borderRadius: '32px',
+                padding: '2.4rem 2rem',
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(251, 191, 36, 0.25)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '16px',
+              }}
+            >
+              {/* Blooming Sacred Geometry Flower */}
+              <motion.div
+                initial={{ scale: 0.5, rotate: -30 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ duration: 1.1, ease: 'easeOut' }}
+              >
+                <MathematicalFlower size={140} />
+              </motion.div>
+
+              <div
+                style={{
+                  fontSize: '0.85rem',
+                  letterSpacing: '3px',
+                  textTransform: 'uppercase',
+                  color: '#fbbf24',
+                  fontWeight: 700,
+                  marginTop: '4px',
+                }}
+              >
+                Chapter Two • Memory Vault
+              </div>
+
+              <h2
+                style={{
+                  margin: 0,
+                  fontFamily: 'Playfair Display, serif',
+                  fontSize: 'clamp(1.8rem, 5vw, 2.6rem)',
+                  background: 'linear-gradient(135deg, #ffffff, #fcd34d, #fda4af)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  fontWeight: 700,
+                }}
+              >
+                Cherished Moments with Sameeksha
+              </h2>
+
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: '0.98rem',
+                  color: '#e2e8f0',
+                  lineHeight: 1.6,
+                  maxWidth: '460px',
+                }}
+              >
+                "Every picture holds a timeless story, a stolen laugh, and an unforgettable memory.
+                Step inside the circle of moments that make your life so extraordinarily beautiful."
+              </p>
+
+              <motion.button
+                className="magic-button"
+                onClick={() => {
+                  soundManager.playTwinkle();
+                  setShowPrelude(false);
+                }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.96 }}
+                style={{
+                  marginTop: '8px',
+                  padding: '0.9rem 2.2rem',
+                  fontSize: '1rem',
+                  boxShadow: '0 8px 30px rgba(244, 63, 94, 0.5)',
+                }}
+              >
+                <span>Step Inside Memory Lane 📸 ✨</span>
+              </motion.button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Background ambient gradient */}
       <div
         style={{

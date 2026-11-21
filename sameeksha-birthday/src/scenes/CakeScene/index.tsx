@@ -341,7 +341,7 @@ const CakeScene: React.FC = () => {
 
     // Trigger companion cake cutting!
     triggerCompanionCakeCut();
-    robotSpeaker.speak(`${companion.name} cake cut karne aa raha hai! 🔪🎂`);
+    robotSpeaker.speak(`${companion.name} is coming to slice the cake with you! 🔪🎂`);
   };
 
   const currentCakeTheme = CAKE_THEMES[selectedTheme] || CAKE_THEMES.strawberry;
@@ -429,9 +429,9 @@ const CakeScene: React.FC = () => {
             }}
           >
             {cakeCutDone
-              ? '✨ Cake is cut! Enjoy the celebration!'
+              ? '✨ Cake is sliced! Enjoy the sweet celebration!'
               : blown
-              ? `🔪 Tap cake or button below: ${companion.name} will cut the cake with knife!`
+              ? `🔪 Tap the cake or button below: ${companion.name} will slice it with the knife!`
               : '👆 Drag to spin cake 360° • Zoom in/out'}
           </div>
 

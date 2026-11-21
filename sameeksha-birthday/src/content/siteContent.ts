@@ -17,64 +17,64 @@ export const content = {
   ],
 
   welcome: {
-    heading: "Hey Sameeksha Baby...",
-    subtext: "Aaj aapke liye ek chhoti si pyari duniya sajayi hai.\nAap tayyar hain hamare dil me chalne ke liye? ✨",
-    button: "Enter Your Universe 💖",
+    heading: "Happy 23rd Birthday Sameeksha",
+    subtext: "A celestial universe handcrafted with love, starlight, and warmth.\nStep inside and let the magic unfold just for you. ✨",
+    button: "Step Into Your Universe 💖",
   },
 
   hero: {
     title: "A Universe Made Just For You ✨",
     subtitle: "23 November 2026",
-    recipient: "Sameeksha Baby",
-    buttonText: "Enter Your Universe 💖",
+    recipient: "Sameeksha",
+    buttonText: "Step Into Your Universe 💖",
   },
 
   gift: {
     heading: "The Magical Gift",
     subtext: "Because someone as special as you deserves a little extra magic.",
-    instruction: "Yeh khaas surprise sirf aapke liye hai... Box ko tap karke dekhiye! 🎁",
-    button: "Open Your Gift 🎁",
+    instruction: "A special delivery from Santa just for you... Tap the box to open! 🎁",
+    button: "Open Your Surprise Gift 🎁",
     opened: {
       heading: "A Gift From The Stars",
-      text: "Aapke aane se meri zindagi ka har ek din khoobsurat ban gaya hai... Chaliye hamari pyari yaadon ke safar par chalte hain. 💕✨",
-      button: "Step Inside Our Memories 📸",
+      text: "Having you in my life turns every single day into a celebration. Let us step into your treasured memories together. 💕✨",
+      button: "Step Inside Your Memories 📸",
     },
   },
 
   memories: {
-    heading: "Our Beautiful Memories",
-    subtext: "Har ek tasveer me aapki ek pyari si ada qaid hai... Har lamha mere dil ke sabse kareeb hai. 🌸✨",
-    emptyState: "Yahan aapki favourite yaadein hain — har ek photo meri sabse keemti daulat hai.",
+    heading: "Our Cherished Memories",
+    subtext: "Every picture holds a timeless story, a stolen laugh, and an unforgettable memory. 🌸✨",
+    emptyState: "Here are our most beloved moments — every photograph is a precious treasure.",
   },
 
   companion: {
     dialogues: [
       {
-        text: "Suno Sameeksha baby... Ek baat sach kahun? 🤫✨ Aap poori duniya ki sabse pyari aur khaas insaan hain.",
-        spokenHindi: "सुनो समीक्षा बेबी, एक बात सच कहूँ? आप पूरी दुनिया की सबसे प्यारी और खास इंसान हैं।",
+        text: "Hey Sameeksha... Can I tell you a little secret? 🤫✨ You are truly the most wonderful and special person in this entire universe.",
+        spokenHindi: "Hey Sameeksha, you are truly the most wonderful and special person in this entire universe.",
       },
       {
-        text: "Aapke chehre ki muskaan se hi meri har subah roshan hoti hai... Aap meri zindagi ki sabse khoobsurat shayari hain. 💕",
-        spokenHindi: "आपके चेहरे की मुस्कान से ही मेरी हर सुबह रोशन होती है। आप मेरी ज़िंदगी की सबसे खूबसूरत शायरी हैं।",
+        text: "Your smile has the power to brighten up the darkest day... You are the most beautiful poetry written in my life. 💕",
+        spokenHindi: "Your smile has the power to brighten up the darkest day. You are the most beautiful poetry in my life.",
       },
       {
-        text: "Hazaaron chehron mein bhi sirf ek chehra nazar aata hai... aur wo hain sirf aap, meri jaan. 🌹✨",
-        spokenHindi: "हज़ारों चेहरों में भी सिर्फ एक चेहरा नज़र आता है, और वो हैं सिर्फ आप, मेरी जान।",
+        text: "In a crowd of millions, my eyes will always search only for you, my dearest Sameeksha. 🌹✨",
+        spokenHindi: "In a crowd of millions, my eyes will always search only for you, my dearest Sameeksha.",
       },
       {
-        text: "Chaand taaron ki tarah hamesha aise hi chamakti rahiye... Happy Birthday to the most special person! 💖",
-        spokenHindi: "चाँद तारों की तरह हमेशा ऐसे ही चमकती रहिए। जन्मदिन बहुत-बहुत मुबारक हो समीक्षा बेबी!",
+        text: "May you always shine as bright and radiant as the stars in the night sky! Happy 23rd Birthday! 💖",
+        spokenHindi: "May you always shine as bright and radiant as the stars in the night sky! Happy 23rd Birthday!",
       },
       {
-        text: "Chaliye ab cake cutting ka waqt aa gaya hai... Dekhiye hamara pyara companion cake lekar aa raha hai! Aap tayyar hain na? 🎂🎉",
-        spokenHindi: "चलिए अब केक कटिंग का वक्त आ गया है। देखिए हमारा प्यारा कंपैनियन केक लेकर आ रहा है। आप तैयार हैं ना समीक्षा बेबी?",
+        text: "The sweetest moment has arrived... Look, our adorable companion has brought the birthday cake! Are you ready to make a wish? 🎂🎉",
+        spokenHindi: "The sweetest moment has arrived. Our companion has brought the birthday cake! Are you ready to make a wish?",
       },
     ],
   },
 
   cake: {
-    heading: "Make a Wish, Sameeksha Baby",
-    subtext: "Aankhein band karke ek pyari si wish maang lijiye... Aaj ka poora jahan sirf aapke liye sajaya gaya hai! 🎂✨",
+    heading: "Make a Wish, Sameeksha",
+    subtext: "Close your eyes, make a heartfelt wish, and blow out the candles! The universe is celebrating you today. 🎂✨",
     button: "Blow the Candles 🕯️✨",
     fallback: "Tap to blow the candles",
   },

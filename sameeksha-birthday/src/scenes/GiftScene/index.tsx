@@ -24,28 +24,28 @@ const GIFTS: GiftChoice[] = [
     name: 'Plush Fluffy Teddy Bear',
     emoji: '🧸',
     tag: 'Soft Cuddles',
-    description: 'Ultra-soft honey plush bear with a ruby satin bowtie, hamesha aapko Harshit ki yaad dilayega!',
+    description: 'Ultra-soft honey plush bear with a ruby satin bowtie, to remind you of Harshit\'s warmth every single day!',
   },
   {
     id: 'rose',
     name: '100 Royal Red Velvet Roses',
     emoji: '🌹',
     tag: 'Eternal Romance',
-    description: 'Taaza mehkte laal gulaabon ka bouquet jo Sameeksha ki khubsurti jaisa hamesha mehke!',
+    description: '100 freshly bloomed velvet red roses radiating elegance and romance, just as radiant as Sameeksha!',
   },
   {
     id: 'diamond',
     name: 'Diamond & Rose-Gold Eternity Heart',
     emoji: '💎',
     tag: 'Precious Gem',
-    description: 'Shining diamond center with orbital rose-gold halo ring — Harshit ke sachhe dil ki nishani!',
+    description: 'Shining brilliant diamond heart with an orbital rose-gold halo ring — a symbol of true love and timeless commitment.',
   },
   {
     id: 'chocolates',
     name: 'Belgian Royal Chocolate Truffles',
     emoji: '🍫',
     tag: 'Sweet Moments',
-    description: 'Handcrafted luxury chocolate truffles with edible gold leaf, bilkul aapki muskaan jaisi meethi!',
+    description: 'Handcrafted luxury Belgian chocolate truffles dusted with edible gold leaf, just as delightfully sweet as your smile!',
   },
 ];
 
@@ -783,7 +783,10 @@ const GiftScene: React.FC = () => {
                 textShadow: '0 1px 8px rgba(0,0,0,0.6)',
               }}
             >
-              ✨ "Ye gift aapko jald hi milega Harshit ki taraf se! 💖" ✨
+              ✨ "This special gift will be delivered to you very soon by Harshit! 💖" ✨
+              <div style={{ fontSize: '0.74rem', opacity: 0.85, marginTop: '2px', fontWeight: 500 }}>
+                (Ye gift aapko jald hi milega Harshit ki taraf se! 💖)
+              </div>
             </div>
 
             <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>

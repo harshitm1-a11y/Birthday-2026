@@ -5,6 +5,7 @@ import {
   SceneNavigation,
   MusicPlaylist,
   RoamingCompanion,
+  FloralBloomTransition,
 } from './components';
 import { useExperienceStore } from './state/experienceStore';
 import { soundManager } from './utils/audio';
@@ -32,6 +33,19 @@ const scenes = [
 export default function App() {
   const [loaded, setLoaded] = React.useState(false);
   const currentScene = useExperienceStore((s) => s.currentScene);
+  const [isBloomTransitioning, setIsBloomTransitioning] = React.useState(false);
+  const prevSceneRef = React.useRef(currentScene);
+
+  useEffect(() => {
+    if (prevSceneRef.current !== currentScene) {
+      prevSceneRef.current = currentScene;
+      setIsBloomTransitioning(true);
+      const timer = setTimeout(() => {
+        setIsBloomTransitioning(false);
+      }, 950);
+      return () => clearTimeout(timer);
+    }
+  }, [currentScene]);
 
   const handleLoadComplete = useCallback(() => {
     setLoaded(true);
@@ -89,16 +103,17 @@ export default function App() {
       onKeyDown={handleKeyDown}
       tabIndex={0}
     >
-      {/* Dynamic Background Gradient */}
+      {/* Deep Luxury Dark Aesthetic Background as requested */}
       <div
         className="webgl-fallback"
         style={{
-          background: `radial-gradient(ellipse at center, 
-            ${currentScene === 6 ? '#2a0845' : currentScene === 4 ? '#200b3b' : '#0d0d2b'} 0%, 
-            #0a0a1a 75%)`,
+          background: '#04030a',
           transition: 'background 1s ease',
         }}
       />
+
+      {/* Mathematical Floral Blooming Transition between scenes */}
+      <FloralBloomTransition isTransitioning={isBloomTransitioning} />
 
       {/* Current Scene with smooth fade */}
       <AnimatePresence mode="wait">

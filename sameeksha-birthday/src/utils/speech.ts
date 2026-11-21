@@ -1,4 +1,4 @@
-// Natural Speech Synthesis Utility with Soft Male Hindi Phonation and Auto Audio-Ducking
+// Natural Speech Synthesis Utility with Soft Sweet Female Voice and Auto Audio-Ducking
 import { soundManager } from './audio';
 
 export interface SpeechSettings {
@@ -12,9 +12,8 @@ class RobotSpeaker {
   private onSpeakingChange: ((isSpeaking: boolean) => void) | null = null;
   private voices: SpeechSynthesisVoice[] = [];
   private selectedVoice: SpeechSynthesisVoice | null = null;
-  private isHindiVoice = false;
-  private pitch = 0.92; // Lower pitch for male voice
-  private rate = 0.88;
+  private pitch = 1.14; // Sweet, melodic feminine pitch as requested
+  private rate = 0.92;
 
   constructor() {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -29,51 +28,45 @@ class RobotSpeaker {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     this.voices = window.speechSynthesis.getVoices();
 
-    // Priority 1: Soft Sweet Male Hindi voices (Madhur, Hemant, Male, Google Hindi)
-    const maleHindiVoice = this.voices.find(
+    // Priority 1: Soft Sweet Female Indian / Hindi / English voices (Heera, Aditi, Zira, Google Female, Samantha)
+    const femaleIndianVoice = this.voices.find(
       (v) =>
-        (v.lang.toLowerCase().startsWith('hi') || v.name.toLowerCase().includes('hindi')) &&
-        (v.name.toLowerCase().includes('madhur') ||
-          v.name.toLowerCase().includes('hemant') ||
-          v.name.toLowerCase().includes('male') ||
+        (v.lang.toLowerCase().includes('in') || v.name.toLowerCase().includes('india') || v.lang.toLowerCase().startsWith('hi')) &&
+        (v.name.toLowerCase().includes('heera') ||
+          v.name.toLowerCase().includes('aditi') ||
+          v.name.toLowerCase().includes('neerja') ||
+          v.name.toLowerCase().includes('kavya') ||
+          v.name.toLowerCase().includes('priya') ||
+          v.name.toLowerCase().includes('female') ||
           v.name.toLowerCase().includes('google'))
     );
 
-    const genericHindiVoice = this.voices.find(
-      (v) => v.lang.toLowerCase().startsWith('hi') || v.name.toLowerCase().includes('hindi')
-    );
-
-    // Priority 2: Male Indian English voice (Rishi, Google Indian English)
-    const maleIndianEngVoice = this.voices.find(
+    const femaleEngVoice = this.voices.find(
       (v) =>
-        (v.lang.toLowerCase().includes('en-in') ||
-          v.name.toLowerCase().includes('india')) &&
-        (v.name.toLowerCase().includes('rishi') ||
-          v.name.toLowerCase().includes('male'))
+        (v.lang.toLowerCase().startsWith('en') || v.lang.toLowerCase().startsWith('hi')) &&
+        (v.name.toLowerCase().includes('zira') ||
+          v.name.toLowerCase().includes('samantha') ||
+          v.name.toLowerCase().includes('karen') ||
+          v.name.toLowerCase().includes('female') ||
+          v.name.toLowerCase().includes('natural') ||
+          v.name.toLowerCase().includes('girl'))
     );
 
-    const indianEngVoice = this.voices.find(
-      (v) =>
-        v.lang.toLowerCase().includes('en-in') ||
-        v.name.toLowerCase().includes('india')
+    const genericFemaleVoice = this.voices.find((v) =>
+      v.name.toLowerCase().includes('female') ||
+      v.name.toLowerCase().includes('woman') ||
+      v.name.toLowerCase().includes('zira') ||
+      v.name.toLowerCase().includes('heera')
     );
 
-    if (maleHindiVoice) {
-      this.selectedVoice = maleHindiVoice;
-      this.isHindiVoice = true;
-    } else if (genericHindiVoice) {
-      this.selectedVoice = genericHindiVoice;
-      this.isHindiVoice = true;
-    } else if (maleIndianEngVoice) {
-      this.selectedVoice = maleIndianEngVoice;
-      this.isHindiVoice = false;
-    } else if (indianEngVoice) {
-      this.selectedVoice = indianEngVoice;
-      this.isHindiVoice = false;
+    if (femaleIndianVoice) {
+      this.selectedVoice = femaleIndianVoice;
+    } else if (femaleEngVoice) {
+      this.selectedVoice = femaleEngVoice;
+    } else if (genericFemaleVoice) {
+      this.selectedVoice = genericFemaleVoice;
     } else {
-      const maleVoice = this.voices.find((v) => v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('natural'));
-      this.selectedVoice = maleVoice || this.voices[0] || null;
-      this.isHindiVoice = false;
+      this.selectedVoice = this.voices[0] || null;
     }
   }
 
@@ -117,10 +110,12 @@ class RobotSpeaker {
 
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
 
-    // If text contains Devanagari Hindi or we have a Hindi voice, set language to hi-IN
+    // Default to natural English pronunciation unless Devanagari Hindi is explicitly present
     const hasDevanagari = /[\u0900-\u097F]/.test(textToSpeak);
-    if (hasDevanagari || this.isHindiVoice) {
+    if (hasDevanagari) {
       utterance.lang = 'hi-IN';
+    } else if (this.selectedVoice) {
+      utterance.lang = this.selectedVoice.lang || 'en-IN';
     } else {
       utterance.lang = 'en-IN';
     }
@@ -129,9 +124,9 @@ class RobotSpeaker {
       utterance.voice = this.selectedVoice;
     }
 
-    utterance.pitch = this.pitch;
-    utterance.rate = this.rate;
-    utterance.volume = 0.85; // Soft and sweet tone
+    utterance.pitch = this.pitch; // 1.14: soft sweet girl voice
+    utterance.rate = this.rate; // 0.92: perfectly paced and clear
+    utterance.volume = 0.9; // Clear and sweet tone
 
     utterance.onstart = () => {
       // DUCK BACKGROUND AUDIO SMOOTHLY WHILE SPEAKING!

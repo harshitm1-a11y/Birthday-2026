@@ -9,3 +9,4 @@ export { default as SecretMessage } from './SecretMessage';
 export { MusicPlaylist } from './MusicPlaylist';
 export { RoamingCompanion } from './RoamingCompanion';
 export { RealisticPopper } from './RealisticPopper';
+export { FloralBloomTransition, MathematicalFlower } from './FloralBloomTransition';
