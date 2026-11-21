@@ -10,10 +10,10 @@ export const content = {
     { id: "welcome", title: "Welcome to Your Universe" },
     { id: "gift", title: "The Magical Gift" },
     { id: "memories", title: "Our Little Memories" },
-    { id: "companion", title: "Your Little Companion" },
     { id: "cake", title: "Make a Wish" },
     { id: "letter", title: "A Letter From The Heart" },
     { id: "finale", title: "Forever My Favourite" },
+    { id: "happyEnding", title: "Grand Happy Ending ✨" },
   ],
 
   welcome: {
@@ -150,6 +150,19 @@ Happy Birthday Sameeksha Baby! 🎂✨`,
       replay: "Replay Our Story 🔄",
       memories: "Visit Memories 📸",
       oneMoreLook: "One More Look ✨",
+      happyEnding: "Step Into Happy Ending ✨🏮",
+    },
+  },
+
+  happyEnding: {
+    badge: "Forever & Always ✨",
+    heading: "Happy 23rd Birthday, Sameeksha 💖",
+    subtext: "Every glowing sky lantern ascending into the cosmos carries a heartfelt wish for your boundless joy, peaceful moments, and radiant smile.\nOur story doesn't end here — every day with you is a beautiful new chapter. 🏮✨",
+    personalNote: "No matter how vast this celestial universe is, my favorite place will forever be right next to you.\nMay your life always be illuminated with starlight, warmth, and endless love.\nHappy 23rd Birthday, my precious one! With all my heart, Harshit. ❤️✨",
+    buttons: {
+      releaseLantern: "Release a Sky Lantern 🏮✨",
+      replay: "Replay From Beginning 🔄",
+      memories: "Visit Memories 📸",
     },
   },
 

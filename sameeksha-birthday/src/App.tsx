@@ -13,10 +13,10 @@ import { soundManager } from './utils/audio';
 import GalaxyScene from './scenes/GalaxyScene';
 import GiftScene from './scenes/GiftScene';
 import MemoriesScene from './scenes/MemoriesScene';
-import CompanionScene from './scenes/CompanionScene';
 import CakeScene from './scenes/CakeScene';
 import LetterScene from './scenes/LetterScene';
 import FinaleScene from './scenes/FinaleScene';
+import HappyEndingScene from './scenes/HappyEndingScene';
 
 import './styles/global.css';
 
@@ -24,10 +24,10 @@ const scenes = [
   GalaxyScene,
   GiftScene,
   MemoriesScene,
-  CompanionScene,
   CakeScene,
   LetterScene,
   FinaleScene,
+  HappyEndingScene,
 ];
 
 export default function App() {
@@ -91,20 +91,20 @@ export default function App() {
         soundManager.playTrack('punjabi-bhangra');
         break;
       case 3:
-        // Companion scene: Tum Hi Ho
-        soundManager.playTrack('hindi-tum-hi-ho');
-        break;
-      case 4:
         // Cake cutting scene: Happy Birthday Pop Celebration
         soundManager.playTrack('birthday-pop');
         break;
-      case 5:
+      case 4:
         // Letter scene: Dil Diyan Gallan
         soundManager.playTrack('hindi-dil-diyan-gallan');
         break;
-      case 6:
+      case 5:
         // Finale celebration: Angreji Beat Punjabi party banger
         soundManager.playTrack('party-angreji-beat');
+        break;
+      case 6:
+        // Grand 3D Happy Ending: Tujh Mein Rab Dikhta Hai
+        soundManager.playTrack('hindi-tujh-mein-rab');
         break;
     }
   }, [currentScene]);

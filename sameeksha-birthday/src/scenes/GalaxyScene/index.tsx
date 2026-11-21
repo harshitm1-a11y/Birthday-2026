@@ -118,6 +118,7 @@ function NestedParametricNeonHearts() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        padding: '1.5rem', // Matches .scene-overlay padding for exact geometric alignment
       }}
     >
       <motion.div
@@ -132,12 +133,12 @@ function NestedParametricNeonHearts() {
         }}
       >
         <svg
-          width="680"
-          height="620"
+          width="720"
+          height="660"
           viewBox="-290 -260 580 520"
           style={{
-            width: 'min(96vw, 680px)',
-            height: 'min(90vw, 620px)',
+            width: 'min(96vw, 720px)',
+            height: 'min(80vh, 660px)',
             overflow: 'visible',
             filter: 'drop-shadow(0 0 35px rgba(255, 0, 127, 0.75)) drop-shadow(0 0 65px rgba(255, 20, 147, 0.45))',
           }}

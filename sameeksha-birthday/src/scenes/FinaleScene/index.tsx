@@ -158,9 +158,20 @@ const FinaleScene: React.FC = () => {
           </div>
 
           {/* Navigation Action Buttons */}
-          <div className="finale-buttons">
+          <div className="finale-buttons" style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <button
               className="magic-button"
+              onClick={() => setScene(6)}
+              style={{
+                background: 'linear-gradient(135deg, #f59e0b, #ec4899, #8b5cf6)',
+                boxShadow: '0 0 25px rgba(245, 158, 11, 0.6)',
+              }}
+              aria-label="Step Into Grand 3D Happy Ending"
+            >
+              <span>{content.finale.buttons.happyEnding || 'Step Into Happy Ending ✨🏮'}</span>
+            </button>
+            <button
+              className="magic-button magic-button-secondary"
               onClick={() => setScene(0)}
               aria-label="Replay the whole birthday journey"
             >
@@ -172,13 +183,6 @@ const FinaleScene: React.FC = () => {
               aria-label="Revisit photo memories"
             >
               <span>{content.finale.buttons.memories}</span>
-            </button>
-            <button
-              className="magic-button magic-button-secondary"
-              onClick={() => setScene(1)}
-              aria-label="Open the magical gift again"
-            >
-              <span>{content.finale.buttons.oneMoreLook}</span>
             </button>
           </div>
 

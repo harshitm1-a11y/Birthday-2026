@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useExperienceStore, COMPANIONS, type CompanionId } from '../state/experienceStore';
+import { useExperienceStore, COMPANIONS } from '../state/experienceStore';
 import { soundManager } from '../utils/audio';
 import { robotSpeaker } from '../utils/speech';
 
@@ -14,7 +14,7 @@ interface CreamParticle {
   size: number;
 }
 
-// 1. Ultra-Realistic & Adorable Animated Teddy Bear (Main & Star Companion!)
+// Ultra-Realistic & Adorable Animated Teddy Bear (The Sole & Beloved Mascot for Sameeksha!)
 const RealisticTeddy: React.FC<{
   isMoving: boolean;
   hasKnife?: boolean;
@@ -205,180 +205,8 @@ const RealisticTeddy: React.FC<{
   </svg>
 );
 
-// 2. Ultra-Realistic & Cute Animated Penguin (Mr. Waddles)
-const RealisticPenguin: React.FC<{ isMoving: boolean; hasKnife?: boolean; isCutting?: boolean }> = ({
-  isMoving,
-  hasKnife,
-  isCutting,
-}) => (
-  <svg width="88" height="100" viewBox="0 0 88 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="penguinBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#1e293b" />
-        <stop offset="50%" stopColor="#0f172a" />
-        <stop offset="100%" stopColor="#020617" />
-      </linearGradient>
-      <linearGradient id="penguinBellyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#ffffff" />
-        <stop offset="85%" stopColor="#f8fafc" />
-        <stop offset="100%" stopColor="#e2e8f0" />
-      </linearGradient>
-    </defs>
-
-    {/* Ground Shadow */}
-    <ellipse cx="44" cy="94" rx="22" ry="5" fill="#000000" opacity="0.35" />
-
-    {/* Rhythmic Breathing Body */}
-    <g style={{ transformOrigin: '44px 70px' }}>
-      <animateTransform attributeName="transform" type="scale" values="1 1; 1.02 1.03; 1 1" dur="2.4s" repeatCount="indefinite" />
-
-      {/* Head & Body Tuxedo Shell */}
-      <ellipse cx="44" cy="50" rx="26" ry="32" fill="url(#penguinBodyGrad)" stroke="#334155" strokeWidth="2" />
-
-      {/* Snowy White Belly */}
-      <ellipse cx="44" cy="54" rx="17" ry="24" fill="url(#penguinBellyGrad)" />
-
-      {/* Cute Pink Blush Cheeks */}
-      <circle cx="29" cy="36" r="4.5" fill="#fda4af" opacity="0.65" />
-      <circle cx="59" cy="36" r="4.5" fill="#fda4af" opacity="0.65" />
-
-      {/* Big Expressive Glossy Eyes with Blinking */}
-      <g>
-        <ellipse cx="34" cy="31" rx="4.5" ry="5.5" fill="#09090b" />
-        <circle cx="35.5" cy="29" r="1.8" fill="#ffffff" />
-        <circle cx="32.5" cy="33" r="0.9" fill="#ffffff" />
-        <ellipse cx="34" cy="31" rx="4.8" ry="0" fill="#1e293b">
-          <animate attributeName="ry" values="0; 0; 0; 5.5; 0; 0" keyTimes="0; 0.88; 0.92; 0.95; 0.98; 1" dur="3.5s" repeatCount="indefinite" />
-        </ellipse>
-      </g>
-
-      <g>
-        <ellipse cx="54" cy="31" rx="4.5" ry="5.5" fill="#09090b" />
-        <circle cx="55.5" cy="29" r="1.8" fill="#ffffff" />
-        <circle cx="52.5" cy="33" r="0.9" fill="#ffffff" />
-        <ellipse cx="54" cy="31" rx="4.8" ry="0" fill="#1e293b">
-          <animate attributeName="ry" values="0; 0; 0; 5.5; 0; 0" keyTimes="0; 0.88; 0.92; 0.95; 0.98; 1" dur="3.5s" repeatCount="indefinite" />
-        </ellipse>
-      </g>
-
-      {/* 3D Curved Orange Beak */}
-      <path d="M38 38 Q44 36 50 38 L44 45 Z" fill="#f97316" stroke="#ea580c" strokeWidth="1" />
-      <ellipse cx="44" cy="39" rx="3" ry="1.2" fill="#fdba74" />
-
-      {/* Red Chef Bandana / Bow */}
-      <path d="M30 47 Q44 52 58 47 L56 53 Q44 57 32 53 Z" fill="#ef4444" />
-      <circle cx="44" cy="53" r="3" fill="#b91c1c" />
-
-      {/* Left Flipper Wing */}
-      <g style={{ transformOrigin: '18px 48px' }}>
-        <ellipse cx="16" cy="55" rx="5" ry="14" fill="url(#penguinBodyGrad)" transform="rotate(-18 16 55)">
-          {isMoving && <animateTransform attributeName="transform" type="rotate" values="-30 18 48; 15 18 48; -30 18 48" dur="0.32s" repeatCount="indefinite" />}
-        </ellipse>
-      </g>
-
-      {/* Right Flipper Wing (Can Hold Knife) */}
-      <g style={{ transformOrigin: '70px 48px' }}>
-        <ellipse cx="72" cy="55" rx="5" ry="14" fill="url(#penguinBodyGrad)" transform="rotate(18 72 55)">
-          {isMoving && <animateTransform attributeName="transform" type="rotate" values="15 70 48; -30 70 48; 15 70 48" dur="0.32s" repeatCount="indefinite" />}
-          {isCutting && <animateTransform attributeName="transform" type="rotate" values="0 70 48; -45 70 48; 30 70 48; 0 70 48" dur="0.4s" repeatCount="3" />}
-        </ellipse>
-
-        {hasKnife && (
-          <g transform="translate(70, 38) rotate(30)">
-            <polygon points="0,0 6,-30 14,-32 14,0" fill="#f8fafc" stroke="#94a3b8" strokeWidth="1" />
-            <rect x="-2" y="0" width="18" height="4" rx="2" fill="#fbbf24" />
-            <rect x="2" y="4" width="10" height="18" rx="3" fill="#78350f" />
-          </g>
-        )}
-      </g>
-    </g>
-
-    {/* Waddling Orange Webbed Feet */}
-    <g style={{ transformOrigin: '33px 80px' }}>
-      <ellipse cx="32" cy="85" rx="10" ry="6" fill="#f97316" stroke="#c2410c" strokeWidth="1.5">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="-20 33 80; 20 33 80; -20 33 80" dur="0.32s" repeatCount="indefinite" />}
-      </ellipse>
-    </g>
-    <g style={{ transformOrigin: '55px 80px' }}>
-      <ellipse cx="56" cy="85" rx="10" ry="6" fill="#f97316" stroke="#c2410c" strokeWidth="1.5">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="20 55 80; -20 55 80; 20 55 80" dur="0.32s" repeatCount="indefinite" />}
-      </ellipse>
-    </g>
-  </svg>
-);
-
-// 3. Realistic Animated Robot (Robo-Bunny)
-const RealisticRobot: React.FC<{ isMoving: boolean; hasKnife?: boolean; isCutting?: boolean }> = ({
-  isMoving,
-  hasKnife,
-  isCutting,
-}) => (
-  <svg width="88" height="100" viewBox="0 0 88 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-    {/* Ground Shadow */}
-    <ellipse cx="44" cy="94" rx="20" ry="4.5" fill="#000000" opacity="0.35" />
-
-    {/* Pulsing LED Antenna */}
-    <line x1="44" y1="20" x2="44" y2="5" stroke="#94a3b8" strokeWidth="3.5" strokeLinecap="round" />
-    <circle cx="44" cy="5" r="5" fill="#38bdf8">
-      <animate attributeName="opacity" values="0.5;1;0.5" dur="1s" repeatCount="indefinite" />
-    </circle>
-
-    {/* Head */}
-    <rect x="20" y="18" width="48" height="32" rx="10" fill="#e2e8f0" stroke="#475569" strokeWidth="2.5" />
-    {/* Visor Screen */}
-    <rect x="26" y="24" width="36" height="20" rx="6" fill="#0f172a" />
-    {/* Glowing Eyes */}
-    <circle cx="35" cy="34" r="4.2" fill="#38bdf8">
-      <animate attributeName="r" values="4.2; 4.8; 4.2" dur="1.8s" repeatCount="indefinite" />
-    </circle>
-    <circle cx="53" cy="34" r="4.2" fill="#38bdf8">
-      <animate attributeName="r" values="4.2; 4.8; 4.2" dur="1.8s" repeatCount="indefinite" />
-    </circle>
-
-    {/* Torso */}
-    <rect x="24" y="54" width="40" height="26" rx="8" fill="#cbd5e1" stroke="#475569" strokeWidth="2" />
-    {/* Battery Indicator */}
-    <rect x="32" y="62" width="24" height="10" rx="4" fill="#334155" />
-    <rect x="34" y="64" width="18" height="6" rx="2" fill="#ec4899" />
-
-    {/* Arms */}
-    <g style={{ transformOrigin: '24px 58px' }}>
-      <line x1="24" y1="58" x2="14" y2="72" stroke="#94a3b8" strokeWidth="5" strokeLinecap="round">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="-15 24 58; 20 24 58; -15 24 58" dur="0.35s" repeatCount="indefinite" />}
-      </line>
-    </g>
-    <g style={{ transformOrigin: '64px 58px' }}>
-      <line x1="64" y1="58" x2="74" y2="72" stroke="#94a3b8" strokeWidth="5" strokeLinecap="round">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="20 64 58; -15 64 58; 20 64 58" dur="0.35s" repeatCount="indefinite" />}
-        {isCutting && <animateTransform attributeName="transform" type="rotate" values="0 64 58; -45 64 58; 30 64 58; 0 64 58" dur="0.4s" repeatCount="3" />}
-      </line>
-      {hasKnife && (
-        <g transform="translate(70, 50) rotate(25)">
-          <polygon points="0,0 6,-30 14,-32 14,0" fill="#f8fafc" stroke="#94a3b8" strokeWidth="1" />
-          <rect x="-2" y="0" width="18" height="4" rx="2" fill="#fbbf24" />
-          <rect x="2" y="4" width="10" height="18" rx="3" fill="#78350f" />
-        </g>
-      )}
-    </g>
-
-    {/* Moving Track Feet */}
-    <g style={{ transformOrigin: '33px 80px' }}>
-      <rect x="27" y="80" width="12" height="14" rx="5" fill="#64748b">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="-18 33 80; 18 33 80; -18 33 80" dur="0.35s" repeatCount="indefinite" />}
-      </rect>
-    </g>
-    <g style={{ transformOrigin: '55px 80px' }}>
-      <rect x="49" y="80" width="12" height="14" rx="5" fill="#64748b">
-        {isMoving && <animateTransform attributeName="transform" type="rotate" values="18 55 80; -18 55 80; 18 55 80" dur="0.35s" repeatCount="indefinite" />}
-      </rect>
-    </g>
-  </svg>
-);
-
 export const RoamingCompanion: React.FC = () => {
   const currentScene = useExperienceStore((s) => s.currentScene);
-  const selectedCompanionId = useExperienceStore((s) => s.selectedCompanion);
-  const setCompanion = useExperienceStore((s) => s.setCompanion);
   const dropCompanionCake = useExperienceStore((s) => s.dropCompanionCake);
   const cakesDropped = useExperienceStore((s) => s.companionCakesDropped);
   const isCompanionCuttingCake = useExperienceStore((s) => s.isCompanionCuttingCake);
@@ -386,7 +214,7 @@ export const RoamingCompanion: React.FC = () => {
   const cakeCutDone = useExperienceStore((s) => s.cakeCutDone);
   const frontKissPopped = useExperienceStore((s) => s.frontKissPopped);
 
-  const companion = COMPANIONS[selectedCompanionId] || COMPANIONS.teddy;
+  const companion = COMPANIONS.teddy;
 
   // Sweet Romantic Praises & Compliments for Sameeksha in English as requested
   const COMPLIMENTS = useMemo(
@@ -414,7 +242,6 @@ export const RoamingCompanion: React.FC = () => {
   const [isFetchingNewCake, setIsFetchingNewCake] = useState(false);
   const [speechText, setSpeechText] = useState(companion.intro);
   const [isSpeechOpen, setIsSpeechOpen] = useState(true);
-  const [isChooserOpen, setIsChooserOpen] = useState(false);
   const [splatParticles, setSplatParticles] = useState<CreamParticle[]>([]);
   const [complimentIndex, setComplimentIndex] = useState(0);
   const [clickSparks, setClickSparks] = useState<{ id: number; x: number; y: number; emoji: string }[]>([]);
@@ -460,7 +287,7 @@ export const RoamingCompanion: React.FC = () => {
       if (
         now - lastMouseMoveRef.current > 3000 &&
         !isCompanionCuttingCake &&
-        currentScene !== 4 &&
+        currentScene !== 3 &&
         (currentScene !== 0 || frontKissPopped)
       ) {
         // Pick friendly roaming coordinate on screen
@@ -589,7 +416,7 @@ export const RoamingCompanion: React.FC = () => {
 
   // Cake Scene entry dialogue
   useEffect(() => {
-    if (currentScene === 4 && !cakeCutDone) {
+    if (currentScene === 3 && !cakeCutDone) {
       const text = `The chef knife is ready! Tap on the cake to make your birthday wish and slice it! 🎂🔪`;
       setSpeechText(text);
       setIsSpeechOpen(true);
@@ -686,24 +513,16 @@ export const RoamingCompanion: React.FC = () => {
   };
 
   const renderAnimatedMascot = () => {
-    const hasKnife = currentScene === 4 && (!cakeCutDone || isCuttingActive || isFeeding);
-    switch (selectedCompanionId) {
-      case 'penguin':
-        return <RealisticPenguin isMoving={isMoving} hasKnife={hasKnife} isCutting={isCuttingActive || isCompanionCuttingCake} />;
-      case 'robo':
-        return <RealisticRobot isMoving={isMoving} hasKnife={hasKnife} isCutting={isCuttingActive || isCompanionCuttingCake} />;
-      case 'teddy':
-      default:
-        return (
-          <RealisticTeddy
-            isMoving={isMoving}
-            hasKnife={hasKnife}
-            isCutting={isCuttingActive}
-            isClapping={isClapping}
-            isFeeding={isFeeding}
-          />
-        );
-    }
+    const hasKnife = currentScene === 3 && (!cakeCutDone || isCuttingActive || isFeeding);
+    return (
+      <RealisticTeddy
+        isMoving={isMoving}
+        hasKnife={hasKnife}
+        isCutting={isCuttingActive}
+        isClapping={isClapping}
+        isFeeding={isFeeding}
+      />
+    );
   };
 
   return (
@@ -902,166 +721,9 @@ export const RoamingCompanion: React.FC = () => {
             boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
           }}
         >
-          {companion.name} {currentScene === 4 && !cakeCutDone ? '🔪 Chef Knife' : ''} {cakesDropped > 0 ? `(Dropped: ${cakesDropped}x)` : ''}
+          {companion.name} {currentScene === 3 && !cakeCutDone ? '🔪 Chef Knife' : ''} {cakesDropped > 0 ? `(Dropped: ${cakesDropped}x)` : ''}
         </div>
       </div>
-
-      {/* Floating Button to Switch Companion (Bottom-Left) */}
-      <motion.button
-        type="button"
-        onClick={() => setIsChooserOpen(true)}
-        whileHover={{ scale: 1.08 }}
-        whileTap={{ scale: 0.95 }}
-        style={{
-          position: 'fixed',
-          bottom: '22px',
-          left: '16px',
-          zIndex: 95,
-          background: 'rgba(17, 12, 34, 0.88)',
-          backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(251, 191, 36, 0.4)',
-          borderRadius: '9999px',
-          padding: '8px 14px',
-          color: '#fbbf24',
-          fontSize: '0.8rem',
-          fontWeight: 600,
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          boxShadow: '0 4px 15px rgba(0, 0, 0, 0.5)',
-        }}
-        title="Switch Companion Character"
-      >
-        <span>{companion.emoji}</span>
-        <span>Companion</span>
-      </motion.button>
-
-      {/* Companion Selector Drawer Modal */}
-      <AnimatePresence>
-        {isChooserOpen && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              zIndex: 160,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'rgba(0, 0, 0, 0.75)',
-              backdropFilter: 'blur(8px)',
-              padding: '16px',
-            }}
-            onClick={() => setIsChooserOpen(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              style={{
-                width: '100%',
-                maxWidth: '440px',
-                background: 'linear-gradient(135deg, rgba(28, 16, 52, 0.96), rgba(14, 10, 32, 0.98))',
-                borderRadius: '24px',
-                border: '1px solid rgba(251, 191, 36, 0.4)',
-                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8)',
-                overflow: 'hidden',
-                color: '#fff',
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Header */}
-              <div
-                style={{
-                  padding: '18px 20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '1.6rem' }}>🐾</span>
-                  <div>
-                    <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#fbbf24' }}>
-                      Choose Your Companion
-                    </h3>
-                    <p style={{ margin: 0, fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.65)' }}>
-                      Teddy Bear is your main friend! Tap to switch companions!
-                    </p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setIsChooserOpen(false)}
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    border: 'none',
-                    borderRadius: '50%',
-                    width: '32px',
-                    height: '32px',
-                    color: '#fff',
-                    cursor: 'pointer',
-                  }}
-                >
-                  ✕
-                </button>
-              </div>
-
-              {/* Companions List */}
-              <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {Object.values(COMPANIONS).map((c) => {
-                  const isSelected = selectedCompanionId === c.id;
-                  return (
-                    <motion.div
-                      key={c.id}
-                      onClick={() => {
-                        soundManager.playTwinkle();
-                        setCompanion(c.id as CompanionId);
-                        setSpeechText(c.intro);
-                        setIsSpeechOpen(true);
-                        setIsChooserOpen(false);
-                      }}
-                      whileHover={{ scale: 1.02, background: 'rgba(255, 255, 255, 0.08)' }}
-                      whileTap={{ scale: 0.98 }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '12px 16px',
-                        borderRadius: '16px',
-                        cursor: 'pointer',
-                        background: isSelected ? 'rgba(251, 191, 36, 0.18)' : 'rgba(255, 255, 255, 0.04)',
-                        border: isSelected
-                          ? '1px solid rgba(251, 191, 36, 0.6)'
-                          : '1px solid rgba(255, 255, 255, 0.08)',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                        <span style={{ fontSize: '2rem' }}>{c.emoji}</span>
-                        <div>
-                          <div style={{ fontSize: '0.95rem', fontWeight: 600, color: isSelected ? '#fbbf24' : '#fff' }}>
-                            {c.name} {c.id === 'teddy' ? '⭐ (Main)' : ''}
-                          </div>
-                          <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.6)' }}>
-                            {c.title} • "{c.intro}"
-                          </div>
-                        </div>
-                      </div>
-
-                      {isSelected && (
-                        <span style={{ color: '#34d399', fontSize: '0.8rem', fontWeight: 600 }}>
-                          Active ✔
-                        </span>
-                      )}
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </>
   );
 };

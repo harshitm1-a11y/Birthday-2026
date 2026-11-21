@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 export type CakeThemeId = 'strawberry' | 'chocolate' | 'lavender' | 'mango' | 'royal';
-export type CompanionId = 'robo' | 'teddy' | 'penguin' | 'kitty' | 'astro';
+export type CompanionId = 'teddy';
 
 export interface CakeThemeInfo {
   id: CakeThemeId;
@@ -77,14 +77,6 @@ export interface CompanionInfo {
 }
 
 export const COMPANIONS: Record<CompanionId, CompanionInfo> = {
-  robo: {
-    id: 'robo',
-    name: 'Robo-Bunny',
-    emoji: '🤖',
-    title: 'Cute Cyber Bunny',
-    color: '#ff8fb3',
-    intro: 'BEEP BOOP! Special celebration robot for Sameeksha!',
-  },
   teddy: {
     id: 'teddy',
     name: 'Teddy Bear',
@@ -92,30 +84,6 @@ export const COMPANIONS: Record<CompanionId, CompanionInfo> = {
     title: 'Fluffy Honey Bear',
     color: '#d97706',
     intro: 'Hugs & cuddles! I brought sweet surprises for you, Sameeksha!',
-  },
-  penguin: {
-    id: 'penguin',
-    name: 'Mr. Waddles',
-    emoji: '🐧',
-    title: 'Chibi Chef Penguin',
-    color: '#06b6d4',
-    intro: 'Waddle waddle! Five-star gourmet cake for Sameeksha!',
-  },
-  kitty: {
-    id: 'kitty',
-    name: 'Miu Miu',
-    emoji: '🐱',
-    title: 'Adorable Calico Kitty',
-    color: '#f43f5e',
-    intro: 'Meow! The sweetest birthday wishes for Sameeksha!',
-  },
-  astro: {
-    id: 'astro',
-    name: 'Cosmo Astro',
-    emoji: '🚀',
-    title: 'Starry Chibi Astronaut',
-    color: '#8b5cf6',
-    intro: 'Mission: Galaxy surprise delivery for Sameeksha!',
   },
 };
 
