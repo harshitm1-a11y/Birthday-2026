@@ -14,7 +14,11 @@ fs.copyFileSync(path.join(srcDir, '404.html'), path.resolve('404.html'));
 fs.writeFileSync(path.resolve('.nojekyll'), '');
 
 if (fs.existsSync(path.join(srcDir, 'assets'))) {
-  fs.cpSync(path.join(srcDir, 'assets'), path.resolve('assets'), { recursive: true });
+  const rootAssets = path.resolve('assets');
+  if (fs.existsSync(rootAssets)) {
+    fs.rmSync(rootAssets, { recursive: true, force: true });
+  }
+  fs.cpSync(path.join(srcDir, 'assets'), rootAssets, { recursive: true });
 }
 if (fs.existsSync(path.join(srcDir, 'images'))) {
   fs.cpSync(path.join(srcDir, 'images'), path.resolve('images'), { recursive: true });

@@ -49,11 +49,26 @@ export const content = {
 
   companion: {
     dialogues: [
-      "Suno Sameeksha baby... Ek baat sach kahun? 🤫✨",
-      "Tere chehre ki hansi se hi meri har subah roshan hoti hai... Tum meri zindagi ki sabse pyari shayari ho. 💕",
-      "Hazaaron chehron mein bhi sirf ek chehra nazar aata hai... aur wo ho sirf tum, meri jaan. 🌹✨",
-      "Chaand taaron ki tarah hamesha aise hi chamakti raho... Happy Birthday to my favorite human! 💖",
-      "Chalo ab cake cutting ka waqt aa gaya hai... Ready ho na Sameeksha baby? 🎂🎉",
+      {
+        text: "Suno Sameeksha baby... Ek baat sach kahun? 🤫✨",
+        spokenHindi: "सुनो समीक्षा बेबी, एक बात सच कहूँ? आप दुनिया की सबसे प्यारी लड़की हो!",
+      },
+      {
+        text: "Tere chehre ki hansi se hi meri har subah roshan hoti hai... Tum meri zindagi ki sabse pyari shayari ho. 💕",
+        spokenHindi: "तेरे चेहरे की हँसी से ही मेरी हर सुबह रोशन होती है। तुम मेरी ज़िंदगी की सबसे प्यारी शायरी हो।",
+      },
+      {
+        text: "Hazaaron chehron mein bhi sirf ek chehra nazar aata hai... aur wo ho sirf tum, meri jaan. 🌹✨",
+        spokenHindi: "हज़ारों चेहरों में भी सिर्फ एक चेहरा नज़र आता है, और वो हो सिर्फ तुम, मेरी जान।",
+      },
+      {
+        text: "Chaand taaron ki tarah hamesha aise hi chamakti raho... Happy Birthday to my favorite human! 💖",
+        spokenHindi: "चाँद तारों की तरह हमेशा ऐसे ही चमकती रहो। हैप्पी बर्थडे समीक्षा बेबी!",
+      },
+      {
+        text: "Chalo ab cake cutting ka waqt aa gaya hai... Dekho hamara companion cake leke aa raha hai! Ready ho na? 🎂🎉",
+        spokenHindi: "चलो अब केक कटिंग का वक्त आ गया है। देखो हमारा कंपैनियन केक लेकर आ रहा है। तैयार हो ना समीक्षा बेबी?",
+      },
     ],
   },
 

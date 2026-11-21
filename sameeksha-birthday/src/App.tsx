@@ -4,7 +4,8 @@ import {
   LoadingScreen,
   SceneNavigation,
   HeartCounter,
-  AudioToggle,
+  MusicPlaylist,
+  RoamingCompanion,
   SecretMessage,
   SceneMenu,
 } from './components';
@@ -91,7 +92,8 @@ export default function App() {
       {/* Global UI Overlays */}
       <SceneMenu />
       <HeartCounter />
-      <AudioToggle />
+      <MusicPlaylist />
+      <RoamingCompanion />
       <SceneNavigation />
 
       {/* Secret message modal */}

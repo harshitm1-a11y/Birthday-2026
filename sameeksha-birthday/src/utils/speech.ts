@@ -1,5 +1,5 @@
-// Advanced Speech Synthesis Utility for the Companion Robot Mascot
-// Tuned for natural, clear Hinglish pronunciation and authentic Indian Hindi/English voices
+// Natural Speech Synthesis Utility with Pure Hindi Phonation and Auto Audio-Ducking
+import { soundManager } from './audio';
 
 export interface SpeechSettings {
   pitch: number;
@@ -12,8 +12,9 @@ class RobotSpeaker {
   private onSpeakingChange: ((isSpeaking: boolean) => void) | null = null;
   private voices: SpeechSynthesisVoice[] = [];
   private selectedVoice: SpeechSynthesisVoice | null = null;
-  private pitch = 1.0;
-  private rate = 0.88;
+  private isHindiVoice = false;
+  private pitch = 1.05;
+  private rate = 0.92;
 
   constructor() {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -28,10 +29,10 @@ class RobotSpeaker {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     this.voices = window.speechSynthesis.getVoices();
 
-    // Priority 1: Indian Hindi voice (Google हिन्दी, Microsoft Kalpana/Hemant/Heera, etc.)
+    // Priority 1: Pure Hindi voices (Google हिन्दी, Microsoft Kalpana/Hemant/Heera, etc.)
     const hindiVoice = this.voices.find(
       (v) =>
-        v.lang.toLowerCase().includes('hi') ||
+        v.lang.toLowerCase().startsWith('hi') ||
         v.name.toLowerCase().includes('hindi') ||
         v.name.toLowerCase().includes('kalpana') ||
         v.name.toLowerCase().includes('hemant')
@@ -55,77 +56,111 @@ class RobotSpeaker {
         v.name.toLowerCase().includes('samantha')
     );
 
-    this.selectedVoice = hindiVoice || indianEngVoice || naturalVoice || this.voices[0] || null;
+    if (hindiVoice) {
+      this.selectedVoice = hindiVoice;
+      this.isHindiVoice = true;
+    } else if (indianEngVoice) {
+      this.selectedVoice = indianEngVoice;
+      this.isHindiVoice = false;
+    } else {
+      this.selectedVoice = naturalVoice || this.voices[0] || null;
+      this.isHindiVoice = false;
+    }
   }
 
   public setSpeakingCallback(cb: (isSpeaking: boolean) => void) {
     this.onSpeakingChange = cb;
   }
 
-  // Pre-process Hinglish text for natural phonetics in TTS engines
-  private prepareHinglishText(text: string): string {
+  // Convert Hinglish or letters into clear spoken phonetics so TTS never spells out letters
+  private sanitizeForSpeech(text: string): string {
     return text
-      // Replace awkward internet abbreviations with spoken phrases
-      .replace(/Psst\.\.\./gi, 'Hey, ')
-      .replace(/Psst/gi, 'Hey, ')
-      .replace(/chhoti-chhoti/gi, 'chhoti chhoti')
-      .replace(/\.\.\./g, ', ')
+      // Replace English acronyms and symbols
+      .replace(/\bHBD\b/gi, 'Happy Birthday')
+      .replace(/\b3D\b/gi, 'Three D')
+      .replace(/&/g, 'aur')
+      .replace(/\+/g, 'aur')
+      // Remove punctuation that causes letter-by-letter pause
+      .replace(/[•\-_~#*\/\\|\[\]{}()<>]/g, ' ')
+      .replace(/\.{2,}/g, ', ')
       // Strip emojis
       .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '')
-      .replace(/['"`]/g, '')
       .replace(/\s+/g, ' ')
       .trim();
   }
 
-  public speak(rawText: string) {
+  public speak(textToDisplay: string, spokenHindiAlternative?: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     if (this.isMuted) return;
 
-    // Refresh voices if not yet cached
     if (this.voices.length === 0) {
       this.loadVoices();
     }
 
-    window.speechSynthesis.cancel();
+    this.stop();
 
-    const cleanText = this.prepareHinglishText(rawText);
-    if (!cleanText) return;
+    // Prefer native Hindi spoken text if available (ensures crystal clear natural pronunciation)
+    const textToSpeak = spokenHindiAlternative
+      ? this.sanitizeForSpeech(spokenHindiAlternative)
+      : this.sanitizeForSpeech(textToDisplay);
 
-    const utterance = new SpeechSynthesisUtterance(cleanText);
+    if (!textToSpeak) return;
 
-    // Natural sweet friendly speech parameters
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+
+    // If text contains Devanagari Hindi or we have a Hindi voice, set language to hi-IN
+    const hasDevanagari = /[\u0900-\u097F]/.test(textToSpeak);
+    if (hasDevanagari || this.isHindiVoice) {
+      utterance.lang = 'hi-IN';
+    } else {
+      utterance.lang = 'en-IN';
+    }
+
+    if (this.selectedVoice) {
+      utterance.voice = this.selectedVoice;
+    }
+
     utterance.pitch = this.pitch;
     utterance.rate = this.rate;
     utterance.volume = 1.0;
 
-    // Use Indian Hindi or English lang code
-    if (this.selectedVoice) {
-      utterance.voice = this.selectedVoice;
-      utterance.lang = this.selectedVoice.lang || 'hi-IN';
-    } else {
-      utterance.lang = 'hi-IN';
-    }
-
     utterance.onstart = () => {
-      this.onSpeakingChange?.(true);
+      // DUCK BACKGROUND AUDIO SMOOTHLY WHILE SPEAKING!
+      soundManager.duckAudio(0.12);
+      if (this.onSpeakingChange) {
+        this.onSpeakingChange(true);
+      }
     };
 
-    utterance.onend = () => {
-      this.onSpeakingChange?.(false);
+    const cleanup = () => {
+      // RESTORE BACKGROUND AUDIO
+      soundManager.unduckAudio();
+      if (this.onSpeakingChange) {
+        this.onSpeakingChange(false);
+      }
     };
 
+    utterance.onend = cleanup;
     utterance.onerror = (e) => {
-      console.warn('SpeechSynthesis error:', e);
-      this.onSpeakingChange?.(false);
+      console.warn('Speech synthesis error:', e);
+      cleanup();
     };
 
-    window.speechSynthesis.speak(utterance);
+    try {
+      window.speechSynthesis.speak(utterance);
+    } catch (err) {
+      console.warn('Speech synthesis speak call failed:', err);
+      cleanup();
+    }
   }
 
   public stop() {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-      this.onSpeakingChange?.(false);
+      soundManager.unduckAudio();
+      if (this.onSpeakingChange) {
+        this.onSpeakingChange(false);
+      }
     }
   }
 
@@ -134,23 +169,11 @@ class RobotSpeaker {
     if (this.isMuted) {
       this.stop();
     }
-    return !this.isMuted;
+    return this.isMuted;
   }
 
   public getIsMuted(): boolean {
     return this.isMuted;
-  }
-
-  public setRate(rate: number) {
-    this.rate = rate;
-  }
-
-  public setPitch(pitch: number) {
-    this.pitch = pitch;
-  }
-
-  public getVoiceName(): string {
-    return this.selectedVoice ? this.selectedVoice.name : 'System Default';
   }
 }
 

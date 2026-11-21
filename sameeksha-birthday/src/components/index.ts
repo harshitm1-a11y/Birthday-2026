@@ -6,3 +6,6 @@ export { LoadingScreen } from './LoadingScreen';
 export { default as SceneMenu } from './SceneMenu';
 export { default as SceneNavigation } from './SceneNavigation';
 export { default as SecretMessage } from './SecretMessage';
+export { MusicPlaylist } from './MusicPlaylist';
+export { RoamingCompanion } from './RoamingCompanion';
+export { RealisticPopper } from './RealisticPopper';

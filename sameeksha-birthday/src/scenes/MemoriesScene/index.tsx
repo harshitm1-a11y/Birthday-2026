@@ -37,6 +37,8 @@ const MemoriesScene: React.FC = () => {
     return () => window.removeEventListener('resize', updateRadius);
   }, []);
 
+  const [speedMultiplier, setSpeedMultiplier] = useState(0.035); // 4x slower and elegant!
+
   // Continuous auto-rotation using requestAnimationFrame
   const isDraggingRef = useRef(false);
   const startXRef = useRef(0);
@@ -45,10 +47,10 @@ const MemoriesScene: React.FC = () => {
 
   const animate = useCallback(() => {
     if (!isPaused && !isDraggingRef.current && viewMode === 'cylinder') {
-      setRotation((prev) => (prev + 0.14 * direction) % 360);
+      setRotation((prev) => (prev + speedMultiplier * direction) % 360);
     }
     rafRef.current = requestAnimationFrame(animate);
-  }, [isPaused, direction, viewMode]);
+  }, [isPaused, direction, viewMode, speedMultiplier]);
 
   useEffect(() => {
     rafRef.current = requestAnimationFrame(animate);
@@ -185,6 +187,14 @@ const MemoriesScene: React.FC = () => {
                 >
                   <span>🔄 Reverse</span>
                 </button>
+
+                <button
+                  className="magic-button magic-button-secondary magic-button-small"
+                  onClick={() => setSpeedMultiplier((s) => (s <= 0.035 ? 0.08 : 0.035))}
+                  style={{ fontSize: '0.8rem', padding: '0.35rem 0.8rem' }}
+                >
+                  <span>{speedMultiplier <= 0.035 ? '🐇 Faster' : '🐢 Slow Drift'}</span>
+                </button>
               </>
             )}
 
@@ -201,6 +211,8 @@ const MemoriesScene: React.FC = () => {
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
               onPointerCancel={handlePointerUp}
+              onPointerEnter={() => setIsPaused(true)}
+              onPointerLeave={() => setIsPaused(false)}
             >
               <div
                 className="cylinder-carousel"
@@ -307,14 +319,33 @@ const MemoriesScene: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
             onClick={() => setSelectedIdx(null)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 140,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(5, 5, 18, 0.88)',
+              backdropFilter: 'blur(16px)',
+              padding: '16px',
+            }}
           >
             <motion.div
               className="gallery-modal-content"
-              initial={{ scale: 0.5, rotateY: 25, opacity: 0 }}
-              animate={{ scale: 1, rotateY: 0, opacity: 1 }}
-              exit={{ scale: 0.5, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 280, damping: 22 }}
+              initial={{ scale: 0.88, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.88, opacity: 0, y: 15 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 26 }}
+              style={{
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                willChange: 'transform, opacity',
+              }}
               onClick={(e) => e.stopPropagation()}
             >
               <button

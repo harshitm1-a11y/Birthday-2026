@@ -192,16 +192,16 @@ const CompanionScene: React.FC = () => {
   const dialogues = content.companion.dialogues;
   const isLast = dialogueIdx >= dialogues.length - 1;
 
-  // Set speech callback on mount
+  // Set speech callback on mount and speak initial dialogue
   useEffect(() => {
     robotSpeaker.setSpeakingCallback((speaking) => {
       setIsSpeaking(speaking);
     });
 
-    // Speak initial dialogue after a short delay
     const timer = setTimeout(() => {
-      robotSpeaker.speak(dialogues[dialogueIdx]);
-    }, 500);
+      const cur = dialogues[dialogueIdx];
+      robotSpeaker.speak(cur.text, cur.spokenHindi);
+    }, 600);
 
     return () => {
       clearTimeout(timer);
@@ -217,14 +217,15 @@ const CompanionScene: React.FC = () => {
     if (!isLast) {
       const nextIdx = dialogueIdx + 1;
       setDialogueIdx(nextIdx);
-      // Trigger speak directly in user click event to bypass browser autoplay restrictions
-      robotSpeaker.speak(dialogues[nextIdx]);
+      const nextD = dialogues[nextIdx];
+      robotSpeaker.speak(nextD.text, nextD.spokenHindi);
     }
   };
 
   const handleReplayVoice = (e: React.MouseEvent) => {
     e.stopPropagation();
-    robotSpeaker.speak(dialogues[dialogueIdx]);
+    const cur = dialogues[dialogueIdx];
+    robotSpeaker.speak(cur.text, cur.spokenHindi);
   };
 
   const handleToggleMute = (e: React.MouseEvent) => {
@@ -232,7 +233,8 @@ const CompanionScene: React.FC = () => {
     const unmuted = robotSpeaker.toggleMute();
     setIsMuted(!unmuted);
     if (unmuted) {
-      robotSpeaker.speak(dialogues[dialogueIdx]);
+      const cur = dialogues[dialogueIdx];
+      robotSpeaker.speak(cur.text, cur.spokenHindi);
     }
   };
 
@@ -275,7 +277,9 @@ const CompanionScene: React.FC = () => {
               onClick={handleNextDialogue}
               style={{ cursor: 'pointer', userSelect: 'none' }}
             >
-              {dialogues[dialogueIdx]}
+              <div style={{ fontSize: '1.15rem', fontWeight: 500, lineHeight: 1.5 }}>
+                {dialogues[dialogueIdx].text}
+              </div>
 
               {/* Voice controls & indicator inside speech bubble */}
               <div
