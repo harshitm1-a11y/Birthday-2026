@@ -1,0 +1,8 @@
+[build]
+  command = "npm --prefix sameeksha-birthday run build && node scripts/sync-build.mjs"
+  publish = "sameeksha-birthday/dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
