@@ -207,6 +207,12 @@ const RealisticTeddy: React.FC<{
 
 export const RoamingCompanion: React.FC = () => {
   const currentScene = useExperienceStore((s) => s.currentScene);
+  
+  // Hide Teddy mascot completely during Long Drive Scene as requested
+  if (currentScene === 7) {
+    return null;
+  }
+
   const dropCompanionCake = useExperienceStore((s) => s.dropCompanionCake);
   const cakesDropped = useExperienceStore((s) => s.companionCakesDropped);
   const isCompanionCuttingCake = useExperienceStore((s) => s.isCompanionCuttingCake);
