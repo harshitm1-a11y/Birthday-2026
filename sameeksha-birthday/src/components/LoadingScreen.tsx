@@ -161,7 +161,8 @@ export function LoadingScreen({ onComplete }: Props) {
     }
   };
 
-  const isGateUnlocked = loveVerified && otpVerified && cypherVerified;
+  // Gate unlocks if love is verified AND either OTP (2311) OR Cypher (1981432) is verified (or both!)
+  const isGateUnlocked = loveVerified && (otpVerified || cypherVerified);
 
   return (
     <div
@@ -699,7 +700,7 @@ export function LoadingScreen({ onComplete }: Props) {
               }}
             >
               <span>{isGateUnlocked ? '✨' : '🔒'}</span>
-              <span>{isGateUnlocked ? 'Enter Harshit\'s Universe 💖' : 'Unlock All 3 Steps Above'}</span>
+              <span>{isGateUnlocked ? 'Enter Harshit\'s Universe 💖' : 'Unlock Steps Above (Step 1 + Step 2/3)'}</span>
               <span>{isGateUnlocked ? '✨' : ''}</span>
             </motion.button>
           </motion.div>

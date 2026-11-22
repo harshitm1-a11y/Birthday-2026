@@ -234,14 +234,14 @@ export default function App() {
       <FloralBloomTransition isTransitioning={isBloomTransitioning} />
 
       {/* Current Scene with smooth fade */}
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         <motion.div
           key={currentScene}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          style={{ position: 'fixed', inset: 0, zIndex: 5 }}
+          transition={{ duration: 0.4 }}
+          style={{ position: 'fixed', inset: 0, zIndex: 10 }}
         >
           <SceneErrorBoundary currentScene={currentScene}>
             <ActiveScene />
@@ -251,7 +251,7 @@ export default function App() {
 
       {/* Global UI Overlays: Clean music player, bottom navigation, and funny roaming companion */}
       <MusicPlaylist />
-      <RoamingCompanion />
+      {currentScene !== 7 && <RoamingCompanion />}
       <SceneNavigation />
     </div>
   );
