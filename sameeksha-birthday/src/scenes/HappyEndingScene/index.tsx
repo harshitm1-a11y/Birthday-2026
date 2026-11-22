@@ -526,7 +526,7 @@ const HappyEndingScene: React.FC = () => {
           </p>
 
           {/* Interactive Wish Lantern Action Button */}
-          <div style={{ marginBottom: '1.6rem' }}>
+          <div style={{ marginBottom: '1.4rem' }}>
             <motion.button
               type="button"
               className="magic-button"
@@ -555,6 +555,83 @@ const HappyEndingScene: React.FC = () => {
               🏮 Sky Lanterns Floating in Space: <strong>{releasedCount + 38}</strong>
             </div>
           </div>
+
+          {/* Big Prominent Long Drive Invitation Card Right Near the Top */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.25 }}
+            style={{
+              background: 'linear-gradient(135deg, rgba(244, 63, 94, 0.32), rgba(251, 191, 36, 0.28), rgba(139, 92, 246, 0.32))',
+              border: '2px solid rgba(251, 191, 36, 0.95)',
+              borderRadius: '24px',
+              padding: '16px 20px',
+              marginBottom: '1.8rem',
+              backdropFilter: 'blur(14px)',
+              boxShadow: '0 0 35px rgba(244, 63, 94, 0.45), 0 0 50px rgba(251, 191, 36, 0.3)',
+              textAlign: 'center',
+            }}
+          >
+            <div
+              style={{
+                fontSize: '0.8rem',
+                color: '#fef08a',
+                fontWeight: 800,
+                letterSpacing: '2px',
+                textTransform: 'uppercase',
+                marginBottom: '4px',
+              }}
+            >
+              🌟 Grand Finale Next Chapter 🌟
+            </div>
+            <h2
+              style={{
+                fontSize: 'clamp(1.2rem, 3.5vw, 1.55rem)',
+                fontWeight: 900,
+                color: '#ffffff',
+                margin: '0 0 6px 0',
+                textShadow: '0 2px 10px rgba(0,0,0,0.8)',
+              }}
+            >
+              Midnight Long Drive With Sameeksha 🚗 🏍️ 🌙
+            </h2>
+            <p
+              style={{
+                fontSize: '0.88rem',
+                color: '#fed7aa',
+                margin: '0 0 14px 0',
+                lineHeight: 1.5,
+              }}
+            >
+              Abhi hamara safar khatam nahi hua hai Sameeksha! Royal Enfield Bullet ya Luxury BMW car choose karke chaliye taaron ke niche ek pyari si long drive par! ✨
+            </p>
+            <motion.button
+              type="button"
+              className="magic-button"
+              onClick={() => {
+                soundManager.playTwinkle();
+                setScene(7);
+              }}
+              whileHover={{ scale: 1.06 }}
+              whileTap={{ scale: 0.94 }}
+              style={{
+                background: 'linear-gradient(135deg, #f43f5e, #fbbf24, #a855f7)',
+                color: '#fff',
+                border: '2px solid #ffffff',
+                borderRadius: '30px',
+                padding: '12px 30px',
+                fontSize: '1rem',
+                fontWeight: 900,
+                cursor: 'pointer',
+                boxShadow: '0 0 25px rgba(244, 63, 94, 0.7), 0 0 40px rgba(251, 191, 36, 0.5)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <span>🚗 Chalein Long Drive Pe! (Click Here) 🏍️💨</span>
+            </motion.button>
+          </motion.div>
 
           {/* Glassmorphic Emotional Letter Card from Harshit */}
           <motion.div

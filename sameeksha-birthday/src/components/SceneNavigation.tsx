@@ -82,7 +82,7 @@ const SceneNavigation: React.FC = () => {
                 }}
               >
                 <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#fbbf24' }}>
-                  Select Birthday Scene (1 - 7)
+                  Select Birthday Scene (1 - {totalScenes})
                 </span>
                 <button
                   type="button"
@@ -150,7 +150,8 @@ const SceneNavigation: React.FC = () => {
       <div
         style={{
           position: 'fixed',
-          bottom: '14px',
+          bottom: currentScene === 7 ? 'auto' : '14px',
+          top: currentScene === 7 ? '68px' : 'auto',
           left: 0,
           right: 0,
           display: 'flex',
@@ -250,7 +251,7 @@ const SceneNavigation: React.FC = () => {
         >
           <span>{SCENE_EMOJIS[currentScene]}</span>
           <span style={{ color: '#fbbf24' }}>
-            {currentScene + 1}/7: {currentTitle}
+            {currentScene + 1}/{totalScenes}: {currentTitle}
           </span>
           <span style={{ fontSize: '0.65rem', color: '#fbbf24' }}>▾</span>
         </motion.button>
@@ -297,26 +298,35 @@ const SceneNavigation: React.FC = () => {
             background:
               currentScene === totalScenes - 1
                 ? 'rgba(255, 255, 255, 0.05)'
+                : currentScene === 6
+                ? 'linear-gradient(135deg, #f43f5e, #fbbf24, #a855f7)'
                 : 'linear-gradient(135deg, #f59e0b, #ec4899)',
             border:
               currentScene === totalScenes - 1
                 ? '1px solid rgba(255, 255, 255, 0.1)'
+                : currentScene === 6
+                ? '2px solid #fbbf24'
                 : '1px solid rgba(251, 191, 36, 0.5)',
             color: currentScene === totalScenes - 1 ? 'rgba(255, 255, 255, 0.3)' : '#fff',
             borderRadius: '9999px',
-            padding: '6px 14px',
+            padding: currentScene === 6 ? '6px 16px' : '6px 14px',
             fontSize: '0.8rem',
-            fontWeight: 600,
+            fontWeight: 700,
             cursor: currentScene === totalScenes - 1 ? 'not-allowed' : 'pointer',
             display: 'flex',
             alignItems: 'center',
             gap: '4px',
-            boxShadow: currentScene === totalScenes - 1 ? 'none' : '0 2px 10px rgba(245, 158, 11, 0.4)',
+            boxShadow:
+              currentScene === totalScenes - 1
+                ? 'none'
+                : currentScene === 6
+                ? '0 0 16px rgba(244, 63, 94, 0.7), 0 0 25px rgba(251, 191, 36, 0.5)'
+                : '0 2px 10px rgba(245, 158, 11, 0.4)',
             transition: 'all 0.2s',
           }}
-          aria-label="Go to next scene"
+          aria-label={currentScene === 6 ? 'Step into Midnight Long Drive' : 'Go to next scene'}
         >
-          <span>Next</span>
+          <span>{currentScene === 6 ? 'Long Drive 🚗' : 'Next'}</span>
           <span>›</span>
         </motion.button>
       </motion.nav>

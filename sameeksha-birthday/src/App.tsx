@@ -32,6 +32,87 @@ const scenes = [
   LongDriveScene,
 ];
 
+// Error Boundary to prevent any scene crash from creating a blank screen
+class SceneErrorBoundary extends React.Component<
+  { children: React.ReactNode; currentScene: number },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: { children: React.ReactNode; currentScene: number }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, info: any) {
+    console.error('Scene rendering error caught by boundary:', error, info);
+  }
+
+  componentDidUpdate(prevProps: { currentScene: number }) {
+    if (prevProps.currentScene !== this.props.currentScene && this.state.hasError) {
+      this.setState({ hasError: false, error: null });
+    }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: '#070414',
+            color: '#fff',
+            padding: '20px',
+            textAlign: 'center',
+            zIndex: 50,
+          }}
+        >
+          <div
+            style={{
+              background: 'rgba(25, 18, 48, 0.95)',
+              border: '2px solid rgba(251, 191, 36, 0.7)',
+              borderRadius: '24px',
+              padding: '24px',
+              maxWidth: '450px',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.8)',
+            }}
+          >
+            <div style={{ fontSize: '2rem', marginBottom: '8px' }}>✨ 💖 ✨</div>
+            <h3 style={{ color: '#fbbf24', margin: '0 0 10px 0' }}>Sameeksha's Universe</h3>
+            <p style={{ color: '#fed7aa', fontSize: '0.9rem', marginBottom: '16px' }}>
+              Scene reload ho raha hai... Kripya neeche button daba kar aage ya peeche chalein!
+            </p>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <button
+                type="button"
+                onClick={() => this.setState({ hasError: false, error: null })}
+                style={{
+                  background: 'linear-gradient(135deg, #f43f5e, #fbbf24)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '20px',
+                  padding: '10px 20px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                🔄 Refresh Scene
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export default function App() {
   const [loaded, setLoaded] = React.useState(false);
   const currentScene = useExperienceStore((s) => s.currentScene);
@@ -110,8 +191,7 @@ export default function App() {
         soundManager.playTrack('hindi-channa-mereya', 58);
         break;
       case 7:
-        // Long Drive Scene: Mika Singh's iconic "Long Drive" original studio track!
-        soundManager.playTrack('party-long-drive', 0);
+        // Handled directly inside LongDriveScene dedicated controller to prevent race conditions
         break;
     }
   }, [currentScene]);
@@ -163,7 +243,9 @@ export default function App() {
           transition={{ duration: 0.5 }}
           style={{ position: 'fixed', inset: 0, zIndex: 5 }}
         >
-          <ActiveScene />
+          <SceneErrorBoundary currentScene={currentScene}>
+            <ActiveScene />
+          </SceneErrorBoundary>
         </motion.div>
       </AnimatePresence>
 

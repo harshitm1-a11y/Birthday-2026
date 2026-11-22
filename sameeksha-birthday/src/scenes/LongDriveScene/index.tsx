@@ -41,6 +41,9 @@ const ROMANTIC_QUOTES = [
 const LongDriveScene: React.FC = () => {
   const setScene = useExperienceStore((s) => s.setScene);
 
+  // Initial Vehicle Selection state ("phle ye aaye ki kese jaayege like pedal, bike, ya car")
+  const [hasStartedDrive, setHasStartedDrive] = useState(false);
+
   // Vehicle & Speed states (Speeds: explicitly 30, 60, 100 km/h as requested)
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleType>('bike');
   const [speedKm, setSpeedKm] = useState<SpeedSetting>(60);
@@ -70,13 +73,29 @@ const LongDriveScene: React.FC = () => {
     return getAssetUrl(content.photos[0]?.src || '/images/IMG-20250423-WA0001.jpg');
   }, []);
 
-  // 1. Play 1st Song: Mika Singh's "Long Drive" on mount
+  // 1. Play Song safely: 1st song Mika Singh's "Long Drive", then others sequentially
   useEffect(() => {
     soundManager.initCtx();
     const song = LONG_DRIVE_PLAYLIST[currentSongIdx];
-    soundManager.playTrack(song.id, song.startSec);
+    try {
+      if (soundManager.getCurrentTrack()?.id !== song.id || !soundManager.isPlaying()) {
+        soundManager.playTrack(song.id, song.startSec);
+      }
+    } catch (e) {
+      console.warn('Road song play warning:', e);
+    }
     setIsPlayingMusic(true);
-  }, [currentSongIdx]);
+  }, [currentSongIdx, hasStartedDrive]);
+
+  // Subscribe to audio changes
+  useEffect(() => {
+    const unsub = soundManager.subscribe(() => {
+      setIsPlayingMusic(soundManager.isPlaying());
+    });
+    return () => {
+      unsub();
+    };
+  }, []);
 
   // Handle Next Song in dedicated road playlist
   const handleNextSong = () => {
@@ -175,189 +194,204 @@ const LongDriveScene: React.FC = () => {
     window.addEventListener('resize', resize);
 
     const render = () => {
-      time += 0.016;
-      const w = canvas.width;
-      const h = canvas.height;
-      const horizonY = h * 0.52;
+      try {
+        time += 0.016;
+        const w = Math.max(320, canvas.width || window.innerWidth || 1024);
+        const h = Math.max(240, canvas.height || window.innerHeight || 768);
+        const horizonY = h * 0.52;
 
-      // Sky: Deep Midnight Nebula Gradient
-      const skyGrad = ctx.createLinearGradient(0, 0, 0, horizonY);
-      skyGrad.addColorStop(0, '#04020a');
-      skyGrad.addColorStop(0.4, '#0f0822');
-      skyGrad.addColorStop(0.8, '#1e1136');
-      skyGrad.addColorStop(1, '#2c184d');
-      ctx.fillStyle = skyGrad;
-      ctx.fillRect(0, 0, w, horizonY);
+        // Sky: Deep Midnight Nebula Gradient
+        const skyGrad = ctx.createLinearGradient(0, 0, 0, horizonY);
+        skyGrad.addColorStop(0, '#04020a');
+        skyGrad.addColorStop(0.4, '#0f0822');
+        skyGrad.addColorStop(0.8, '#1e1136');
+        skyGrad.addColorStop(1, '#2c184d');
+        ctx.fillStyle = skyGrad;
+        ctx.fillRect(0, 0, w, horizonY);
 
-      // Stars
-      stars.forEach((s) => {
-        const twinkle = Math.sin(time * 3 + s.x) * 0.25;
-        ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.15, s.alpha + twinkle)})`;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fill();
-      });
+        // Stars
+        stars.forEach((s) => {
+          const twinkle = Math.sin(time * 3 + s.x) * 0.25;
+          ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.15, s.alpha + twinkle)})`;
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
 
-      // Realistic Moon with Lunar Haze
-      const moonX = w * 0.84;
-      const moonY = h * 0.17;
-      const moonRadius = Math.min(w, h) * 0.062;
+        // Realistic Moon with Lunar Haze
+        const moonX = w * 0.84;
+        const moonY = h * 0.17;
+        const moonRadius = Math.max(8, Math.min(w, h) * 0.062);
 
-      const moonGlow = ctx.createRadialGradient(moonX, moonY, moonRadius * 0.3, moonX, moonY, moonRadius * 3.2);
-      moonGlow.addColorStop(0, 'rgba(254, 240, 138, 0.45)');
-      moonGlow.addColorStop(0.4, 'rgba(251, 191, 36, 0.15)');
-      moonGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      ctx.fillStyle = moonGlow;
-      ctx.beginPath();
-      ctx.arc(moonX, moonY, moonRadius * 3.2, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Moon Body
-      ctx.fillStyle = '#fef9c3';
-      ctx.beginPath();
-      ctx.arc(moonX, moonY, moonRadius, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#fde047';
-      ctx.beginPath();
-      ctx.arc(moonX - moonRadius * 0.25, moonY - moonRadius * 0.2, moonRadius * 0.24, 0, Math.PI * 2);
-      ctx.arc(moonX + moonRadius * 0.32, moonY + moonRadius * 0.25, moonRadius * 0.28, 0, Math.PI * 2);
-      ctx.arc(moonX + moonRadius * 0.08, moonY - moonRadius * 0.35, moonRadius * 0.16, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Distant Parallax City Skyline & Mountains
-      cityOffset = (cityOffset + speedMultiplier * 0.12) % 360;
-      ctx.fillStyle = '#170f30';
-      const bWidth = 48;
-      for (let bx = -bWidth; bx < w + bWidth; bx += bWidth) {
-        const heightIdx = Math.abs(Math.sin((bx + cityOffset * 0.6) * 0.02)) * 65 + 35;
-        ctx.fillRect(bx - (cityOffset % bWidth), horizonY - heightIdx, bWidth - 4, heightIdx);
-        // Illuminated window dots
-        ctx.fillStyle = 'rgba(251, 191, 36, 0.55)';
-        for (let wy = horizonY - heightIdx + 10; wy < horizonY - 8; wy += 14) {
-          if (Math.sin(bx + wy) > 0.05) {
-            ctx.fillRect(bx - (cityOffset % bWidth) + 8, wy, 4, 6);
-            ctx.fillRect(bx - (cityOffset % bWidth) + 24, wy, 4, 6);
-          }
-        }
-        ctx.fillStyle = '#170f30';
-      }
-
-      // Roadside Silhouetted Trees
-      treeOffset = (treeOffset + speedMultiplier * 0.38) % 180;
-      ctx.fillStyle = '#0c061a';
-      for (let tx = -80; tx < w + 80; tx += 90) {
-        const xPos = tx - (treeOffset % 90);
-        ctx.beginPath();
-        ctx.moveTo(xPos, horizonY);
-        ctx.lineTo(xPos + 20, horizonY - 48);
-        ctx.lineTo(xPos + 40, horizonY);
-        ctx.fill();
-      }
-
-      // Realistic Dark Asphalt Highway
-      const roadGrad = ctx.createLinearGradient(0, horizonY, 0, h);
-      roadGrad.addColorStop(0, '#151520');
-      roadGrad.addColorStop(0.25, '#181824');
-      roadGrad.addColorStop(1, '#0c0c14');
-      ctx.fillStyle = roadGrad;
-      ctx.fillRect(0, horizonY, w, h - horizonY);
-
-      // Road shoulder & guardrail base
-      ctx.fillStyle = '#334155';
-      ctx.fillRect(0, horizonY, w, 7);
-
-      // Highway Guardrails & Amber Reflectors (Cat's Eyes)
-      const reflectorUnit = 120;
-      const refOffset = (roadOffset + speedMultiplier * 2.5) % reflectorUnit;
-      for (let rx = -reflectorUnit; rx < w + reflectorUnit; rx += reflectorUnit) {
-        const rPos = rx - refOffset;
-        ctx.fillStyle = '#f59e0b';
-        ctx.beginPath();
-        ctx.arc(rPos, horizonY + 5, 2.5, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // Scrolling Center Highway Lines (Bright Dashed White & Yellow Lines)
-      roadOffset = (roadOffset + speedMultiplier * 2.5) % 130;
-      const centerY = horizonY + (h - horizonY) * 0.58;
-
-      ctx.save();
-      ctx.fillStyle = '#fbbf24';
-      ctx.shadowColor = 'rgba(251, 191, 36, 0.7)';
-      ctx.shadowBlur = 10;
-      const dashLength = 70;
-      const gapLength = 60;
-      const totalDashUnit = dashLength + gapLength;
-
-      for (let dx = -totalDashUnit; dx < w + totalDashUnit; dx += totalDashUnit) {
-        const currentX = dx - (roadOffset % totalDashUnit);
-        ctx.fillRect(currentX, centerY - 2, dashLength, 5);
-      }
-      ctx.restore();
-
-      // Overhead Curved Highway Streetlamps with Dynamic Amber Light Pools
-      lampOffset = (lampOffset + speedMultiplier * 1.8) % 460;
-      for (let lx = -460; lx < w + 460; lx += 460) {
-        const lampX = lx - (lampOffset % 460);
-
-        ctx.strokeStyle = '#64748b';
-        ctx.lineWidth = 3.5;
-        ctx.beginPath();
-        ctx.moveTo(lampX, horizonY + 25);
-        ctx.lineTo(lampX, horizonY - 85);
-        ctx.quadraticCurveTo(lampX, horizonY - 118, lampX + 40, horizonY - 118);
-        ctx.stroke();
-
-        ctx.fillStyle = '#fef08a';
-        ctx.beginPath();
-        ctx.arc(lampX + 40, horizonY - 118, 5.5, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Warm light cone cast on road
-        const coneGrad = ctx.createRadialGradient(
-          lampX + 40,
-          horizonY + 80,
-          10,
-          lampX + 40,
-          horizonY + 80,
-          170
+        const moonGlow = ctx.createRadialGradient(
+          moonX,
+          moonY,
+          Math.max(1, moonRadius * 0.3),
+          moonX,
+          moonY,
+          Math.max(6, moonRadius * 3.2)
         );
-        coneGrad.addColorStop(0, 'rgba(254, 240, 138, 0.25)');
-        coneGrad.addColorStop(0.5, 'rgba(251, 191, 36, 0.08)');
-        coneGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
-        ctx.fillStyle = coneGrad;
+        moonGlow.addColorStop(0, 'rgba(254, 240, 138, 0.45)');
+        moonGlow.addColorStop(0.4, 'rgba(251, 191, 36, 0.15)');
+        moonGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = moonGlow;
         ctx.beginPath();
-        ctx.ellipse(lampX + 40, horizonY + 80, 140, 50, 0, 0, Math.PI * 2);
+        ctx.arc(moonX, moonY, Math.max(6, moonRadius * 3.2), 0, Math.PI * 2);
         ctx.fill();
+
+        // Moon Body
+        ctx.fillStyle = '#fef9c3';
+        ctx.beginPath();
+        ctx.arc(moonX, moonY, moonRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#fde047';
+        ctx.beginPath();
+        ctx.arc(moonX - moonRadius * 0.25, moonY - moonRadius * 0.2, Math.max(1, moonRadius * 0.24), 0, Math.PI * 2);
+        ctx.arc(moonX + moonRadius * 0.32, moonY + moonRadius * 0.25, Math.max(1, moonRadius * 0.28), 0, Math.PI * 2);
+        ctx.arc(moonX + moonRadius * 0.08, moonY - moonRadius * 0.35, Math.max(1, moonRadius * 0.16), 0, Math.PI * 2);
+        ctx.fill();
+
+        // Distant Parallax City Skyline & Mountains
+        cityOffset = (cityOffset + speedMultiplier * 0.12) % 360;
+        ctx.fillStyle = '#170f30';
+        const bWidth = 48;
+        for (let bx = -bWidth; bx < w + bWidth; bx += bWidth) {
+          const heightIdx = Math.abs(Math.sin((bx + cityOffset * 0.6) * 0.02)) * 65 + 35;
+          ctx.fillRect(bx - (cityOffset % bWidth), horizonY - heightIdx, bWidth - 4, heightIdx);
+          // Illuminated window dots
+          ctx.fillStyle = 'rgba(251, 191, 36, 0.55)';
+          for (let wy = horizonY - heightIdx + 10; wy < horizonY - 8; wy += 14) {
+            if (Math.sin(bx + wy) > 0.05) {
+              ctx.fillRect(bx - (cityOffset % bWidth) + 8, wy, 4, 6);
+              ctx.fillRect(bx - (cityOffset % bWidth) + 24, wy, 4, 6);
+            }
+          }
+          ctx.fillStyle = '#170f30';
+        }
+
+        // Roadside Silhouetted Trees
+        treeOffset = (treeOffset + speedMultiplier * 0.38) % 180;
+        ctx.fillStyle = '#0c061a';
+        for (let tx = -80; tx < w + 80; tx += 90) {
+          const xPos = tx - (treeOffset % 90);
+          ctx.beginPath();
+          ctx.moveTo(xPos, horizonY);
+          ctx.lineTo(xPos + 20, horizonY - 48);
+          ctx.lineTo(xPos + 40, horizonY);
+          ctx.fill();
+        }
+
+        // Realistic Dark Asphalt Highway
+        const roadGrad = ctx.createLinearGradient(0, horizonY, 0, h);
+        roadGrad.addColorStop(0, '#151520');
+        roadGrad.addColorStop(0.25, '#181824');
+        roadGrad.addColorStop(1, '#0c0c14');
+        ctx.fillStyle = roadGrad;
+        ctx.fillRect(0, horizonY, w, h - horizonY);
+
+        // Road shoulder & guardrail base
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(0, horizonY, w, 7);
+
+        // Highway Guardrails & Amber Reflectors (Cat's Eyes)
+        const reflectorUnit = 120;
+        const refOffset = (roadOffset + speedMultiplier * 2.5) % reflectorUnit;
+        for (let rx = -reflectorUnit; rx < w + reflectorUnit; rx += reflectorUnit) {
+          const rPos = rx - refOffset;
+          ctx.fillStyle = '#f59e0b';
+          ctx.beginPath();
+          ctx.arc(rPos, horizonY + 5, 2.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Scrolling Center Highway Lines (Bright Dashed White & Yellow Lines)
+        roadOffset = (roadOffset + speedMultiplier * 2.5) % 130;
+        const centerY = horizonY + (h - horizonY) * 0.58;
+
+        ctx.save();
+        ctx.fillStyle = '#fbbf24';
+        ctx.shadowColor = 'rgba(251, 191, 36, 0.7)';
+        ctx.shadowBlur = 10;
+        const dashLength = 70;
+        const gapLength = 60;
+        const totalDashUnit = dashLength + gapLength;
+
+        for (let dx = -totalDashUnit; dx < w + totalDashUnit; dx += totalDashUnit) {
+          const currentX = dx - (roadOffset % totalDashUnit);
+          ctx.fillRect(currentX, centerY - 2, dashLength, 5);
+        }
+        ctx.restore();
+
+        // Overhead Curved Highway Streetlamps with Dynamic Amber Light Pools
+        lampOffset = (lampOffset + speedMultiplier * 1.8) % 460;
+        for (let lx = -460; lx < w + 460; lx += 460) {
+          const lampX = lx - (lampOffset % 460);
+
+          ctx.strokeStyle = '#64748b';
+          ctx.lineWidth = 3.5;
+          ctx.beginPath();
+          ctx.moveTo(lampX, horizonY + 25);
+          ctx.lineTo(lampX, horizonY - 85);
+          ctx.quadraticCurveTo(lampX, horizonY - 118, lampX + 40, horizonY - 118);
+          ctx.stroke();
+
+          ctx.fillStyle = '#fef08a';
+          ctx.beginPath();
+          ctx.arc(lampX + 40, horizonY - 118, 5.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Warm light cone cast on road
+          const coneGrad = ctx.createRadialGradient(
+            lampX + 40,
+            horizonY + 80,
+            10,
+            lampX + 40,
+            horizonY + 80,
+            170
+          );
+          coneGrad.addColorStop(0, 'rgba(254, 240, 138, 0.25)');
+          coneGrad.addColorStop(0.5, 'rgba(251, 191, 36, 0.08)');
+          coneGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+          ctx.fillStyle = coneGrad;
+          ctx.beginPath();
+          if (typeof ctx.ellipse === 'function') {
+            ctx.ellipse(lampX + 40, horizonY + 80, 140, 50, 0, 0, Math.PI * 2);
+          } else {
+            ctx.arc(lampX + 40, horizonY + 80, 80, 0, Math.PI * 2);
+          }
+          ctx.fill();
+        }
+
+        // Forward Headlight Beam from Vehicle
+        const vehicleBaseX = w * 0.44;
+        const vehicleBaseY = horizonY + (h - horizonY) * 0.48;
+
+        const beamGrad = ctx.createRadialGradient(
+          vehicleBaseX + 190,
+          vehicleBaseY + 15,
+          15,
+          vehicleBaseX + 300,
+          vehicleBaseY + 15,
+          300
+        );
+        beamGrad.addColorStop(0, isHornActive ? 'rgba(255, 255, 255, 0.85)' : 'rgba(254, 240, 138, 0.5)');
+        beamGrad.addColorStop(0.55, 'rgba(251, 191, 36, 0.16)');
+        beamGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+        ctx.fillStyle = beamGrad;
+        ctx.beginPath();
+        ctx.moveTo(vehicleBaseX + 90, vehicleBaseY);
+        ctx.lineTo(vehicleBaseX + 450, vehicleBaseY - 45);
+        ctx.lineTo(vehicleBaseX + 470, vehicleBaseY + 75);
+        ctx.closePath();
+        ctx.fill();
+      } catch (err) {
+        console.warn('Canvas render error in LongDriveScene:', err);
+      } finally {
+        animationFrameId = requestAnimationFrame(render);
       }
-
-      // Forward Headlight Beam from Vehicle
-      const vehicleBaseX = w * 0.44;
-      const vehicleBaseY = horizonY + (h - horizonY) * 0.48;
-
-      const beamGrad = ctx.createRadialGradient(
-        vehicleBaseX + 190,
-        vehicleBaseY + 15,
-        15,
-        vehicleBaseX + 300,
-        vehicleBaseY + 15,
-        300
-      );
-      beamGrad.addColorStop(0, isHornActive ? 'rgba(255, 255, 255, 0.85)' : 'rgba(254, 240, 138, 0.5)');
-      beamGrad.addColorStop(0.55, 'rgba(251, 191, 36, 0.16)');
-      beamGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
-      ctx.fillStyle = beamGrad;
-      ctx.beginPath();
-      ctx.moveTo(vehicleBaseX + 90, vehicleBaseY);
-      ctx.lineTo(vehicleBaseX + 450, vehicleBaseY - 45);
-      ctx.lineTo(vehicleBaseX + 470, vehicleBaseY + 75);
-      ctx.closePath();
-      ctx.fill();
-
-      animationFrameId = requestAnimationFrame(render);
     };
 
     render();
@@ -1332,6 +1366,233 @@ const LongDriveScene: React.FC = () => {
                   Keep Driving 🚗💨
                 </button>
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 7. INITIAL VEHICLE SELECTION MODAL ("phle ye aaye ki kese jaayege like pedal, bike, ya car") */}
+      <AnimatePresence>
+        {!hasStartedDrive && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 140,
+              background: 'radial-gradient(circle at center, rgba(17, 12, 34, 0.96) 0%, rgba(5, 3, 15, 0.98) 100%)',
+              backdropFilter: 'blur(16px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '20px',
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 25 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 25 }}
+              transition={{ type: 'spring', damping: 22, stiffness: 280 }}
+              style={{
+                width: '100%',
+                maxWidth: '540px',
+                background: 'linear-gradient(135deg, rgba(30, 20, 56, 0.98), rgba(15, 10, 30, 0.98))',
+                border: '2px solid rgba(251, 191, 36, 0.85)',
+                borderRadius: '28px',
+                padding: '26px 22px',
+                textAlign: 'center',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.9), 0 0 40px rgba(244, 63, 94, 0.4)',
+                position: 'relative',
+              }}
+            >
+              <div
+                style={{
+                  display: 'inline-block',
+                  background: 'rgba(251, 191, 36, 0.2)',
+                  border: '1px solid rgba(251, 191, 36, 0.7)',
+                  borderRadius: '9999px',
+                  padding: '4px 16px',
+                  fontSize: '0.8rem',
+                  fontWeight: 800,
+                  color: '#fef08a',
+                  letterSpacing: '1.5px',
+                  marginBottom: '10px',
+                  textTransform: 'uppercase',
+                }}
+              >
+                🌙 MIDNIGHT LONG DRIVE SPECIAL 🌙
+              </div>
+
+              <h2
+                style={{
+                  fontSize: 'clamp(1.3rem, 4vw, 1.8rem)',
+                  fontWeight: 900,
+                  color: '#fff',
+                  margin: '0 0 8px 0',
+                  textShadow: '0 2px 10px rgba(0,0,0,0.8)',
+                }}
+              >
+                Sameeksha, Hum Kaise Chalein? 💖
+              </h2>
+
+              <p style={{ fontSize: '0.88rem', color: '#fed7aa', margin: '0 0 18px 0', lineHeight: 1.5 }}>
+                Aapka special birthday ride shuru ho raha hai! Apni pasandeeda gaadi choose karein aur chaliye taaron ke niche suhane safar par:
+              </p>
+
+              {/* 3 Interactive Vehicle Choice Cards */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '22px' }}>
+                {/* 1. Bullet 350 */}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleSwitchVehicle('bike')}
+                  style={{
+                    background:
+                      selectedVehicle === 'bike'
+                        ? 'linear-gradient(135deg, rgba(244, 63, 94, 0.35), rgba(251, 191, 36, 0.25))'
+                        : 'rgba(255, 255, 255, 0.05)',
+                    border: selectedVehicle === 'bike' ? '2px solid #fbbf24' : '1px solid rgba(255, 255, 255, 0.15)',
+                    borderRadius: '18px',
+                    padding: '12px 16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '14px',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    boxShadow: selectedVehicle === 'bike' ? '0 0 20px rgba(251, 191, 36, 0.4)' : 'none',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <div style={{ fontSize: '2rem' }}>🏍️</div>
+                  <div style={{ flex: 1 }}>
+                    <div
+                      style={{
+                        fontSize: '0.98rem',
+                        fontWeight: 800,
+                        color: selectedVehicle === 'bike' ? '#fef08a' : '#fff',
+                      }}
+                    >
+                      Royal Enfield Bullet 350
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: '#fed7aa' }}>
+                      Thandi hawa aur bike ride, aap mere piche pakad ke baithogi! ❤️
+                    </div>
+                  </div>
+                  {selectedVehicle === 'bike' && <span style={{ color: '#34d399', fontSize: '1.3rem', fontWeight: 900 }}>✓</span>}
+                </motion.div>
+
+                {/* 2. BMW M Roadster */}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleSwitchVehicle('car')}
+                  style={{
+                    background:
+                      selectedVehicle === 'car'
+                        ? 'linear-gradient(135deg, rgba(37, 99, 235, 0.35), rgba(139, 92, 246, 0.25))'
+                        : 'rgba(255, 255, 255, 0.05)',
+                    border: selectedVehicle === 'car' ? '2px solid #60a5fa' : '1px solid rgba(255, 255, 255, 0.15)',
+                    borderRadius: '18px',
+                    padding: '12px 16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '14px',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    boxShadow: selectedVehicle === 'car' ? '0 0 20px rgba(96, 165, 250, 0.4)' : 'none',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <div style={{ fontSize: '2rem' }}>🚗</div>
+                  <div style={{ flex: 1 }}>
+                    <div
+                      style={{
+                        fontSize: '0.98rem',
+                        fontWeight: 800,
+                        color: selectedVehicle === 'car' ? '#93c5fd' : '#fff',
+                      }}
+                    >
+                      Luxury BMW M Convertible
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: '#fed7aa' }}>
+                      Open-top luxury car, romantic music aur high speed long drive! ✨
+                    </div>
+                  </div>
+                  {selectedVehicle === 'car' && <span style={{ color: '#34d399', fontSize: '1.3rem', fontWeight: 900 }}>✓</span>}
+                </motion.div>
+
+                {/* 3. Romantic Midnight Walk */}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleSwitchVehicle('pedal')}
+                  style={{
+                    background:
+                      selectedVehicle === 'pedal'
+                        ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.35), rgba(244, 63, 94, 0.25))'
+                        : 'rgba(255, 255, 255, 0.05)',
+                    border: selectedVehicle === 'pedal' ? '2px solid #34d399' : '1px solid rgba(255, 255, 255, 0.15)',
+                    borderRadius: '18px',
+                    padding: '12px 16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '14px',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    boxShadow: selectedVehicle === 'pedal' ? '0 0 20px rgba(52, 211, 153, 0.4)' : 'none',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <div style={{ fontSize: '2rem' }}>🚶‍♂️</div>
+                  <div style={{ flex: 1 }}>
+                    <div
+                      style={{
+                        fontSize: '0.98rem',
+                        fontWeight: 800,
+                        color: selectedVehicle === 'pedal' ? '#6ee7b7' : '#fff',
+                      }}
+                    >
+                      Romantic Midnight Walk
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: '#fed7aa' }}>
+                      Taaron ke niche dheere dheere haath me haath daal kar chalte hain! 💕
+                    </div>
+                  </div>
+                  {selectedVehicle === 'pedal' && <span style={{ color: '#34d399', fontSize: '1.3rem', fontWeight: 900 }}>✓</span>}
+                </motion.div>
+              </div>
+
+              {/* Start Button */}
+              <motion.button
+                type="button"
+                onClick={() => {
+                  soundManager.initCtx();
+                  if (selectedVehicle === 'bike') soundManager.playEngineRev('bike');
+                  else if (selectedVehicle === 'car') soundManager.playEngineRev('car');
+                  else soundManager.playTwinkle();
+                  setHasStartedDrive(true);
+                }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  background: 'linear-gradient(135deg, #f43f5e, #fbbf24, #10b981)',
+                  border: '2px solid #ffffff',
+                  borderRadius: '30px',
+                  padding: '14px 34px',
+                  color: '#fff',
+                  fontSize: '1.05rem',
+                  fontWeight: 900,
+                  cursor: 'pointer',
+                  boxShadow: '0 0 30px rgba(244, 63, 94, 0.7), 0 0 45px rgba(251, 191, 36, 0.5)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+              >
+                <span>✨ Chalein Safar Par / Start Long Drive 🚗💨</span>
+              </motion.button>
             </motion.div>
           </motion.div>
         )}
