@@ -109,12 +109,28 @@ const Celebration: React.FC<CelebrationProps> = ({ active }) => {
 
     spawnBursts(canvas);
 
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        particlesRef.current = [];
+        if (burstTimerRef.current) {
+          clearTimeout(burstTimerRef.current);
+          burstTimerRef.current = null;
+        }
+      } else if (active && canvasRef.current) {
+        scheduleNextBurst();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     const scheduleNextBurst = () => {
-      if (!active) return;
-      const delay = randomBetween(1800, 3500);
+      if (!active || document.hidden) return;
+      const delay = randomBetween(2200, 4000);
       burstTimerRef.current = setTimeout(() => {
-        if (active && canvasRef.current) {
-          spawnBursts(canvasRef.current);
+        if (active && canvasRef.current && !document.hidden) {
+          // Cap total particles to 120 max
+          if (particlesRef.current.length < 90) {
+            spawnBursts(canvasRef.current);
+          }
           scheduleNextBurst();
         }
       }, delay);
@@ -163,6 +179,7 @@ const Celebration: React.FC<CelebrationProps> = ({ active }) => {
       cancelAnimationFrame(rafRef.current);
       if (burstTimerRef.current) clearTimeout(burstTimerRef.current);
       window.removeEventListener('resize', resize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [active, spawnBursts]);
 

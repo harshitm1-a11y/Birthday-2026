@@ -10,10 +10,10 @@ const LetterScene: React.FC = () => {
   const letterSkipped = useExperienceStore((s) => s.letterSkipped);
   const setLetterSkipped = useExperienceStore((s) => s.setLetterSkipped);
 
-  const [language, setLanguage] = useState<'hindi' | 'english'>('hindi');
+  const [language, setLanguage] = useState<'hindi' | 'english'>('english');
   const [isReadingVoice, setIsReadingVoice] = useState(false);
 
-  const fullText = language === 'hindi' ? content.letter.hindi : content.letter.english;
+  const fullText = language === 'english' ? content.letter.english : content.letter.hindi;
   const [displayedLength, setDisplayedLength] = useState(letterSkipped ? fullText.length : 0);
   const isComplete = displayedLength >= fullText.length;
 
@@ -54,7 +54,7 @@ const LetterScene: React.FC = () => {
     if (lang === language) return;
     soundManager.playTwinkle();
     setLanguage(lang);
-    const targetText = lang === 'hindi' ? content.letter.hindi : content.letter.english;
+    const targetText = lang === 'english' ? content.letter.english : content.letter.hindi;
     setDisplayedLength(targetText.length); // instant show when user switches language
     setLetterSkipped();
 
@@ -70,7 +70,7 @@ const LetterScene: React.FC = () => {
       setIsReadingVoice(false);
     } else {
       setIsReadingVoice(true);
-      robotSpeaker.speak(fullText, content.letter.hindi);
+      robotSpeaker.speak(fullText, language === 'english' ? content.letter.english : content.letter.hindi);
     }
   };
 

@@ -39,15 +39,15 @@ function SkyLantern({
   glowColor = '#f59e0b',
 }: LanternProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const flameRef = useRef<THREE.PointLight>(null);
   const posYRef = useRef(initialPos[1]);
 
-  useFrame(({ clock }) => {
+  useFrame(({ clock }, delta) => {
     if (!groupRef.current) return;
     const t = clock.getElapsedTime();
+    const dt = Math.min(delta, 0.04); // Cap delta so background tab / scene switch does not jump
 
     // Constant slow upward ascension
-    posYRef.current += speed * 0.022;
+    posYRef.current += speed * dt * 1.35;
     if (posYRef.current > 24) {
       posYRef.current = -8; // Loop back from below
     }
@@ -60,22 +60,17 @@ function SkyLantern({
     // Subtle gentle tilt
     groupRef.current.rotation.z = Math.sin(t * swaySpeed + swayOffset) * 0.08;
     groupRef.current.rotation.x = Math.cos(t * swaySpeed * 0.7 + swayOffset) * 0.06;
-
-    // Candle flicker inside lantern
-    if (flameRef.current) {
-      flameRef.current.intensity = 1.6 + Math.sin(t * 12 + swayOffset) * 0.45;
-    }
   });
 
   return (
     <group ref={groupRef} position={initialPos} scale={[scale, scale, scale]}>
       {/* Outer Glowing Paper Lantern Body */}
       <mesh position={[0, 0, 0]}>
-        <cylinderGeometry args={[0.32, 0.42, 0.95, 14, 1, true]} />
+        <cylinderGeometry args={[0.32, 0.42, 0.95, 12, 1, true]} />
         <meshStandardMaterial
           color="#ffedd5"
           emissive={glowColor}
-          emissiveIntensity={2.4}
+          emissiveIntensity={2.8}
           roughness={0.4}
           side={THREE.DoubleSide}
           transparent
@@ -85,11 +80,11 @@ function SkyLantern({
 
       {/* Top Paper Dome */}
       <mesh position={[0, 0.47, 0]}>
-        <sphereGeometry args={[0.32, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <sphereGeometry args={[0.32, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2]} />
         <meshStandardMaterial
           color="#ffedd5"
           emissive={glowColor}
-          emissiveIntensity={2.6}
+          emissiveIntensity={3.0}
           roughness={0.3}
           side={THREE.DoubleSide}
           transparent
@@ -99,32 +94,25 @@ function SkyLantern({
 
       {/* Bottom Bamboo Ring Rim */}
       <mesh position={[0, -0.48, 0]}>
-        <torusGeometry args={[0.42, 0.025, 8, 18]} />
+        <torusGeometry args={[0.42, 0.025, 6, 14]} />
         <meshStandardMaterial color="#78350f" roughness={0.8} />
       </mesh>
 
       {/* Cross Bamboo Struts */}
       <mesh position={[0, -0.48, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.015, 0.015, 0.84, 6]} />
+        <cylinderGeometry args={[0.015, 0.015, 0.84, 4]} />
         <meshStandardMaterial color="#78350f" />
       </mesh>
       <mesh position={[0, -0.48, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.015, 0.015, 0.84, 6]} />
+        <cylinderGeometry args={[0.015, 0.015, 0.84, 4]} />
         <meshStandardMaterial color="#78350f" />
       </mesh>
 
       {/* Internal Candle Flame */}
       <mesh position={[0, -0.4, 0]}>
-        <sphereGeometry args={[0.08, 10, 10]} />
+        <sphereGeometry args={[0.08, 8, 8]} />
         <meshBasicMaterial color="#ffffff" />
       </mesh>
-      <pointLight
-        ref={flameRef}
-        position={[0, -0.35, 0]}
-        intensity={2.0}
-        distance={4.5}
-        color={glowColor}
-      />
     </group>
   );
 }
@@ -133,8 +121,9 @@ function SkyLantern({
 function SkyLanternField({ extraLanterns }: { extraLanterns: Array<{ id: number; x: number; z: number; color: string }> }) {
   const baseLanterns = useMemo(() => {
     const list = [];
-    for (let i = 0; i < 38; i++) {
-      const angle = (i / 38) * Math.PI * 2;
+    const count = 22;
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2;
       const radius = 2.5 + Math.random() * 8.5;
       const x = Math.cos(angle) * radius + (Math.random() - 0.5) * 3;
       const z = Math.sin(angle) * radius - 2 - Math.random() * 7;
@@ -347,6 +336,16 @@ const HappyEndingScene: React.FC = () => {
   const [extraLanterns, setExtraLanterns] = useState<Array<{ id: number; x: number; z: number; color: string }>>([]);
   const [currentTrackId, setCurrentTrackId] = useState('hindi-channa-mereya');
 
+  // Sameeksha's Reply / Feedback note state
+  const [replyText, setReplyText] = useState(() => {
+    return localStorage.getItem('sameeksha_birthday_reply_2026') || '';
+  });
+  const [isReplySubmitted, setIsReplySubmitted] = useState(() => {
+    return !!localStorage.getItem('sameeksha_birthday_reply_2026');
+  });
+  const [isEditingReply, setIsEditingReply] = useState(false);
+  const [copyStatus, setCopyStatus] = useState<string | null>(null);
+
   // Play romantic anthem on mount: Channa Mereya ("Accha chalta hoon, duaon mein yaad rakhna")
   useEffect(() => {
     soundManager.playTrack('hindi-channa-mereya');
@@ -374,7 +373,8 @@ const HappyEndingScene: React.FC = () => {
       color: colors[Math.floor(Math.random() * colors.length)],
     };
 
-    setExtraLanterns((prev) => [...prev.slice(-15), newLantern]);
+    // Cap extra lanterns to 8 to guarantee smooth 60fps
+    setExtraLanterns((prev) => [...prev.slice(-7), newLantern]);
   };
 
   const handleSelectTrack = (trackId: string) => {
@@ -382,6 +382,47 @@ const HappyEndingScene: React.FC = () => {
     if (!soundManager.isPlaying()) {
       soundManager.startAmbient();
     }
+  };
+
+  const handleSaveReply = () => {
+    if (!replyText.trim()) return;
+    localStorage.setItem('sameeksha_birthday_reply_2026', replyText.trim());
+    setIsReplySubmitted(true);
+    setIsEditingReply(false);
+    soundManager.playTwinkle();
+  };
+
+  const handleShareOrCopy = async () => {
+    const textToShare = `💖 Sameeksha's Birthday Reply to Harshit 💖\n\n"${replyText.trim()}"\n\n✨ 23 November 2026 • Celestial Birthday Universe ✨`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Sameeksha's Birthday Reply for Harshit",
+          text: textToShare,
+        });
+        setCopyStatus('Shared successfully! 💖');
+        setTimeout(() => setCopyStatus(null), 3500);
+        return;
+      } catch {
+        // User cancelled share dialog
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(textToShare);
+      setCopyStatus('Copied! Take a screenshot of this card or send on WhatsApp! 📸✨');
+      setTimeout(() => setCopyStatus(null), 4000);
+    } catch {
+      setCopyStatus('Take a screenshot of this card to share with Harshit! 📸✨');
+      setTimeout(() => setCopyStatus(null), 4000);
+    }
+  };
+
+  const handleWhatsAppDirect = () => {
+    const textToShare = `💖 Sameeksha's Birthday Reply to Harshit 💖\n\n"${replyText.trim()}"\n\n✨ 23 November 2026 ✨`;
+    const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(textToShare)}`;
+    window.open(waUrl, '_blank');
   };
 
   return (
@@ -559,6 +600,295 @@ const HappyEndingScene: React.FC = () => {
             >
               {content.happyEnding.personalNote}
             </p>
+          </motion.div>
+
+          {/* Interactive Birthday Reply / Feedback Card for Sameeksha */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45, duration: 0.7 }}
+            style={{
+              background: 'linear-gradient(135deg, rgba(28, 16, 52, 0.95), rgba(17, 12, 34, 0.98))',
+              border: '2px solid rgba(251, 191, 36, 0.65)',
+              borderRadius: '24px',
+              padding: '1.6rem',
+              marginBottom: '1.8rem',
+              boxShadow: '0 16px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(251, 191, 36, 0.25)',
+              backdropFilter: 'blur(16px)',
+              textAlign: 'center',
+            }}
+          >
+            <div
+              style={{
+                display: 'inline-block',
+                background: 'rgba(251, 191, 36, 0.2)',
+                border: '1px solid rgba(251, 191, 36, 0.7)',
+                borderRadius: '9999px',
+                padding: '4px 16px',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                color: '#fef08a',
+                letterSpacing: '1.5px',
+                marginBottom: '0.6rem',
+                textTransform: 'uppercase',
+              }}
+            >
+              💌 Sameeksha's Birthday Reply 💌
+            </div>
+
+            <h3
+              style={{
+                fontSize: '1.35rem',
+                fontWeight: 700,
+                color: '#ffffff',
+                margin: '0 0 0.5rem 0',
+                textShadow: '0 2px 10px rgba(0,0,0,0.8)',
+              }}
+            >
+              Leave a Note or Feedback for Harshit ✨
+            </h3>
+
+            <p style={{ fontSize: '0.86rem', color: '#fed7aa', margin: '0 0 1.1rem 0', lineHeight: 1.5 }}>
+              Sameeksha, write your thoughts, sweet words, or birthday reply below. Harshit will read and keep this close to his heart forever!
+            </p>
+
+            {/* If submitted & not currently editing: Show Celebration Card */}
+            {isReplySubmitted && !isEditingReply ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                style={{
+                  background: 'rgba(251, 191, 36, 0.12)',
+                  border: '1.5px solid rgba(251, 191, 36, 0.6)',
+                  borderRadius: '18px',
+                  padding: '1.4rem',
+                  marginBottom: '1rem',
+                  textAlign: 'left',
+                }}
+              >
+                {/* Thank You Banner */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    color: '#34d399',
+                    fontSize: '1.05rem',
+                    fontWeight: 700,
+                    marginBottom: '0.8rem',
+                  }}
+                >
+                  <span>🎉</span>
+                  <span>Thank you so much Sameeksha! ❤️</span>
+                </div>
+                <div style={{ fontSize: '0.82rem', color: '#fef08a', marginBottom: '0.9rem' }}>
+                  Harshit will treasure your reply forever and ever! Here is your saved note:
+                </div>
+
+                {/* Formatted Keepsake Postcard for Screenshot */}
+                <div
+                  style={{
+                    background: 'rgba(0, 0, 0, 0.45)',
+                    border: '1px dashed rgba(251, 191, 36, 0.5)',
+                    borderRadius: '14px',
+                    padding: '1rem 1.2rem',
+                    color: '#fff',
+                    fontStyle: 'italic',
+                    fontSize: '0.98rem',
+                    lineHeight: 1.6,
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  "{replyText}"
+                  <div
+                    style={{
+                      textAlign: 'right',
+                      marginTop: '0.8rem',
+                      fontStyle: 'normal',
+                      fontSize: '0.82rem',
+                      color: '#fb7185',
+                      fontWeight: 600,
+                    }}
+                  >
+                    — Sameeksha 🌸 (23 Nov 2026)
+                  </div>
+                </div>
+
+                {/* Share / Screenshot Instructions & Actions */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                    <motion.button
+                      type="button"
+                      onClick={handleShareOrCopy}
+                      whileHover={{ scale: 1.04 }}
+                      whileTap={{ scale: 0.96 }}
+                      style={{
+                        background: 'linear-gradient(135deg, #10b981, #059669)',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '24px',
+                        padding: '9px 18px',
+                        fontSize: '0.85rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)',
+                      }}
+                    >
+                      <span>📸</span>
+                      <span>Share / Send to Harshit</span>
+                    </motion.button>
+
+                    <motion.button
+                      type="button"
+                      onClick={handleWhatsAppDirect}
+                      whileHover={{ scale: 1.04 }}
+                      whileTap={{ scale: 0.96 }}
+                      style={{
+                        background: 'linear-gradient(135deg, #25D366, #128C7E)',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '24px',
+                        padding: '9px 18px',
+                        fontSize: '0.85rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        boxShadow: '0 4px 15px rgba(37, 211, 102, 0.4)',
+                      }}
+                    >
+                      <span>💬</span>
+                      <span>Open WhatsApp</span>
+                    </motion.button>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingReply(true)}
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.3)',
+                        color: '#fff',
+                        borderRadius: '24px',
+                        padding: '9px 16px',
+                        fontSize: '0.82rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      ✏️ Edit Note
+                    </button>
+                  </div>
+
+                  {/* Screenshot hint */}
+                  <div
+                    style={{
+                      fontSize: '0.78rem',
+                      color: '#fed7aa',
+                      textAlign: 'center',
+                      marginTop: '6px',
+                    }}
+                  >
+                    ✨ <strong>Tip:</strong> Is card ka screenshot lekar aap WhatsApp ya Instagram par Harshit ke saath share kar sakte hain! 📸❤️
+                  </div>
+
+                  {/* Copy status toast */}
+                  {copyStatus && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      style={{
+                        background: 'rgba(251, 191, 36, 0.25)',
+                        border: '1px solid #fbbf24',
+                        color: '#fef08a',
+                        padding: '6px 12px',
+                        borderRadius: '12px',
+                        fontSize: '0.78rem',
+                        fontWeight: 600,
+                        textAlign: 'center',
+                      }}
+                    >
+                      {copyStatus}
+                    </motion.div>
+                  )}
+                </div>
+              </motion.div>
+            ) : (
+              /* Input Form */
+              <div style={{ textAlign: 'left' }}>
+                <textarea
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                  placeholder="Harshit, your surprise was so special... Here is my birthday reply to you! 💖✨"
+                  rows={4}
+                  style={{
+                    width: '100%',
+                    background: 'rgba(0, 0, 0, 0.55)',
+                    border: '1.5px solid rgba(251, 191, 36, 0.5)',
+                    borderRadius: '16px',
+                    padding: '12px 14px',
+                    color: '#ffffff',
+                    fontSize: '0.92rem',
+                    lineHeight: 1.5,
+                    resize: 'vertical',
+                    outline: 'none',
+                    boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.6)',
+                    marginBottom: '0.8rem',
+                    fontFamily: 'inherit',
+                  }}
+                />
+
+                <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <motion.button
+                    type="button"
+                    onClick={handleSaveReply}
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.96 }}
+                    disabled={!replyText.trim()}
+                    style={{
+                      background: replyText.trim()
+                        ? 'linear-gradient(135deg, #f59e0b, #ec4899)'
+                        : 'rgba(255, 255, 255, 0.1)',
+                      color: replyText.trim() ? '#fff' : 'rgba(255, 255, 255, 0.4)',
+                      border: 'none',
+                      borderRadius: '24px',
+                      padding: '10px 24px',
+                      fontSize: '0.92rem',
+                      fontWeight: 700,
+                      cursor: replyText.trim() ? 'pointer' : 'not-allowed',
+                      boxShadow: replyText.trim()
+                        ? '0 6px 20px rgba(245, 158, 11, 0.5)'
+                        : 'none',
+                    }}
+                  >
+                    💌 Save & Send Birthday Reply to Harshit
+                  </motion.button>
+
+                  {isReplySubmitted && (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingReply(false)}
+                      style={{
+                        background: 'transparent',
+                        border: '1px solid rgba(255, 255, 255, 0.3)',
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        borderRadius: '24px',
+                        padding: '10px 18px',
+                        fontSize: '0.84rem',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </motion.div>
 
           {/* Romantic Soundtrack Switcher */}

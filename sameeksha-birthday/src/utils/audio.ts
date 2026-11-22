@@ -1016,27 +1016,28 @@ class SoundManager {
     }
   }
 
-  // Acoustic Sound Effects
+  // Acoustic Sound Effects - Pleasant, realistic, festive party popper sounds
   public playPopperCannonSound() {
     try {
       this.initCtx();
       if (!this.ctx) return;
       const now = this.ctx.currentTime;
+
+      // Soft natural champagne cork / party popper "thump"
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
 
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(80, now);
-      osc.frequency.exponentialRampToValueAtTime(320, now + 0.25);
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(140, now);
+      osc.frequency.exponentialRampToValueAtTime(45, now + 0.08);
 
-      gain.gain.setValueAtTime(0.01, now);
-      gain.gain.linearRampToValueAtTime(0.35, now + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+      gain.gain.setValueAtTime(0.18, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
 
       osc.connect(gain);
       gain.connect(this.ctx.destination);
       osc.start(now);
-      osc.stop(now + 0.3);
+      osc.stop(now + 0.1);
     } catch {
       // Audio context ignored
     }
@@ -1048,35 +1049,24 @@ class SoundManager {
       if (!this.ctx) return;
       const now = this.ctx.currentTime;
 
-      const bufferSize = this.ctx.sampleRate * 0.18;
-      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-      const output = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        output[i] = Math.random() * 2 - 1;
-      }
-
-      const whiteNoise = this.ctx.createBufferSource();
-      whiteNoise.buffer = buffer;
-
-      const filter = this.ctx.createBiquadFilter();
-      filter.type = 'highpass';
-      filter.frequency.setValueAtTime(900, now);
-      filter.frequency.exponentialRampToValueAtTime(2500, now + 0.15);
-
+      // Soft crisp festive sparkle pop that harmonizes with music
+      const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
-      gain.gain.setValueAtTime(0.8, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
 
-      whiteNoise.connect(filter);
-      filter.connect(gain);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(260, now);
+      osc.frequency.exponentialRampToValueAtTime(80, now + 0.06);
+
+      gain.gain.setValueAtTime(0.14, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+
+      osc.connect(gain);
       gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.08);
 
-      whiteNoise.start(now);
-      whiteNoise.stop(now + 0.18);
-
-      setTimeout(() => {
-        this.playTwinkle();
-      }, 70);
+      // Light musical chime
+      this.playTwinkle();
     } catch {
       // Ignored
     }

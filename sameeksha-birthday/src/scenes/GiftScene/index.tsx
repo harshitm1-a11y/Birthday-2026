@@ -1248,7 +1248,10 @@ const GiftScene: React.FC = () => {
     setSelectedGiftId(id);
     const chosen = GIFTS.find((g) => g.id === id);
     if (chosen) {
-      robotSpeaker.speak(`Wow! You opened: ${chosen.name}! Tap to choose this special gift from Harshit! 💖`);
+      robotSpeaker.speak(
+        'Aapne open kar diya! Kuch waqt baad aapko Harshit ki taraf se ye sab zaroor milega! 💖',
+        `You opened ${chosen.name}! Kuch waqt baad aapko Harshit ki taraf se ye sab zaroor milega!`
+      );
     }
   };
 
@@ -1258,7 +1261,10 @@ const GiftScene: React.FC = () => {
     setSelectedGiftId(id);
     const chosen = GIFTS.find((g) => g.id === id);
     if (chosen) {
-      robotSpeaker.speak(`You chose ${chosen.name}! Ye gift aapko jald hi milega Harshit ki taraf se! 💖`);
+      robotSpeaker.speak(
+        'Aapne open kar diya! Kuch waqt baad aapko Harshit ki taraf se ye sab zaroor milega! 💖',
+        `You chose ${chosen.name}! Kuch waqt baad aapko Harshit ki taraf se ye sab zaroor milega!`
+      );
     }
   };
 
@@ -1759,20 +1765,21 @@ const GiftScene: React.FC = () => {
             {/* Harshit's Promised Gift Delivery Announcement! */}
             <div
               style={{
-                background: 'rgba(251, 191, 36, 0.15)',
-                border: '1px solid rgba(251, 191, 36, 0.5)',
-                borderRadius: '14px',
-                padding: '8px 12px',
+                background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.22), rgba(244, 63, 94, 0.22))',
+                border: '1.5px solid rgba(251, 191, 36, 0.7)',
+                borderRadius: '16px',
+                padding: '10px 14px',
                 color: '#fef08a',
-                fontSize: '0.88rem',
+                fontSize: '0.94rem',
                 fontWeight: 700,
                 margin: '0 0 0.9rem 0',
-                textShadow: '0 1px 8px rgba(0,0,0,0.6)',
+                textShadow: '0 1px 10px rgba(0,0,0,0.7)',
+                lineHeight: 1.4,
               }}
             >
-              ✨ "This special gift will be delivered to you very soon by Harshit! 💖" ✨
-              <div style={{ fontSize: '0.74rem', opacity: 0.85, marginTop: '2px', fontWeight: 500 }}>
-                (Ye gift aapko jald hi milega Harshit ki taraf se! 💖)
+              🎁 "Aapne open kar diya! Kuch waqt baad aapko Harshit ki taraf se ye sab sach me milega! ❤️"
+              <div style={{ fontSize: '0.78rem', color: '#fbcfe8', marginTop: '4px', fontWeight: 500 }}>
+                (Harshit's promise: Each of these wonderful surprises will be delivered to you in real life! ✨)
               </div>
             </div>
 

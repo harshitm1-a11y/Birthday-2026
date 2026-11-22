@@ -67,7 +67,7 @@ export const RealisticPopper: React.FC = () => {
   const rafRef = useRef<number>(0);
   const autoPopIntervalRef = useRef<any>(null);
 
-  // Resize canvas
+  // Resize canvas & handle tab visibility to prevent background queuing lag
   useEffect(() => {
     const handleResize = () => {
       if (canvasRef.current) {
@@ -77,15 +77,32 @@ export const RealisticPopper: React.FC = () => {
     };
     handleResize();
     window.addEventListener('resize', handleResize);
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // Clear pending rockets and stop auto-popping while tab is in background
+        rocketsRef.current = [];
+        flashesRef.current = [];
+        if (autoPopIntervalRef.current) {
+          clearInterval(autoPopIntervalRef.current);
+          autoPopIntervalRef.current = null;
+        }
+        setIsAutoPopping(false);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (autoPopIntervalRef.current) {
         clearInterval(autoPopIntervalRef.current);
       }
+      cancelAnimationFrame(rafRef.current);
     };
   }, []);
 
-  // Explode a rocket shell at its apex into hundreds of 3D metallic foil pieces
+  // Explode a rocket shell at its apex into crisp 3D metallic foil pieces
   const explodeRocket = (x: number, y: number, color: string) => {
     soundManager.playPopperBurstSound();
     setShowBanner(true);
@@ -95,19 +112,19 @@ export const RealisticPopper: React.FC = () => {
     flashesRef.current.push({
       x,
       y,
-      radius: 10,
-      maxRadius: 140,
-      alpha: 1.0,
+      radius: 8,
+      maxRadius: 110,
+      alpha: 0.9,
       color,
     });
 
-    // 120+ 3D metallic foil particles, curly ribbons, stars, and hearts!
+    // 50 crisp 3D metallic foil particles (capped for silky 60fps)
     const newPieces: ConfettiPiece[] = [];
-    const count = 130;
+    const count = 50;
 
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const speed = 6 + Math.random() * 22; // Explosive radial burst
+      const speed = 5 + Math.random() * 18; // Explosive radial burst
       const isRibbon = Math.random() < 0.22;
       const isStar = Math.random() < 0.15;
       const isHeart = Math.random() < 0.12;
@@ -120,26 +137,33 @@ export const RealisticPopper: React.FC = () => {
       newPieces.push({
         x,
         y,
-        vx: Math.cos(angle) * speed + (Math.random() - 0.5) * 4,
-        vy: Math.sin(angle) * speed - (Math.random() * 8 + 4), // extra upward momentum
-        width: type === 'ribbon' ? 24 : type === 'foil' ? 9 + Math.random() * 9 : 14,
-        height: type === 'ribbon' ? 32 : type === 'foil' ? 14 + Math.random() * 16 : 14,
+        vx: Math.cos(angle) * speed + (Math.random() - 0.5) * 3,
+        vy: Math.sin(angle) * speed - (Math.random() * 6 + 3),
+        width: type === 'ribbon' ? 20 : type === 'foil' ? 8 + Math.random() * 7 : 12,
+        height: type === 'ribbon' ? 28 : type === 'foil' ? 12 + Math.random() * 12 : 12,
         color: FOIL_COLORS[Math.floor(Math.random() * FOIL_COLORS.length)],
         rotation: Math.random() * Math.PI * 2,
-        rotationSpeed: (Math.random() - 0.5) * 0.25,
+        rotationSpeed: (Math.random() - 0.5) * 0.2,
         wobbleX: Math.random() * Math.PI * 2,
         wobbleY: Math.random() * Math.PI * 2,
-        wobbleSpeed: 0.08 + Math.random() * 0.1,
+        wobbleSpeed: 0.08 + Math.random() * 0.08,
         alpha: 1,
         type,
       });
     }
 
+    // Keep memory budget healthy (max 180 particles total)
+    if (confettiRef.current.length > 140) {
+      confettiRef.current.splice(0, confettiRef.current.length - 140);
+    }
     confettiRef.current.push(...newPieces);
   };
 
   // Launch a realistic popper rocket shooting up from bottom
   const launchRocket = (fromSide: 'left' | 'right' | 'center') => {
+    // Prevent rocket queue pileup and ignore if tab hidden
+    if (rocketsRef.current.length >= 3 || document.hidden) return;
+
     soundManager.playPopperCannonSound();
     const canvas = canvasRef.current;
     if (!canvas) return;
