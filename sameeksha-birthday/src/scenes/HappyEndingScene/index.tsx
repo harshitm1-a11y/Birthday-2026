@@ -321,13 +321,13 @@ function Royal3DTeddy() {
   );
 }
 
-// Romantic Song List for the Grand Happy Ending
+// Romantic Song List for the Grand Happy Ending with instant iconic vocal chorus hooks
 const ROMANTIC_HITS = [
-  { id: 'hindi-channa-mereya', name: 'Channa Mereya (Accha Chalta Hoon)', artist: 'Arijit Singh', emoji: '🌟' },
-  { id: 'hindi-tujh-mein-rab', name: 'Tujh Mein Rab Dikhta Hai', artist: 'Roop Kumar Rathod', emoji: '✨' },
-  { id: 'hindi-dil-diyan-gallan', name: 'Dil Diyan Gallan', artist: 'Atif Aslam', emoji: '💖' },
-  { id: 'hindi-raataan-lambiyan', name: 'Raataan Lambiyan', artist: 'Jubin Nautiyal & Asees', emoji: '🌙' },
-  { id: 'hindi-tera-ban-jaunga', name: 'Tera Ban Jaunga', artist: 'Akhil Sachdeva & Tulsi', emoji: '🌹' },
+  { id: 'hindi-channa-mereya', name: 'Channa Mereya (Accha Chalta Hoon)', artist: 'Arijit Singh', emoji: '🌟', vocalStart: 58 },
+  { id: 'hindi-tujh-mein-rab', name: 'Tujh Mein Rab Dikhta Hai', artist: 'Roop Kumar Rathod', emoji: '✨', vocalStart: 42 },
+  { id: 'hindi-dil-diyan-gallan', name: 'Dil Diyan Gallan', artist: 'Atif Aslam', emoji: '💖', vocalStart: 52 },
+  { id: 'hindi-raataan-lambiyan', name: 'Raataan Lambiyan', artist: 'Jubin Nautiyal & Asees', emoji: '🌙', vocalStart: 56 },
+  { id: 'hindi-tera-ban-jaunga', name: 'Tera Ban Jaunga', artist: 'Akhil Sachdeva & Tulsi', emoji: '🌹', vocalStart: 35 },
 ];
 
 const HappyEndingScene: React.FC = () => {
@@ -346,9 +346,9 @@ const HappyEndingScene: React.FC = () => {
   const [isEditingReply, setIsEditingReply] = useState(false);
   const [copyStatus, setCopyStatus] = useState<string | null>(null);
 
-  // Play romantic anthem on mount: Channa Mereya ("Accha chalta hoon, duaon mein yaad rakhna")
+  // Play romantic anthem on mount: Channa Mereya ("Accha chalta hoon, duaon mein yaad rakhna" at 58s)
   useEffect(() => {
-    soundManager.playTrack('hindi-channa-mereya');
+    soundManager.playTrack('hindi-channa-mereya', 58);
     if (!soundManager.isPlaying()) {
       soundManager.startAmbient();
     }
@@ -377,8 +377,8 @@ const HappyEndingScene: React.FC = () => {
     setExtraLanterns((prev) => [...prev.slice(-7), newLantern]);
   };
 
-  const handleSelectTrack = (trackId: string) => {
-    soundManager.playTrack(trackId);
+  const handleSelectTrack = (trackId: string, vocalStart: number = 0) => {
+    soundManager.playTrack(trackId, vocalStart);
     if (!soundManager.isPlaying()) {
       soundManager.startAmbient();
     }
@@ -912,7 +912,7 @@ const HappyEndingScene: React.FC = () => {
                   <motion.button
                     key={hit.id}
                     type="button"
-                    onClick={() => handleSelectTrack(hit.id)}
+                    onClick={() => handleSelectTrack(hit.id, hit.vocalStart)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     style={{

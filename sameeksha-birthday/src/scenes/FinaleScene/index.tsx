@@ -16,11 +16,11 @@ const flowers = [
 ];
 
 const PARTY_HITS = [
-  { id: 'party-angreji-beat', name: 'Angreji Beat', emoji: '🎉', artist: 'Honey Singh & Gippy' },
-  { id: 'punjabi-bhangra', name: 'Mundian To Bach Ke', emoji: '🥁', artist: 'Panjabi MC' },
-  { id: 'party-brown-rang', name: 'Brown Rang', emoji: '🔥', artist: 'Honey Singh' },
-  { id: 'punjabi-blue-eyes', name: 'Blue Eyes', emoji: '💙', artist: 'Honey Singh' },
-  { id: 'party-dope-shope', name: 'Dope Shope', emoji: '💃', artist: 'Deep Money' },
+  { id: 'party-angreji-beat', name: 'Angreji Beat', emoji: '🎉', artist: 'Honey Singh & Gippy', vocalStart: 34 },
+  { id: 'punjabi-bhangra', name: 'Mundian To Bach Ke', emoji: '🥁', artist: 'Panjabi MC', vocalStart: 30 },
+  { id: 'party-brown-rang', name: 'Brown Rang', emoji: '🔥', artist: 'Honey Singh', vocalStart: 38 },
+  { id: 'punjabi-blue-eyes', name: 'Blue Eyes', emoji: '💙', artist: 'Honey Singh', vocalStart: 44 },
+  { id: 'party-dope-shope', name: 'Dope Shope', emoji: '💃', artist: 'Deep Money', vocalStart: 42 },
 ];
 
 const FinaleScene: React.FC = () => {
@@ -28,9 +28,9 @@ const FinaleScene: React.FC = () => {
   const [selectedFlower, setSelectedFlower] = useState<number | null>(null);
   const [currentPartyTrackId, setCurrentPartyTrackId] = useState<string>(soundManager.getCurrentTrack().id);
 
-  // Automatically start high-energy party Punjabi soundtrack when entering finale poppers scene!
+  // Automatically start high-energy party Punjabi soundtrack right at the vocal hook!
   useEffect(() => {
-    soundManager.playTrack('party-angreji-beat');
+    soundManager.playTrack('party-angreji-beat', 34);
     if (!soundManager.isPlaying()) {
       soundManager.startAmbient();
     }
@@ -43,8 +43,8 @@ const FinaleScene: React.FC = () => {
     };
   }, []);
 
-  const handleSelectPartyTrack = (trackId: string) => {
-    soundManager.playTrack(trackId);
+  const handleSelectPartyTrack = (trackId: string, vocalStart: number = 0) => {
+    soundManager.playTrack(trackId, vocalStart);
     if (!soundManager.isPlaying()) {
       soundManager.startAmbient();
     }
@@ -126,7 +126,7 @@ const FinaleScene: React.FC = () => {
                   <motion.button
                     key={hit.id}
                     type="button"
-                    onClick={() => handleSelectPartyTrack(hit.id)}
+                    onClick={() => handleSelectPartyTrack(hit.id, hit.vocalStart)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     style={{

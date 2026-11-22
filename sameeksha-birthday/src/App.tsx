@@ -74,37 +74,37 @@ export default function App() {
     };
   }, []);
 
-  // Automatic soundtrack transitions per scene as requested!
+  // Automatic soundtrack transitions per scene with instant vocal hooks!
   useEffect(() => {
     if (!soundManager.isPlaying()) return;
     switch (currentScene) {
       case 0:
         // Front page: Tum Hi Ho - Arijit Singh original vocals
-        soundManager.playTrack('hindi-tum-hi-ho');
+        soundManager.playTrack('hindi-tum-hi-ho', 0);
         break;
       case 1:
-        // Gift scene: Raataan Lambiyan
-        soundManager.playTrack('hindi-raataan-lambiyan');
+        // Gift scene: Raataan Lambiyan (starts at vocal chorus 56s)
+        soundManager.playTrack('hindi-raataan-lambiyan', 56);
         break;
       case 2:
-        // Memories scene: Mundian To Bach Ke Punjabi
-        soundManager.playTrack('punjabi-bhangra');
+        // Memories scene: Mundian To Bach Ke Punjabi (starts at vocal hook 30s)
+        soundManager.playTrack('punjabi-bhangra', 30);
         break;
       case 3:
-        // Cake cutting scene: Happy Birthday Pop Celebration
-        soundManager.playTrack('birthday-pop');
+        // Cake cutting scene: Happy Birthday Pop Celebration (vocals from start)
+        soundManager.playTrack('birthday-pop', 0);
         break;
       case 4:
-        // Letter scene: Dil Diyan Gallan
-        soundManager.playTrack('hindi-dil-diyan-gallan');
+        // Letter scene: Dil Diyan Gallan (starts at vocal chorus 52s)
+        soundManager.playTrack('hindi-dil-diyan-gallan', 52);
         break;
       case 5:
-        // Finale celebration: Angreji Beat Punjabi party banger
-        soundManager.playTrack('party-angreji-beat');
+        // Finale celebration: Angreji Beat Punjabi party banger (starts directly at vocals 34s)
+        soundManager.playTrack('party-angreji-beat', 34);
         break;
       case 6:
-        // Grand 3D Happy Ending: Channa Mereya (Accha Chalta Hoon, Duaon Mein Yaad Rakhna)
-        soundManager.playTrack('hindi-channa-mereya');
+        // Grand 3D Happy Ending: Channa Mereya ("Accha Chalta Hoon, Duaon Mein Yaad Rakhna" iconic chorus 58s)
+        soundManager.playTrack('hindi-channa-mereya', 58);
         break;
     }
   }, [currentScene]);
