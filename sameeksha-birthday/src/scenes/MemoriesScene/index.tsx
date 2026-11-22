@@ -103,13 +103,19 @@ const MemoriesScene: React.FC = () => {
       if (prevSoundtrackRef.current) {
         soundManager.restoreTrack(prevSoundtrackRef.current);
         prevSoundtrackRef.current = null;
+      } else {
+        soundManager.resumeBackgroundAfterReel();
       }
       setReelOffset(0);
     }
-    return () => {
-      soundManager.stopReelAudio();
-    };
   }, [selectedIdx, reelOffset]);
+
+  // Clean up and restore background music if leaving the scene while photo modal is open
+  useEffect(() => {
+    return () => {
+      soundManager.resumeBackgroundAfterReel();
+    };
+  }, []);
 
   // Responsive radius based on window width
   const [radius, setRadius] = useState(480);

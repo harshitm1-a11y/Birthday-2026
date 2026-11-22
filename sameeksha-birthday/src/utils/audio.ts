@@ -514,6 +514,8 @@ class SoundManager {
   private isDucked = false;
   private synthIntervalId: any = null;
   private listeners: Set<() => void> = new Set();
+  private wasBackgroundPlayingBeforeReel = false;
+  private isReelActive = false;
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -571,6 +573,9 @@ class SoundManager {
   }
 
   public isPlaying(): boolean {
+    if (this.isReelActive && this.reelAudioElement && !this.reelAudioElement.paused && !this.reelAudioElement.ended) {
+      return true;
+    }
     return !!(this.audioElement && !this.audioElement.paused && !this.audioElement.ended);
   }
 
@@ -604,14 +609,20 @@ class SoundManager {
     if (this.audioElement) {
       this.audioElement.volume = this.isDucked ? Math.min(0.08, this.baseVolume * 0.15) : this.baseVolume;
     }
+    if (this.reelAudioElement) {
+      this.reelAudioElement.volume = this.baseVolume;
+    }
     this.notify();
   }
 
-  // Audio ducking for speech and photo reel clips
+  // Audio ducking for speech and voice greetings
   public duckAudio(duckLevel: number = 0.08) {
     this.isDucked = true;
     if (this.audioElement) {
       this.audioElement.volume = Math.min(duckLevel, this.baseVolume * 0.15);
+    }
+    if (this.reelAudioElement) {
+      this.reelAudioElement.volume = Math.min(duckLevel, this.baseVolume * 0.15);
     }
     this.notify();
   }
@@ -620,6 +631,9 @@ class SoundManager {
     this.isDucked = false;
     if (this.audioElement) {
       this.audioElement.volume = this.baseVolume;
+    }
+    if (this.reelAudioElement) {
+      this.reelAudioElement.volume = this.baseVolume;
     }
     this.notify();
   }
@@ -645,12 +659,18 @@ class SoundManager {
   }
 
   // Dedicated independent reel audio element:
-  // Never unloads background music, eliminating any stuttering or buffering!
+  // Completely pauses background music when viewing a photo, ensuring 100% focused solo vocal reel audio!
   public playReelAudio(src: string, streamUrl?: string) {
     this.initCtx();
     const assetUrl = getAssetUrl(src);
-    // Duck background music smoothly so the reel vocal hook is clear
-    this.duckAudio(0.08);
+
+    this.isReelActive = true;
+
+    // Completely pause background music so the photo reel vocal soundtrack plays solo without background noise
+    if (this.audioElement && !this.audioElement.paused) {
+      this.wasBackgroundPlayingBeforeReel = true;
+      this.audioElement.pause();
+    }
 
     if (!this.reelAudioElement && typeof window !== 'undefined') {
       this.reelAudioElement = new Audio();
@@ -675,9 +695,11 @@ class SoundManager {
         });
       }
     }
+    this.notify();
   }
 
   public stopReelAudio() {
+    this.isReelActive = false;
     if (this.reelAudioElement) {
       try {
         this.reelAudioElement.pause();
@@ -687,13 +709,29 @@ class SoundManager {
       }
     }
     this.unduckAudio();
+    this.notify();
+  }
+
+  public resumeBackgroundAfterReel() {
+    this.stopReelAudio();
+    if (this.wasBackgroundPlayingBeforeReel || this.isAudioPlaying) {
+      if (this.audioElement && this.audioElement.paused && this.isAudioPlaying) {
+        this.audioElement.volume = this.baseVolume;
+        const p = this.audioElement.play();
+        if (p !== undefined) {
+          p.catch((err) => {
+            if (err && err.name === 'AbortError') return;
+            console.warn('Resume background audio after reel:', err);
+          });
+        }
+      }
+    }
+    this.wasBackgroundPlayingBeforeReel = false;
+    this.notify();
   }
 
   public restoreTrack(_trackId?: string, _startTime: number = 0) {
-    this.stopReelAudio();
-    if (this.audioElement && this.isAudioPlaying && this.audioElement.paused) {
-      this.audioElement.play().catch(() => {});
-    }
+    this.resumeBackgroundAfterReel();
   }
 
   public nextTrack() {
@@ -718,6 +756,10 @@ class SoundManager {
   }
 
   private switchTrack(startTime: number = 0) {
+    if (this.isReelActive) {
+      this.stopReelAudio();
+      this.isReelActive = false;
+    }
     const track = PLAYLIST_TRACKS[this.currentTrackIndex];
     this.stopSynthPlayback();
     this.initAudioElement();
@@ -788,6 +830,8 @@ class SoundManager {
 
   public stopAmbient() {
     this.isAudioPlaying = false;
+    this.wasBackgroundPlayingBeforeReel = false;
+    this.isReelActive = false;
     if (this.audioElement) {
       this.audioElement.pause();
     }
