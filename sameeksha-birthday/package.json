@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "postbuild": "node -e \"const fs = require('fs'); if (fs.existsSync('dist/index.html')) { fs.copyFileSync('dist/index.html', 'dist/404.html'); fs.writeFileSync('dist/.nojekyll', ''); }\"",
     "lint": "oxlint",
     "preview": "vite preview"
   },
