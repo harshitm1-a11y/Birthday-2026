@@ -14,6 +14,126 @@ export interface ReelSongTrack {
 
 export const REEL_SONGS: ReelSongTrack[] = [
   {
+    "id": "reel-retro-01",
+    "songTitle": "Make Some Noise For The Desi Boyz",
+    "artist": "KK, Bob & Pritam (Desi Boyz)",
+    "album": "Desi Boyz (Original Motion Picture Soundtrack)",
+    "category": "celebration",
+    "src": "/audio/reels/reel-retro-01.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/82/79/43/827943ee-59e8-b535-52dd-c2b68ae62163/mzaf_5249414782359432432.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-retro-02",
+    "songTitle": "Daru Badnaam",
+    "artist": "Param Singh & Kamal Kahlon",
+    "album": "Daru Badnaam (feat. Pratik Studio) - Single",
+    "category": "punjabi",
+    "src": "/audio/reels/reel-retro-02.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/71/a4/76/71a476ea-b063-8486-8640-90faa978c35f/mzaf_1382162417360433686.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-retro-03",
+    "songTitle": "Gulabi Aankhen",
+    "artist": "Mohammed Rafi (The Train)",
+    "album": "Gulabi Aankhen \u2013 70's Romantic Hits",
+    "category": "celebration",
+    "src": "/audio/reels/reel-retro-03.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/ab/98/56/ab98569d-870a-22a3-75fe-20d6edff407c/mzaf_17642444591665641452.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-retro-04",
+    "songTitle": "Pal Pal Dil Ke Paas",
+    "artist": "Kishore Kumar (Blackmail)",
+    "album": "Blackmail (Original Soundtrack)",
+    "category": "celebration",
+    "src": "/audio/reels/reel-retro-04.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/9a/6b/20/9a6b2063-8492-9a67-7d85-3c8fedcf425f/mzaf_10296051997391143250.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-retro-05",
+    "songTitle": "Chura Liya Hai Tumne Jo Dil Ko",
+    "artist": "Asha Bhosle & Mohammed Rafi (Yaadon Ki Baaraat)",
+    "album": "Yaadon Ki Baaraat (Original Motion Picture Soundtrack)",
+    "category": "celebration",
+    "src": "/audio/reels/reel-retro-05.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/f7/cd/c1/f7cdc13c-1c2c-8f2c-01aa-615c7475e79b/mzaf_3099726714847927153.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-retro-06",
+    "songTitle": "Badan Pe Sitare Lapete Huye",
+    "artist": "Mohammed Rafi (Prince)",
+    "album": "Prince (Original Motion Picture Soundtrack)",
+    "category": "celebration",
+    "src": "/audio/reels/reel-retro-06.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/5f/74/4a/5f744a3d-caab-d650-c98c-b078ff68a302/mzaf_14064048677900128941.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-retro-07",
+    "songTitle": "Yeh Sham Mastani",
+    "artist": "Kishore Kumar (Kati Patang)",
+    "album": "Kati Patang (Original Motion Picture Soundtrack)",
+    "category": "celebration",
+    "src": "/audio/reels/reel-retro-07.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/6a/18/e7/6a18e7a2-7b8c-73df-af03-0a6c2f260048/mzaf_4865175655096928001.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-retro-08",
+    "songTitle": "Likhe Jo Khat Tujhe",
+    "artist": "Mohammed Rafi (Kanyadaan)",
+    "album": "Kanyadaan (Original Motion Picture Soundtrack)",
+    "category": "celebration",
+    "src": "/audio/reels/reel-retro-08.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/fd/8d/92/fd8d9220-cbd8-8e31-0774-40113d125d79/mzaf_5713656474480438865.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-retro-09",
+    "songTitle": "O Mere Dil Ke Chain",
+    "artist": "Kishore Kumar (Mere Jeevan Saathi)",
+    "album": "Mere Jeevan Saathi (Original Motion Picture Soundtrack)",
+    "category": "celebration",
+    "src": "/audio/reels/reel-retro-09.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/73/ed/11/73ed119d-4f77-7e5a-a12a-625453c431bc/mzaf_14126741395245293091.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-retro-10",
+    "songTitle": "Khaike Paan Banaras Wala",
+    "artist": "Kishore Kumar (Don)",
+    "album": "Don (Original Motion Picture Soundtrack)",
+    "category": "celebration",
+    "src": "/audio/reels/reel-retro-10.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/bb/8f/46/bb8f46be-2683-65bc-d89e-1bd579b0d1d8/mzaf_5105872815279144535.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-retro-11",
+    "songTitle": "Mere Sapnon Ki Rani",
+    "artist": "Kishore Kumar (Aradhana)",
+    "album": "Aradhana (Original Motion Picture Soundtrack)",
+    "category": "celebration",
+    "src": "/audio/reels/reel-retro-11.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/e6/f8/8a/e6f88ad3-6f5e-ffbf-0e5a-ec544e2285a7/mzaf_15904636086395268082.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-retro-12",
+    "songTitle": "Bachna Ae Haseeno",
+    "artist": "Kishore Kumar (Hum Kisise Kum Naheen)",
+    "album": "Hum Kisise Kum Naheen (Original Motion Picture Soundtrack)",
+    "category": "celebration",
+    "src": "/audio/reels/reel-retro-12.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/c7/76/33/c776337e-9c62-7161-0d3a-f635e5fa6d4d/mzaf_12549596945226466325.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
     "id": "reel-req-01",
     "songTitle": "Long Drive",
     "artist": "Mika Singh (Khiladi 786)",

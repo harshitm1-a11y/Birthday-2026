@@ -5,7 +5,7 @@ export interface PlaylistTrack {
   id: string;
   title: string;
   artist: string;
-  category: 'hindi' | 'punjabi' | 'theme' | 'birthday' | 'party';
+  category: 'hindi' | 'punjabi' | 'theme' | 'birthday' | 'party' | 'retro';
   type: 'file' | 'synth';
   src?: string;
   duration: string;
@@ -159,6 +159,16 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
 
   // ========== 3. PUNJABI REAL VOCAL HITS ==========
   {
+    id: 'punjabi-daru-badnaam',
+    title: 'Daru Badnaam',
+    artist: 'Param Singh & Kamal Kahlon',
+    category: 'punjabi',
+    type: 'file',
+    src: '/audio/punjabi-daru-badnaam.m4a',
+    duration: '3:30',
+    description: 'All-time massive Punjabi celebration anthem: Daru badnaam kardi!',
+  },
+  {
     id: 'punjabi-bhangra',
     title: 'Mundian To Bach Ke',
     artist: 'Panjabi MC & Labh Janjua',
@@ -220,6 +230,16 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     description: 'High-octane Punjabi bhangra celebration anthem by Mika Singh',
   },
   // ========== 4. PARTY DANCE BUSTERS ==========
+  {
+    id: 'party-desi-boyz',
+    title: 'Make Some Noise For The Desi Boyz',
+    artist: 'KK, Bob & Pritam (Desi Boyz)',
+    category: 'party',
+    type: 'file',
+    src: '/audio/party-desi-boyz.m4a',
+    duration: '3:30',
+    description: 'Iconic high-energy title track: Make some noise for the Desi Boyz!',
+  },
   {
     id: 'party-brown-rang',
     title: 'Brown Rang',
@@ -330,6 +350,107 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     duration: '3:30',
     description: 'Tang tang seetiyaan and pure celebratory energy',
   },
+  // ========== 5. GOLDEN RETRO CLASSICS (Rafi, Kishore Kumar, Asha Bhosle) ==========
+  {
+    id: 'retro-gulabi-aankhen',
+    title: 'Gulabi Aankhen',
+    artist: 'Mohammed Rafi (The Train)',
+    category: 'retro',
+    type: 'file',
+    src: '/audio/retro-gulabi-aankhen.m4a',
+    duration: '3:30',
+    description: 'Evergreen romantic celebration: Gulabi aankhen jo teri dekhi, sharabi yeh dil ho gaya!',
+  },
+  {
+    id: 'retro-pal-pal-dil-ke-paas',
+    title: 'Pal Pal Dil Ke Paas',
+    artist: 'Kishore Kumar (Blackmail)',
+    category: 'retro',
+    type: 'file',
+    src: '/audio/retro-pal-pal-dil-ke-paas.m4a',
+    duration: '3:30',
+    description: 'Timeless golden classic: Pal pal dil ke paas tum rehti ho',
+  },
+  {
+    id: 'retro-chura-liya',
+    title: 'Chura Liya Hai Tumne Jo Dil Ko',
+    artist: 'Asha Bhosle & Mohammed Rafi (Yaadon Ki Baaraat)',
+    category: 'retro',
+    type: 'file',
+    src: '/audio/retro-chura-liya.m4a',
+    duration: '3:30',
+    description: 'Legendary romantic retro melody with beautiful acoustic glasses and guitar intro',
+  },
+  {
+    id: 'retro-badan-pe-sitare',
+    title: 'Badan Pe Sitare Lapete Huye',
+    artist: 'Mohammed Rafi (Prince)',
+    category: 'retro',
+    type: 'file',
+    src: '/audio/retro-badan-pe-sitare.m4a',
+    duration: '3:30',
+    description: 'Iconic classic party melody: Badan pe sitare lapete huye, o jaan-e-tamanna kidhar jaa rahi ho',
+  },
+  {
+    id: 'retro-yeh-shaam-mastani',
+    title: 'Yeh Sham Mastani',
+    artist: 'Kishore Kumar (Kati Patang)',
+    category: 'retro',
+    type: 'file',
+    src: '/audio/retro-yeh-shaam-mastani.m4a',
+    duration: '3:30',
+    description: 'Soulful evening romance: Yeh sham mastani madhosh kiye jaaye',
+  },
+  {
+    id: 'retro-likhe-jo-khat-tujhe',
+    title: 'Likhe Jo Khat Tujhe',
+    artist: 'Mohammed Rafi (Kanyadaan)',
+    category: 'retro',
+    type: 'file',
+    src: '/audio/retro-likhe-jo-khat-tujhe.m4a',
+    duration: '3:30',
+    description: 'All-time nostalgic love song: Likhe jo khat tujhe woh teri yaad mein',
+  },
+  {
+    id: 'retro-o-mere-dil-ke-chain',
+    title: 'O Mere Dil Ke Chain',
+    artist: 'Kishore Kumar (Mere Jeevan Saathi)',
+    category: 'retro',
+    type: 'file',
+    src: '/audio/retro-o-mere-dil-ke-chain.m4a',
+    duration: '3:30',
+    description: 'Timeless romantic peace: O mere dil ke chain, chain aaye mere dil ko dua kijiye',
+  },
+  {
+    id: 'retro-khaike-paan',
+    title: 'Khaike Paan Banaras Wala',
+    artist: 'Kishore Kumar (Don)',
+    category: 'retro',
+    type: 'file',
+    src: '/audio/retro-khaike-paan.m4a',
+    duration: '3:30',
+    description: 'Fun, energetic vintage celebration: Khaike paan banaras wala!',
+  },
+  {
+    id: 'retro-mere-sapnon-ki-rani',
+    title: 'Mere Sapnon Ki Rani',
+    artist: 'Kishore Kumar (Aradhana)',
+    category: 'retro',
+    type: 'file',
+    src: '/audio/retro-mere-sapnon-ki-rani.m4a',
+    duration: '3:30',
+    description: 'Iconic vintage train romance anthem: Mere sapnon ki rani kab aayegi tu',
+  },
+  {
+    id: 'retro-bachna-ae-haseeno',
+    title: 'Bachna Ae Haseeno',
+    artist: 'Kishore Kumar (Hum Kisise Kum Naheen)',
+    category: 'retro',
+    type: 'file',
+    src: '/audio/retro-bachna-ae-haseeno.m4a',
+    duration: '3:30',
+    description: 'Vintage dance sensation: Bachna ae haseeno lo main aa gaya!',
+  },
 ];
 
 export interface PhotoReelTrack {
@@ -341,6 +462,18 @@ export interface PhotoReelTrack {
 
 // Reel-style vocal soundtracks mapped uniquely to each memory photo!
 export const PHOTO_REEL_SOUNDTRACKS: PhotoReelTrack[] = [
+  { trackId: 'party-desi-boyz', songTitle: 'Make Some Noise For The Desi Boyz', artist: 'KK, Bob & Pritam (Desi Boyz)', chorusStartTime: 0 },
+  { trackId: 'punjabi-daru-badnaam', songTitle: 'Daru Badnaam', artist: 'Param Singh & Kamal Kahlon', chorusStartTime: 0 },
+  { trackId: 'retro-gulabi-aankhen', songTitle: 'Gulabi Aankhen', artist: 'Mohammed Rafi (The Train)', chorusStartTime: 0 },
+  { trackId: 'retro-pal-pal-dil-ke-paas', songTitle: 'Pal Pal Dil Ke Paas', artist: 'Kishore Kumar (Blackmail)', chorusStartTime: 0 },
+  { trackId: 'retro-chura-liya', songTitle: 'Chura Liya Hai Tumne Jo Dil Ko', artist: 'Asha Bhosle & Mohammed Rafi (Yaadon Ki Baaraat)', chorusStartTime: 0 },
+  { trackId: 'retro-badan-pe-sitare', songTitle: 'Badan Pe Sitare Lapete Huye', artist: 'Mohammed Rafi (Prince)', chorusStartTime: 0 },
+  { trackId: 'retro-yeh-shaam-mastani', songTitle: 'Yeh Sham Mastani', artist: 'Kishore Kumar (Kati Patang)', chorusStartTime: 0 },
+  { trackId: 'retro-likhe-jo-khat-tujhe', songTitle: 'Likhe Jo Khat Tujhe', artist: 'Mohammed Rafi (Kanyadaan)', chorusStartTime: 0 },
+  { trackId: 'retro-o-mere-dil-ke-chain', songTitle: 'O Mere Dil Ke Chain', artist: 'Kishore Kumar (Mere Jeevan Saathi)', chorusStartTime: 0 },
+  { trackId: 'retro-khaike-paan', songTitle: 'Khaike Paan Banaras Wala', artist: 'Kishore Kumar (Don)', chorusStartTime: 0 },
+  { trackId: 'retro-mere-sapnon-ki-rani', songTitle: 'Mere Sapnon Ki Rani', artist: 'Kishore Kumar (Aradhana)', chorusStartTime: 0 },
+  { trackId: 'retro-bachna-ae-haseeno', songTitle: 'Bachna Ae Haseeno', artist: 'Kishore Kumar (Hum Kisise Kum Naheen)', chorusStartTime: 0 },
   { trackId: 'party-long-drive', songTitle: 'Long Drive', artist: 'Mika Singh (Khiladi 786)', chorusStartTime: 0 },
   { trackId: 'party-mujhko-yaad-sataye', songTitle: 'Mujhko Yaad Sataye Teri', artist: 'Himesh Reshammiya (Phir Hera Pheri)', chorusStartTime: 0 },
   { trackId: 'party-hookah-bar', songTitle: 'Hookah Bar', artist: 'Himesh Reshammiya (Khiladi 786)', chorusStartTime: 0 },

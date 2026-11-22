@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { soundManager, PLAYLIST_TRACKS, type PlaylistTrack } from '../utils/audio';
 
-type MusicCategory = 'all' | 'hindi' | 'punjabi' | 'birthday' | 'party';
+type MusicCategory = 'all' | 'hindi' | 'punjabi' | 'birthday' | 'party' | 'retro';
 
 export const MusicPlaylist: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -68,6 +68,7 @@ export const MusicPlaylist: React.FC = () => {
     if (activeCategory === 'punjabi') return t.category === 'punjabi';
     if (activeCategory === 'birthday') return t.category === 'birthday' || t.id === 'bollywood-birthday';
     if (activeCategory === 'party') return t.category === 'party';
+    if (activeCategory === 'retro') return t.category === 'retro';
     return true;
   });
 
@@ -83,6 +84,8 @@ export const MusicPlaylist: React.FC = () => {
         return '🎂';
       case 'party':
         return '🎉';
+      case 'retro':
+        return '📻';
       default:
         return '🎵';
     }
@@ -271,11 +274,12 @@ export const MusicPlaylist: React.FC = () => {
                 }}
               >
                 {[
-                  { id: 'all', label: 'All Songs' },
-                  { id: 'hindi', label: '🇮🇳 Real Hindi' },
-                  { id: 'punjabi', label: '🥁 Punjabi Hits' },
-                  { id: 'birthday', label: '🎂 Birthday' },
+                  { id: 'all', label: '✨ All Tracks' },
                   { id: 'party', label: '🎉 Party Hits' },
+                  { id: 'punjabi', label: '🥁 Punjabi Hits' },
+                  { id: 'retro', label: '📻 Golden Retro' },
+                  { id: 'hindi', label: '🇮🇳 Romantic' },
+                  { id: 'birthday', label: '🎂 Birthday' },
                 ].map((tab) => (
                   <button
                     key={tab.id}
