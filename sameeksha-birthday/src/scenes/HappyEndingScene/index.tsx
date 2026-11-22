@@ -942,6 +942,38 @@ const HappyEndingScene: React.FC = () => {
             </div>
           </div>
 
+          {/* Long Drive Grand Adventure Button */}
+          <div style={{ marginTop: '1rem', marginBottom: '1.2rem', textAlign: 'center' }}>
+            <motion.button
+              type="button"
+              className="magic-button"
+              onClick={() => {
+                soundManager.playTwinkle();
+                setScene(7);
+              }}
+              whileHover={{ scale: 1.07 }}
+              whileTap={{ scale: 0.94 }}
+              style={{
+                background: 'linear-gradient(135deg, #f43f5e, #fbbf24, #a855f7)',
+                color: '#fff',
+                border: '2px solid rgba(251, 191, 36, 0.9)',
+                borderRadius: '35px',
+                padding: '14px 34px',
+                fontSize: '1.05rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                boxShadow: '0 0 25px rgba(244, 63, 94, 0.7), 0 0 40px rgba(251, 191, 36, 0.4)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}
+            >
+              <span style={{ fontSize: '1.4rem' }}>🚗</span>
+              <span>Long Drive Pe Chalein, Sameeksha? 🏍️ 🌙</span>
+              <span style={{ fontSize: '1.4rem' }}>✨</span>
+            </motion.button>
+          </div>
+
           {/* Bottom Actions */}
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <button

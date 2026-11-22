@@ -550,11 +550,12 @@ class SoundManager {
       const track = PLAYLIST_TRACKS[this.currentTrackIndex];
       const audioPath = track.src ? getAssetUrl(track.src) : getAssetUrl('/audio/bollywood-birthday.mp3');
       this.audioElement = new Audio(audioPath);
-      this.audioElement.loop = true;
+      this.audioElement.loop = false; // Allow auto-advance when a song finishes naturally!
       this.audioElement.volume = this.baseVolume;
       this.audioElement.preload = 'auto';
 
       this.audioElement.addEventListener('ended', () => {
+        // Automatically advance to the next song in playlist!
         this.nextTrack();
       });
 
@@ -641,6 +642,11 @@ class SoundManager {
   public playTrack(trackId: string, startTime: number = 0) {
     const idx = PLAYLIST_TRACKS.findIndex((t) => t.id === trackId);
     if (idx === -1) return;
+
+    this.isAudioPlaying = true;
+    if (this.audioElement) {
+      this.audioElement.loop = false;
+    }
 
     // If the track is already active and playing, avoid reload / AbortError:
     if (this.currentTrackIndex === idx && this.audioElement && !this.audioElement.paused) {
@@ -735,11 +741,13 @@ class SoundManager {
   }
 
   public nextTrack() {
+    this.isAudioPlaying = true;
     this.currentTrackIndex = (this.currentTrackIndex + 1) % PLAYLIST_TRACKS.length;
     this.switchTrack();
   }
 
   public prevTrack() {
+    this.isAudioPlaying = true;
     this.currentTrackIndex =
       (this.currentTrackIndex - 1 + PLAYLIST_TRACKS.length) % PLAYLIST_TRACKS.length;
     this.switchTrack();
@@ -892,6 +900,72 @@ class SoundManager {
     } catch {
       // Ignored
     }
+  }
+
+  // Realistic Royal Enfield Bullet Motorcycle Horn (Punchy dual-tone pip-pip)
+  public playBikeHorn() {
+    try {
+      this.initCtx();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      [440, 520].forEach((freq) => {
+        const osc = this.ctx!.createOscillator();
+        const gain = this.ctx!.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(0.14, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.26);
+        osc.connect(gain);
+        gain.connect(this.ctx!.destination);
+        osc.start(now);
+        osc.stop(now + 0.27);
+      });
+    } catch {}
+  }
+
+  // Realistic BMW Luxury Car Horn (Deep resonant euro dual-tone honk)
+  public playCarHorn() {
+    try {
+      this.initCtx();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      [340, 415].forEach((freq) => {
+        const osc = this.ctx!.createOscillator();
+        const gain = this.ctx!.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+        osc.connect(gain);
+        gain.connect(this.ctx!.destination);
+        osc.start(now);
+        osc.stop(now + 0.39);
+      });
+    } catch {}
+  }
+
+  // Realistic Engine Rev Sound Effect
+  public playEngineRev(type: 'bike' | 'car' = 'bike') {
+    try {
+      this.initCtx();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = type === 'bike' ? 'sawtooth' : 'triangle';
+      const startFreq = type === 'bike' ? 90 : 110;
+      const peakFreq = type === 'bike' ? 260 : 310;
+      osc.frequency.setValueAtTime(startFreq, now);
+      osc.frequency.exponentialRampToValueAtTime(peakFreq, now + 0.22);
+      osc.frequency.exponentialRampToValueAtTime(startFreq, now + 0.58);
+      gain.gain.setValueAtTime(0.14, now);
+      gain.gain.linearRampToValueAtTime(0.22, now + 0.22);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.62);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.65);
+    } catch {}
   }
 
   // Acoustic Sound Effects - Crisp, realistic physical party popper sounds (Zero instrumental notes)

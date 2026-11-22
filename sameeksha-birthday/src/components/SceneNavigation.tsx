@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useExperienceStore } from '../state/experienceStore';
 import { content } from '../content/siteContent';
 
-const SCENE_EMOJIS = ['🌌', '🎁', '📸', '🎂', '💌', '🎉', '🏮'];
+const SCENE_EMOJIS = ['🌌', '🎁', '📸', '🎂', '💌', '🎉', '🏮', '🚗'];
 
 const SceneNavigation: React.FC = () => {
   const currentScene = useExperienceStore((s) => s.currentScene);

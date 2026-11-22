@@ -149,7 +149,7 @@ export interface ExperienceState {
   setFrontKissPopped: (val: boolean) => void;
 }
 
-const TOTAL_SCENES = 7;
+const TOTAL_SCENES = 8;
 const TOTAL_HEARTS = 5;
 
 export const useExperienceStore = create<ExperienceState>((set, get) => ({

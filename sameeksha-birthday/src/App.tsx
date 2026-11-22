@@ -17,6 +17,7 @@ import CakeScene from './scenes/CakeScene';
 import LetterScene from './scenes/LetterScene';
 import FinaleScene from './scenes/FinaleScene';
 import HappyEndingScene from './scenes/HappyEndingScene';
+import LongDriveScene from './scenes/LongDriveScene';
 
 import './styles/global.css';
 
@@ -28,6 +29,7 @@ const scenes = [
   LetterScene,
   FinaleScene,
   HappyEndingScene,
+  LongDriveScene,
 ];
 
 export default function App() {
@@ -106,6 +108,10 @@ export default function App() {
       case 6:
         // Grand 3D Happy Ending: Channa Mereya ("Accha Chalta Hoon, Duaon Mein Yaad Rakhna" iconic chorus 58s)
         soundManager.playTrack('hindi-channa-mereya', 58);
+        break;
+      case 7:
+        // Long Drive Scene: Mika Singh's iconic "Long Drive" original studio track!
+        soundManager.playTrack('party-long-drive', 0);
         break;
     }
   }, [currentScene]);

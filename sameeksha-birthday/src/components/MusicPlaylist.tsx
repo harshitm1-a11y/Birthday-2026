@@ -570,6 +570,27 @@ export const MusicPlaylist: React.FC = () => {
                       <span>🔀</span>
                       <span>Shuffle</span>
                     </button>
+
+                    {/* Auto-advance status badge */}
+                    <div
+                      style={{
+                        background: 'rgba(52, 211, 153, 0.15)',
+                        border: '1px solid rgba(52, 211, 153, 0.4)',
+                        color: '#34d399',
+                        borderRadius: '16px',
+                        padding: '3px 10px',
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        marginLeft: '4px',
+                      }}
+                      title="Songs change and loop through playlist automatically"
+                    >
+                      <span>🔁</span>
+                      <span>Auto-Next: ON</span>
+                    </div>
                   </div>
 
                   {/* Volume Slider */}

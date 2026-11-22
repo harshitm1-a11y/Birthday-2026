@@ -14,6 +14,7 @@ export const content = {
     { id: "letter", title: "A Letter From The Heart" },
     { id: "finale", title: "Forever My Favourite" },
     { id: "happyEnding", title: "Grand Happy Ending ✨" },
+    { id: "longDrive", title: "Midnight Long Drive 🚗 🏍️" },
   ],
 
   welcome: {
