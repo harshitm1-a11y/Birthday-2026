@@ -14,6 +14,126 @@ export interface ReelSongTrack {
 
 export const REEL_SONGS: ReelSongTrack[] = [
   {
+    "id": "reel-req-01",
+    "songTitle": "Long Drive",
+    "artist": "Mika Singh (Khiladi 786)",
+    "album": "Khiladi 786 (Original Motion Picture Soundtrack)",
+    "category": "celebration",
+    "src": "/audio/reels/reel-custom-01.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/22/ac/bb/22acbb6d-f3c9-b27f-6d65-1ac890d4cc3a/mzaf_18261993836590946416.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-req-02",
+    "songTitle": "Mujhko Yaad Sataye Teri",
+    "artist": "Himesh Reshammiya (Phir Hera Pheri)",
+    "album": "Phir Hera Pheri (Original Motion Picture Soundtrack)",
+    "category": "celebration",
+    "src": "/audio/reels/reel-custom-02.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/2e/9e/7e/2e9e7e9c-12ec-3b44-4a55-5eb1f5a1b708/mzaf_15413026761726169495.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-req-03",
+    "songTitle": "Hookah Bar",
+    "artist": "Himesh Reshammiya (Khiladi 786)",
+    "album": "Khiladi 786 (Original Motion Picture Soundtrack)",
+    "category": "celebration",
+    "src": "/audio/reels/reel-custom-03.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/ee/a2/09/eea209cc-08f7-a835-faed-c6b9defc7adf/mzaf_15089614314366252162.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-req-04",
+    "songTitle": "Subha Hone Na De (Tu Mera Hero)",
+    "artist": "Mika Singh & Shefali Alvares (Desi Boyz)",
+    "album": "Desi Boyz (Original Motion Picture Soundtrack)",
+    "category": "celebration",
+    "src": "/audio/reels/reel-custom-04.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/f7/04/b0/f704b00f-31b5-b310-2c24-0359d3049aa6/mzaf_72235167749780642.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-req-05",
+    "songTitle": "Mauja Hi Mauja",
+    "artist": "Mika Singh (Jab We Met)",
+    "album": "Jab We Met (Original Motion Picture Soundtrack)",
+    "category": "punjabi",
+    "src": "/audio/reels/reel-custom-05.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/04/1d/09/041d09d7-a360-21c2-c4e3-a5378f0db855/mzaf_12873879781101561989.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-req-06",
+    "songTitle": "Aashiq Banaya Aapne",
+    "artist": "Himesh Reshammiya & Shreya Ghoshal",
+    "album": "Aashiq Banaya Aapne (Original Motion Picture Soundtrack)",
+    "category": "romantic",
+    "src": "/audio/reels/reel-custom-06.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/28/f9/ca/28f9ca23-8889-a1c7-8230-1def8c8c750c/mzaf_7892451157555650240.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-req-07",
+    "songTitle": "Zara Sa",
+    "artist": "KK & Pritam (Jannat)",
+    "album": "Jannat (Original Motion Picture Soundtrack)",
+    "category": "romantic",
+    "src": "/audio/reels/reel-custom-07.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/4d/f5/c0/4df5c07a-53ff-8e08-5bf2-a102e0444f4d/mzaf_2883771190480476336.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-req-08",
+    "songTitle": "Kya Mujhe Pyaar Hai",
+    "artist": "KK & Pritam (Woh Lamhe)",
+    "album": "Woh Lamhe (Original Motion Picture Soundtrack)",
+    "category": "romantic",
+    "src": "/audio/reels/reel-custom-08.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/2f/34/32/2f343228-df07-a771-8bf2-05011afa282c/mzaf_2073241524310681578.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-req-09",
+    "songTitle": "Dhinka Chika",
+    "artist": "Mika Singh & Amrita Kak (Ready)",
+    "album": "Ready (Original Motion Picture Soundtrack)",
+    "category": "celebration",
+    "src": "/audio/reels/reel-custom-09.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/c3/03/a3/c303a3e5-bc41-c12d-bd47-1341d776d2d8/mzaf_682417754924167802.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-req-10",
+    "songTitle": "Desi Girl",
+    "artist": "Shankar Mahadevan & Sunidhi Chauhan (Dostana)",
+    "album": "Dostana (Original Motion Picture Soundtrack)",
+    "category": "celebration",
+    "src": "/audio/reels/reel-custom-10.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b4/58/80/b45880d1-8f73-2281-aedb-384f28e5d76c/mzaf_5076496193019092454.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-req-11",
+    "songTitle": "Dilliwaali Girlfriend",
+    "artist": "Arijit Singh & Sunidhi Chauhan (YJHD)",
+    "album": "Yeh Jawaani Hai Deewani (Original Motion Picture Soundtrack)",
+    "category": "celebration",
+    "src": "/audio/reels/reel-custom-11.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/95/f6/5f/95f65f13-4a42-6b9a-2689-0b221473ea3b/mzaf_12878159079636166594.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
+    "id": "reel-req-12",
+    "songTitle": "Tune Maari Entriyaan",
+    "artist": "KK, Bappi Lahiri & Neeti Mohan (Gunday)",
+    "album": "Gunday (Original Motion Picture Soundtrack)",
+    "category": "celebration",
+    "src": "/audio/reels/reel-custom-12.m4a",
+    "streamUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/89/3d/72/893d7291-4d29-5963-5f17-8a0a53fd7db5/mzaf_8697070377006501036.plus.aac.p.m4a",
+    "duration": "0:30"
+  },
+  {
     "id": "reel-01",
     "songTitle": "Kesariya (From \"Brahmastra\")",
     "artist": "Pritam, Arijit Singh & Amitabh Bhattacharya",
