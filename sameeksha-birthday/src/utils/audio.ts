@@ -236,8 +236,8 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     artist: 'KK, Bob & Pritam (Desi Boyz)',
     category: 'party',
     type: 'file',
-    src: '/audio/party-desi-boyz.m4a',
-    duration: '3:30',
+    src: '/audio/party-desi-boyz.mp3',
+    duration: '4:06',
     description: 'Iconic high-energy title track: Make some noise for the Desi Boyz!',
   },
   {
@@ -276,8 +276,8 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     artist: 'Mika Singh (Khiladi 786)',
     category: 'party',
     type: 'file',
-    src: '/audio/party-long-drive.m4a',
-    duration: '3:30',
+    src: '/audio/party-long-drive.mp3',
+    duration: '4:15',
     description: 'High energy dance track with Mika Singh iconic vocals: Long drive pe chal mere naal soniye!',
   },
   {
@@ -286,8 +286,8 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     artist: 'Himesh Reshammiya (Phir Hera Pheri)',
     category: 'party',
     type: 'file',
-    src: '/audio/party-mujhko-yaad-sataye.m4a',
-    duration: '3:30',
+    src: '/audio/party-mujhko-yaad-sataye.mp3',
+    duration: '5:24',
     description: 'Legendary nostalgic superhit by Himesh Reshammiya: Haaye haaye yaad sataye teri!',
   },
   {
@@ -296,8 +296,8 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     artist: 'Himesh Reshammiya (Khiladi 786)',
     category: 'party',
     type: 'file',
-    src: '/audio/party-hookah-bar.m4a',
-    duration: '3:30',
+    src: '/audio/party-hookah-bar.mp3',
+    duration: '4:15',
     description: 'Blockbuster energetic party club anthem: Tera pyaar pyaar pyaar hookah bar!',
   },
   {
@@ -357,8 +357,8 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     artist: 'Mohammed Rafi (The Train)',
     category: 'retro',
     type: 'file',
-    src: '/audio/retro-gulabi-aankhen.m4a',
-    duration: '3:30',
+    src: '/audio/retro-gulabi-aankhen.mp3',
+    duration: '3:21',
     description: 'Evergreen romantic celebration: Gulabi aankhen jo teri dekhi, sharabi yeh dil ho gaya!',
   },
   {
@@ -377,8 +377,8 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     artist: 'Asha Bhosle & Mohammed Rafi (Yaadon Ki Baaraat)',
     category: 'retro',
     type: 'file',
-    src: '/audio/retro-chura-liya.m4a',
-    duration: '3:30',
+    src: '/audio/retro-chura-liya.mp3',
+    duration: '4:43',
     description: 'Legendary romantic retro melody with beautiful acoustic glasses and guitar intro',
   },
   {
@@ -417,8 +417,8 @@ export const PLAYLIST_TRACKS: PlaylistTrack[] = [
     artist: 'Kishore Kumar (Mere Jeevan Saathi)',
     category: 'retro',
     type: 'file',
-    src: '/audio/retro-o-mere-dil-ke-chain.m4a',
-    duration: '3:30',
+    src: '/audio/retro-o-mere-dil-ke-chain.mp3',
+    duration: '4:24',
     description: 'Timeless romantic peace: O mere dil ke chain, chain aaye mere dil ko dua kijiye',
   },
   {
@@ -507,6 +507,7 @@ export const PHOTO_REEL_SOUNDTRACKS: PhotoReelTrack[] = [
 class SoundManager {
   private ctx: AudioContext | null = null;
   private audioElement: HTMLAudioElement | null = null;
+  private reelAudioElement: HTMLAudioElement | null = null;
   private isAudioPlaying = false;
   private currentTrackIndex = 0;
   private baseVolume = 0.55;
@@ -565,13 +566,12 @@ class SoundManager {
 
       this.audioElement.addEventListener('error', (e) => {
         console.warn('Audio element error encountered:', e);
-        // Strictly real studio vocals only — never fall back to synthetic oscillators
       });
     }
   }
 
   public isPlaying(): boolean {
-    return this.isAudioPlaying;
+    return !!(this.audioElement && !this.audioElement.paused && !this.audioElement.ended);
   }
 
   public getCurrentTime(): number {
@@ -602,16 +602,16 @@ class SoundManager {
   public setVolume(vol: number) {
     this.baseVolume = Math.max(0, Math.min(1, vol));
     if (this.audioElement) {
-      this.audioElement.volume = this.isDucked ? Math.min(0.12, this.baseVolume * 0.2) : this.baseVolume;
+      this.audioElement.volume = this.isDucked ? Math.min(0.08, this.baseVolume * 0.15) : this.baseVolume;
     }
     this.notify();
   }
 
-  // Audio ducking for speech
-  public duckAudio(duckLevel: number = 0.12) {
+  // Audio ducking for speech and photo reel clips
+  public duckAudio(duckLevel: number = 0.08) {
     this.isDucked = true;
     if (this.audioElement) {
-      this.audioElement.volume = Math.min(duckLevel, this.baseVolume * 0.2);
+      this.audioElement.volume = Math.min(duckLevel, this.baseVolume * 0.15);
     }
     this.notify();
   }
@@ -629,7 +629,7 @@ class SoundManager {
     if (idx === -1) return;
 
     // If the track is already active and playing, avoid reload / AbortError:
-    if (this.currentTrackIndex === idx && this.audioElement && this.isAudioPlaying && !this.audioElement.paused) {
+    if (this.currentTrackIndex === idx && this.audioElement && !this.audioElement.paused) {
       if (startTime > 0 && Math.abs(this.audioElement.currentTime - startTime) > 2) {
         try {
           this.audioElement.currentTime = startTime;
@@ -644,41 +644,56 @@ class SoundManager {
     this.switchTrack(startTime);
   }
 
-  // Play a dedicated 30-second vocal reel audio for memory photo modals
+  // Dedicated independent reel audio element:
+  // Never unloads background music, eliminating any stuttering or buffering!
   public playReelAudio(src: string, streamUrl?: string) {
     this.initCtx();
     const assetUrl = getAssetUrl(src);
-    if (!this.audioElement) {
-      this.initAudioElement();
+    // Duck background music smoothly so the reel vocal hook is clear
+    this.duckAudio(0.08);
+
+    if (!this.reelAudioElement && typeof window !== 'undefined') {
+      this.reelAudioElement = new Audio();
+      this.reelAudioElement.loop = true;
+      this.reelAudioElement.preload = 'auto';
     }
-    if (this.audioElement) {
-      this.audioElement.pause();
-      this.audioElement.src = assetUrl;
-      this.audioElement.currentTime = 0;
-      this.audioElement.loop = true;
-      this.audioElement.volume = this.baseVolume;
-      const playPromise = this.audioElement.play();
+
+    if (this.reelAudioElement) {
+      this.reelAudioElement.pause();
+      this.reelAudioElement.src = assetUrl;
+      this.reelAudioElement.currentTime = 0;
+      this.reelAudioElement.volume = this.baseVolume;
+      const playPromise = this.reelAudioElement.play();
       if (playPromise !== undefined) {
         playPromise.catch((err) => {
           if (err && err.name === 'AbortError') return;
-          console.warn('Reel local audio play failed, falling back to stream:', err);
-          if (streamUrl && this.audioElement) {
-            this.audioElement.src = streamUrl;
-            this.audioElement.play().catch(() => {});
+          console.warn('Reel local audio play failed, trying stream:', err);
+          if (streamUrl && this.reelAudioElement) {
+            this.reelAudioElement.src = streamUrl;
+            this.reelAudioElement.play().catch(() => {});
           }
         });
       }
-      this.isAudioPlaying = true;
-      this.notify();
     }
   }
 
-  public restoreTrack(trackId: string, startTime: number = 0) {
-    const idx = PLAYLIST_TRACKS.findIndex((t) => t.id === trackId);
-    if (idx !== -1) {
-      this.currentTrackIndex = idx;
+  public stopReelAudio() {
+    if (this.reelAudioElement) {
+      try {
+        this.reelAudioElement.pause();
+        this.reelAudioElement.removeAttribute('src');
+      } catch {
+        // Ignored
+      }
     }
-    this.switchTrack(startTime);
+    this.unduckAudio();
+  }
+
+  public restoreTrack(_trackId?: string, _startTime: number = 0) {
+    this.stopReelAudio();
+    if (this.audioElement && this.isAudioPlaying && this.audioElement.paused) {
+      this.audioElement.play().catch(() => {});
+    }
   }
 
   public nextTrack() {
@@ -709,7 +724,6 @@ class SoundManager {
 
     if (track.type === 'file' && track.src && this.audioElement) {
       const targetSrc = getAssetUrl(track.src);
-      // Avoid re-assigning .src if already loaded with exact same track
       const currentSrc = this.audioElement.src;
       const isSameSrc = currentSrc && (currentSrc === targetSrc || currentSrc.endsWith(track.src));
 
@@ -754,12 +768,17 @@ class SoundManager {
     if (track.type === 'file' && track.src) {
       this.initAudioElement();
       if (this.audioElement) {
-        this.audioElement.volume = this.isDucked ? 0.12 : this.baseVolume;
+        this.audioElement.volume = this.isDucked ? 0.08 : this.baseVolume;
         const p = this.audioElement.play();
         if (p !== undefined) {
-          p.catch((err) => {
+          p.then(() => {
+            this.isAudioPlaying = true;
+            this.notify();
+          }).catch((err) => {
             if (err && err.name === 'AbortError') return;
             console.warn('Ambient play failed:', err);
+            this.isAudioPlaying = false;
+            this.notify();
           });
         }
       }
@@ -772,6 +791,7 @@ class SoundManager {
     if (this.audioElement) {
       this.audioElement.pause();
     }
+    this.stopReelAudio();
     this.stopSynthPlayback();
     this.notify();
   }

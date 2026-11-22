@@ -106,6 +106,9 @@ const MemoriesScene: React.FC = () => {
       }
       setReelOffset(0);
     }
+    return () => {
+      soundManager.stopReelAudio();
+    };
   }, [selectedIdx, reelOffset]);
 
   // Responsive radius based on window width

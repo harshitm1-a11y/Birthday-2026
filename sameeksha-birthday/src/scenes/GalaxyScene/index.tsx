@@ -86,10 +86,11 @@ function RotatingSceneLight() {
   return <pointLight ref={lightRef} intensity={2.8} distance={12} color="#fbbf24" />;
 }
 
-// Helper to generate centered parametric heart SVG path
+// Helper to generate dead-centered parametric heart SVG path
 function generateHeartPath(scale: number) {
   const N = 180;
-  const yCenterOffset = 2.5385 * scale;
+  // Exact mathematical vertical midpoint: min rawY = -16.48, max rawY = 17.0
+  const yCenterOffset = 0.26 * scale;
   const pts: string[] = [];
   for (let i = 0; i <= N; i++) {
     const t = (i / N) * Math.PI * 2;
@@ -106,7 +107,7 @@ function NestedParametricNeonHearts() {
   const path1 = useMemo(() => generateHeartPath(6.8), []); // Core Inner Heart
   const path2 = useMemo(() => generateHeartPath(10.0), []); // Mid-Inner
   const path3 = useMemo(() => generateHeartPath(13.2), []); // Mid-Outer
-  const path4 = useMemo(() => generateHeartPath(16.8), []); // Grand Outer Frame
+  const path4 = useMemo(() => generateHeartPath(16.5), []); // Grand Outer Frame
 
   return (
     <div
@@ -118,7 +119,8 @@ function NestedParametricNeonHearts() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '1.5rem', // Matches .scene-overlay padding for exact geometric alignment
+        margin: 0,
+        padding: 0,
       }}
     >
       <motion.div
@@ -133,12 +135,12 @@ function NestedParametricNeonHearts() {
         }}
       >
         <svg
-          width="720"
+          width="700"
           height="660"
-          viewBox="-290 -260 580 520"
+          viewBox="-300 -290 600 580"
           style={{
-            width: 'min(96vw, 720px)',
-            height: 'min(80vh, 660px)',
+            width: 'min(94vw, 680px)',
+            height: 'min(78vh, 640px)',
             overflow: 'visible',
             filter: 'drop-shadow(0 0 35px rgba(255, 0, 127, 0.75)) drop-shadow(0 0 65px rgba(255, 20, 147, 0.45))',
           }}
@@ -299,9 +301,10 @@ const GalaxyScene: React.FC = () => {
 
   const handleEnter = () => {
     soundManager.playTwinkle();
+    soundManager.initCtx();
+    soundManager.startAmbient();
     if (!audioEnabled) {
       toggleAudio();
-      soundManager.startAmbient();
     }
     nextScene();
   };

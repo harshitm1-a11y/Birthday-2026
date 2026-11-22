@@ -55,21 +55,22 @@ export default function App() {
   }, []);
 
   // Browser Autoplay Fallback Unlocker:
-  // Guarantees audio starts immediately without getting blocked by browser autoplay policies
+  // Guarantees audio starts immediately on any user gesture (tap/click/key)
   useEffect(() => {
     const unlockAudio = () => {
       soundManager.initCtx();
       if (!soundManager.isPlaying()) {
-        soundManager.playTrack('hindi-tum-hi-ho');
         soundManager.startAmbient();
       }
     };
-    window.addEventListener('pointerdown', unlockAudio, { once: true });
-    window.addEventListener('touchstart', unlockAudio, { once: true });
-    window.addEventListener('keydown', unlockAudio, { once: true });
+    window.addEventListener('pointerdown', unlockAudio, { passive: true });
+    window.addEventListener('touchstart', unlockAudio, { passive: true });
+    window.addEventListener('click', unlockAudio, { passive: true });
+    window.addEventListener('keydown', unlockAudio, { passive: true });
     return () => {
       window.removeEventListener('pointerdown', unlockAudio);
       window.removeEventListener('touchstart', unlockAudio);
+      window.removeEventListener('click', unlockAudio);
       window.removeEventListener('keydown', unlockAudio);
     };
   }, []);

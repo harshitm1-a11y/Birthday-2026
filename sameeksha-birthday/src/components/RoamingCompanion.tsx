@@ -233,10 +233,10 @@ export const RoamingCompanion: React.FC = () => {
     []
   );
 
-  // 2D Full-Screen position state (% of viewport)
-  const [posX, setPosX] = useState(50);
-  const [posY, setPosY] = useState(36);
-  const [direction, setDirection] = useState<1 | -1>(1);
+  // 2D Full-Screen position state (% of viewport) - initially positioned comfortably at top-right
+  const [posX, setPosX] = useState(82);
+  const [posY, setPosY] = useState(24);
+  const [direction, setDirection] = useState<1 | -1>(-1);
   const [isMoving, setIsMoving] = useState(false);
   const [isDropped, setIsDropped] = useState(false);
   const [isFetchingNewCake, setIsFetchingNewCake] = useState(false);
@@ -249,8 +249,8 @@ export const RoamingCompanion: React.FC = () => {
   const [isFeeding, setIsFeeding] = useState(false);
   const [isCuttingActive, setIsCuttingActive] = useState(false);
 
-  const targetXRef = useRef<number>(50);
-  const targetYRef = useRef<number>(36);
+  const targetXRef = useRef<number>(82);
+  const targetYRef = useRef<number>(24);
   const lastMouseMoveRef = useRef<number>(Date.now());
 
   // Full Screen 2D Cursor Following & Mobile Wandering Engine
@@ -550,7 +550,7 @@ export const RoamingCompanion: React.FC = () => {
                 position: 'absolute',
                 bottom: '105px',
                 left: '50%',
-                transform: posX > 60 ? 'translateX(-75%)' : posX < 40 ? 'translateX(-25%)' : 'translateX(-50%)',
+                transform: posX > 65 ? 'translateX(-88%)' : posX < 35 ? 'translateX(-12%)' : 'translateX(-50%)',
                 background: 'rgba(17, 12, 34, 0.94)',
                 backdropFilter: 'blur(12px)',
                 border: '1px solid rgba(251, 191, 36, 0.45)',
@@ -572,7 +572,7 @@ export const RoamingCompanion: React.FC = () => {
                 style={{
                   position: 'absolute',
                   bottom: '-6px',
-                  left: '50%',
+                  left: posX > 65 ? '85%' : posX < 35 ? '15%' : '50%',
                   transform: 'translateX(-50%) rotate(45deg)',
                   width: '12px',
                   height: '12px',
