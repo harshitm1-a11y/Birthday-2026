@@ -146,28 +146,60 @@ const SceneNavigation: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Floating Bottom Navigation Bar Dock */}
-      <nav
-        aria-label="Scene navigation dock"
+      {/* Floating Draggable Navigation Bar Dock: Moveable anywhere on screen! */}
+      <div
         style={{
           position: 'fixed',
           bottom: '14px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 100,
+          left: 0,
+          right: 0,
           display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          background: 'rgba(15, 12, 34, 0.88)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(251, 191, 36, 0.35)',
-          borderRadius: '9999px',
-          padding: '6px 10px',
-          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(251, 191, 36, 0.15)',
-          userSelect: 'none',
-          maxWidth: '96vw',
+          justifyContent: 'center',
+          pointerEvents: 'none',
+          zIndex: 100,
         }}
       >
+        <motion.nav
+          drag
+          dragMomentum={false}
+          dragElastic={0.08}
+          whileDrag={{
+            scale: 1.05,
+            cursor: 'grabbing',
+            boxShadow: '0 16px 40px rgba(251, 191, 36, 0.45), 0 0 35px rgba(0,0,0,0.95)',
+          }}
+          aria-label="Scene navigation dock"
+          style={{
+            pointerEvents: 'auto',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'rgba(15, 12, 34, 0.92)',
+            backdropFilter: 'blur(16px)',
+            border: '1px solid rgba(251, 191, 36, 0.45)',
+            borderRadius: '9999px',
+            padding: '6px 12px',
+            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(251, 191, 36, 0.2)',
+            userSelect: 'none',
+            maxWidth: '96vw',
+            cursor: 'grab',
+            touchAction: 'none',
+          }}
+        >
+          {/* Visual Move / Drag Handle Grip */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '0 2px 0 4px',
+              color: 'rgba(251, 191, 36, 0.75)',
+              fontSize: '1rem',
+              cursor: 'grab',
+            }}
+            title="Drag to move navigation anywhere on screen"
+          >
+            ⠿
+          </div>
         {/* Back / Previous Button */}
         <motion.button
           type="button"
@@ -287,9 +319,10 @@ const SceneNavigation: React.FC = () => {
           <span>Next</span>
           <span>›</span>
         </motion.button>
-      </nav>
-    </>
-  );
+      </motion.nav>
+    </div>
+  </>
+);
 };
 
 export default SceneNavigation;

@@ -32,10 +32,10 @@ const GIFTS: GiftChoice[] = [
   },
   {
     id: 'rose',
-    name: '100 Royal Red Velvet Roses',
+    name: '100 Velvet Red Roses Bouquet',
     emoji: '🌹',
     tag: 'Eternal Romance',
-    description: '100 freshly bloomed velvet red roses with multi-whorled petals, delicate morning dew sheen, and swirling petals, just as radiant as Sameeksha!',
+    description: '100 freshly bloomed Dutch velvet red roses with multi-whorled spiral petals, glistening morning dew, and lush emerald leaves — as radiant as Sameeksha!',
     color: '#065f46',
     ribbonColor: '#e11d48',
   },
@@ -50,10 +50,10 @@ const GIFTS: GiftChoice[] = [
   },
   {
     id: 'chocolates',
-    name: 'Belgian Royal Chocolate Truffles',
+    name: 'Belgian Dark Chocolate Bar & Truffles',
     emoji: '🍫',
     tag: 'Sweet Moments',
-    description: 'Artisanal Belgian chocolate box with 24K gold-leaf truffles, hazelnut pralines, and ruby berry ganache, delightfully sweet just like Sameeksha!',
+    description: 'Authentic segmented Belgian dark chocolate bar with peeled golden foil, paired with crunchy hazelnut praline balls & dark cocoa bonbons — 100% pure chocolate delight!',
     color: '#78350f',
     ribbonColor: '#fb7185',
   },
@@ -389,9 +389,54 @@ function TeddyBear3D({
 }
 
 // ==========================================
-// 2. PHOTOREALISTIC VELVET ROSE BOUQUET 3D
+// 2. PHOTOREALISTIC VELVET RED ROSE & BOUQUET 3D
 // ==========================================
-// Single realistic rose blossom with multi-whorled curved petals
+
+// Individual organic curved rose petal with physical velvet sheen
+function OrganicRosePetal({
+  radius = 0.22,
+  angle = 0,
+  distance = 0.08,
+  y = 0.05,
+  tilt = 0.4,
+  roll = 0,
+  scale = 1,
+  color = '#be123c',
+}: {
+  radius?: number;
+  angle?: number;
+  distance?: number;
+  y?: number;
+  tilt?: number;
+  roll?: number;
+  scale?: number;
+  color?: string;
+}) {
+  return (
+    <group
+      position={[Math.cos(angle) * distance, y, Math.sin(angle) * distance]}
+      rotation={[tilt, angle + Math.PI / 2, roll]}
+      scale={[scale, scale * 1.32, scale * 0.44]}
+    >
+      <mesh castShadow receiveShadow>
+        <sphereGeometry args={[radius, 16, 12, 0, Math.PI * 0.88, 0.22, Math.PI * 0.6]} />
+        <meshPhysicalMaterial
+          color={color}
+          roughness={0.36}
+          metalness={0.02}
+          clearcoat={0.25}
+          clearcoatRoughness={0.15}
+          sheen={1.0}
+          sheenColor="#fda4af"
+          sheenRoughness={0.35}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+// Single Botanical Masterpiece Rose Blossom with Multi-Whorled Velvet Petals & Dewdrops
 function RealisticSingleRose({
   position,
   scale = 1,
@@ -403,93 +448,157 @@ function RealisticSingleRose({
 }) {
   return (
     <group position={position} scale={[scale, scale, scale]} rotation={rotation}>
-      {/* Central Bud Core */}
-      <mesh position={[0, 0.08, 0]}>
-        <sphereGeometry args={[0.12, 16, 16]} />
+      {/* 1. Deep Central Bud Core */}
+      <mesh position={[0, 0.12, 0]}>
+        <sphereGeometry args={[0.095, 16, 16]} />
         <meshPhysicalMaterial
-          color="#881337"
-          roughness={0.28}
-          clearcoat={0.35}
-          clearcoatRoughness={0.2}
+          color="#4c0519"
+          roughness={0.4}
           sheen={1.0}
-          sheenColor="#f43f5e"
+          sheenColor="#9f1239"
         />
       </mesh>
 
-      {/* Whorl 1: Tight Inner Curving Petals */}
-      {[0, (Math.PI * 2) / 3, (Math.PI * 4) / 3].map((angle, i) => (
-        <mesh
+      {/* 2. Ring 1: Tight Central Spiraling Bud Petals (6 Petals) */}
+      {[0, 1.05, 2.1, 3.14, 4.2, 5.24].map((angle, i) => (
+        <OrganicRosePetal
+          key={`bud_${i}`}
+          radius={0.12}
+          angle={angle}
+          distance={0.028}
+          y={0.11}
+          tilt={0.15}
+          scale={0.92}
+          color="#580824"
+        />
+      ))}
+
+      {/* 3. Ring 2: Inner Heart Blooms (7 Petals) */}
+      {[0, 0.9, 1.8, 2.7, 3.6, 4.5, 5.4].map((angle, i) => (
+        <OrganicRosePetal
           key={`w1_${i}`}
-          position={[Math.cos(angle) * 0.045, 0.09, Math.sin(angle) * 0.045]}
-          rotation={[0.3, angle + 0.4, 0.2]}
-        >
-          <cylinderGeometry args={[0.13, 0.09, 0.18, 14, 1, true, 0, Math.PI * 0.9]} />
+          radius={0.165}
+          angle={angle + 0.45}
+          distance={0.055}
+          y={0.095}
+          tilt={0.28}
+          scale={0.98}
+          color="#881337"
+        />
+      ))}
+
+      {/* 4. Ring 3: Mid Blooming Unfurled Petals (8 Petals) */}
+      {[0, 0.78, 1.57, 2.35, 3.14, 3.92, 4.71, 5.5].map((angle, i) => (
+        <OrganicRosePetal
+          key={`w2_${i}`}
+          radius={0.22}
+          angle={angle + 0.25}
+          distance={0.095}
+          y={0.075}
+          tilt={0.48}
+          scale={1.05}
+          color="#9f1239"
+        />
+      ))}
+
+      {/* 5. Ring 4: Outer Velvet Blooming Petals (9 Petals) */}
+      {[0, 0.7, 1.4, 2.1, 2.8, 3.5, 4.2, 4.9, 5.6].map((angle, i) => (
+        <OrganicRosePetal
+          key={`w3_${i}`}
+          radius={0.28}
+          angle={angle + 0.5}
+          distance={0.145}
+          y={0.045}
+          tilt={0.68}
+          scale={1.12}
+          color="#be123c"
+        />
+      ))}
+
+      {/* 6. Ring 5: Broad Arching Velvet Guard Petals (10 Petals) */}
+      {[0, 0.63, 1.26, 1.88, 2.51, 3.14, 3.77, 4.4, 5.02, 5.65].map((angle, i) => (
+        <OrganicRosePetal
+          key={`w4_${i}`}
+          radius={0.34}
+          angle={angle + 0.32}
+          distance={0.21}
+          y={0.015}
+          tilt={0.88}
+          scale={1.18}
+          color="#e11d48"
+        />
+      ))}
+
+      {/* 7. Sparkling Morning Dewdrops Resting on Velvet Petals */}
+      {[
+        [0.18, 0.14, 0.12],
+        [-0.16, 0.12, 0.17],
+        [0.08, 0.11, -0.22],
+        [-0.19, 0.08, -0.14],
+        [0.22, 0.06, -0.09],
+      ].map((dropPos, di) => (
+        <mesh key={`dew_${di}`} position={dropPos as [number, number, number]}>
+          <sphereGeometry args={[0.013, 12, 12]} />
           <meshPhysicalMaterial
-            color="#9f1239"
-            roughness={0.26}
-            clearcoat={0.35}
-            sheen={1.0}
-            sheenColor="#fb7185"
-            side={THREE.DoubleSide}
+            color="#ffffff"
+            transmission={0.98}
+            ior={1.33}
+            roughness={0.02}
+            clearcoat={1}
+            clearcoatRoughness={0.01}
           />
         </mesh>
       ))}
 
-      {/* Whorl 2: Unfolding Mid Petals */}
+      {/* 8. Botanical Calyx Receptacle & Sepals */}
+      <mesh position={[0, -0.05, 0]} scale={[0.85, 1.15, 0.85]}>
+        <sphereGeometry args={[0.095, 16, 16]} />
+        <meshStandardMaterial color="#166534" roughness={0.45} />
+      </mesh>
       {[0, 1.25, 2.5, 3.75, 5.0].map((angle, i) => (
         <mesh
-          key={`w2_${i}`}
-          position={[Math.cos(angle) * 0.085, 0.065, Math.sin(angle) * 0.085]}
-          rotation={[0.45, angle + 0.3, 0.15]}
+          key={`sep_${i}`}
+          position={[Math.cos(angle) * 0.08, -0.06, Math.sin(angle) * 0.08]}
+          rotation={[-0.65, angle, 0]}
         >
-          <cylinderGeometry args={[0.18, 0.12, 0.21, 14, 1, true, 0, Math.PI * 0.85]} />
-          <meshPhysicalMaterial
-            color="#be123c"
-            roughness={0.28}
-            clearcoat={0.3}
-            sheen={1.0}
-            sheenColor="#f43f5e"
-            side={THREE.DoubleSide}
-          />
+          <coneGeometry args={[0.038, 0.18, 6]} />
+          <meshStandardMaterial color="#14532d" roughness={0.4} />
         </mesh>
       ))}
 
-      {/* Whorl 3: Broad Velvet Outer Petals Gently Recurving */}
-      {[0, 0.9, 1.8, 2.7, 3.6, 4.5, 5.4].map((angle, i) => (
-        <mesh
-          key={`w3_${i}`}
-          position={[Math.cos(angle) * 0.135, 0.035, Math.sin(angle) * 0.135]}
-          rotation={[0.65, angle + 0.25, 0.1]}
-        >
-          <cylinderGeometry args={[0.24, 0.16, 0.22, 14, 1, true, 0, Math.PI * 0.75]} />
-          <meshPhysicalMaterial
-            color="#e11d48"
-            roughness={0.3}
-            clearcoat={0.25}
-            sheen={1.0}
-            sheenColor="#fda4af"
-            side={THREE.DoubleSide}
-          />
-        </mesh>
-      ))}
+      {/* 9. Thorny Stem with Green Thorns */}
+      <mesh position={[0, -0.35, 0]} castShadow>
+        <cylinderGeometry args={[0.032, 0.026, 0.55, 14]} />
+        <meshStandardMaterial color="#15803d" roughness={0.55} />
+      </mesh>
+      {/* Rose Thorns */}
+      <mesh position={[0.03, -0.25, 0]} rotation={[0, 0, -Math.PI / 3]}>
+        <coneGeometry args={[0.016, 0.045, 6]} />
+        <meshStandardMaterial color="#991b1b" roughness={0.4} />
+      </mesh>
+      <mesh position={[-0.03, -0.42, 0.01]} rotation={[0, 0, Math.PI / 3]}>
+        <coneGeometry args={[0.016, 0.045, 6]} />
+        <meshStandardMaterial color="#991b1b" roughness={0.4} />
+      </mesh>
 
-      {/* Emerald Calyx & Sepals Supporting Blossom */}
-      <group position={[0, -0.04, 0]}>
-        {[0, 1.25, 2.5, 3.75, 5.0].map((angle, i) => (
-          <mesh
-            key={`sep_${i}`}
-            position={[Math.cos(angle) * 0.08, -0.02, Math.sin(angle) * 0.08]}
-            rotation={[-0.5, angle, 0]}
-          >
-            <coneGeometry args={[0.035, 0.14, 6]} />
-            <meshStandardMaterial color="#166534" roughness={0.5} />
-          </mesh>
-        ))}
+      {/* 10. Serrated Rose Compound Leaflets */}
+      <group position={[0.08, -0.32, 0]} rotation={[0.2, 0, Math.PI / 4]}>
+        <mesh scale={[1.2, 0.05, 0.65]}>
+          <sphereGeometry args={[0.11, 12, 12]} />
+          <meshStandardMaterial color="#15803d" roughness={0.4} />
+        </mesh>
+      </group>
+      <group position={[-0.08, -0.45, 0]} rotation={[-0.2, 0, -Math.PI / 4]}>
+        <mesh scale={[1.2, 0.05, 0.65]}>
+          <sphereGeometry args={[0.11, 12, 12]} />
+          <meshStandardMaterial color="#15803d" roughness={0.4} />
+        </mesh>
       </group>
     </group>
   );
 }
 
+// Grand Dome of 12 Photorealistic Roses in Luxury Frosted Craft Wrap with Silk Bow
 function RoseBouquet3D({
   position,
   scale,
@@ -500,7 +609,7 @@ function RoseBouquet3D({
   scale: number;
   isSolo: boolean;
   onClick?: () => void;
-}) {
+  }) {
   const roseRef = useRef<THREE.Group>(null);
   const petalsRef = useRef<THREE.Group>(null);
 
@@ -530,87 +639,127 @@ function RoseBouquet3D({
         }
       }}
     >
-      {/* Central Grand Red Velvet Rose */}
-      <RealisticSingleRose position={[0, 0.84, 0]} scale={1.22} />
+      {/* Central Grand Crown Velvet Red Rose */}
+      <RealisticSingleRose position={[0, 0.86, 0]} scale={1.25} />
 
-      {/* Surrounding Cluster of 6 Lush Blooming Roses */}
+      {/* Mid-Tier Ring of 5 Lush Blooming Roses */}
       {[
-        { pos: [-0.26, 0.76, 0.14] as [number, number, number], rot: [-0.2, -0.4, 0.3] as [number, number, number], s: 0.95 },
-        { pos: [0.26, 0.76, 0.14] as [number, number, number], rot: [-0.2, 0.4, -0.3] as [number, number, number], s: 0.95 },
-        { pos: [0, 0.78, -0.26] as [number, number, number], rot: [0.35, 0, 0] as [number, number, number], s: 0.98 },
-        { pos: [-0.22, 0.71, -0.16] as [number, number, number], rot: [0.25, -0.6, 0.2] as [number, number, number], s: 0.88 },
-        { pos: [0.22, 0.71, -0.16] as [number, number, number], rot: [0.25, 0.6, -0.2] as [number, number, number], s: 0.88 },
-        { pos: [0, 0.69, 0.28] as [number, number, number], rot: [-0.4, 0, 0] as [number, number, number], s: 0.92 },
+        { pos: [-0.25, 0.78, 0.16] as [number, number, number], rot: [-0.22, -0.4, 0.28] as [number, number, number], s: 0.98 },
+        { pos: [0.25, 0.78, 0.16] as [number, number, number], rot: [-0.22, 0.4, -0.28] as [number, number, number], s: 0.98 },
+        { pos: [0, 0.81, -0.27] as [number, number, number], rot: [0.38, 0, 0] as [number, number, number], s: 1.02 },
+        { pos: [-0.24, 0.73, -0.17] as [number, number, number], rot: [0.28, -0.62, 0.22] as [number, number, number], s: 0.94 },
+        { pos: [0.24, 0.73, -0.17] as [number, number, number], rot: [0.28, 0.62, -0.22] as [number, number, number], s: 0.94 },
       ].map((r, i) => (
-        <RealisticSingleRose key={i} position={r.pos} scale={r.s} rotation={r.rot} />
+        <RealisticSingleRose key={`mid_${i}`} position={r.pos} scale={r.s} rotation={r.rot} />
       ))}
 
-      {/* Fresh Green Stems Bundled Together */}
+      {/* Lower-Tier Outer Ring of 6 Blooming Roses */}
+      {[
+        { pos: [0, 0.71, 0.32] as [number, number, number], rot: [-0.48, 0, 0] as [number, number, number], s: 0.95 },
+        { pos: [-0.34, 0.66, 0.21] as [number, number, number], rot: [-0.35, -0.7, 0.4] as [number, number, number], s: 0.9 },
+        { pos: [0.34, 0.66, 0.21] as [number, number, number], rot: [-0.35, 0.7, -0.4] as [number, number, number], s: 0.9 },
+        { pos: [-0.36, 0.64, -0.09] as [number, number, number], rot: [0.15, -1.1, 0.35] as [number, number, number], s: 0.9 },
+        { pos: [0.36, 0.64, -0.09] as [number, number, number], rot: [0.15, 1.1, -0.35] as [number, number, number], s: 0.9 },
+        { pos: [0, 0.68, -0.35] as [number, number, number], rot: [0.55, 0, 0] as [number, number, number], s: 0.92 },
+      ].map((r, i) => (
+        <RealisticSingleRose key={`low_${i}`} position={r.pos} scale={r.s} rotation={r.rot} />
+      ))}
+
+      {/* Baby's Breath (Gypsophila) Delicate Little White Blossom Sprigs */}
+      {[
+        [-0.14, 0.82, 0.28],
+        [0.14, 0.82, 0.28],
+        [-0.32, 0.75, 0.04],
+        [0.32, 0.75, 0.04],
+        [0, 0.76, 0.42],
+        [-0.2, 0.78, -0.28],
+        [0.2, 0.78, -0.28],
+      ].map((bbPos, bbi) => (
+        <group key={`bb_${bbi}`} position={bbPos as [number, number, number]}>
+          {[-0.04, 0, 0.04].map((bx, bi) => (
+            <mesh key={bi} position={[bx, (bi % 2) * 0.02, (bi % 2) * 0.02]}>
+              <sphereGeometry args={[0.018, 8, 8]} />
+              <meshStandardMaterial color="#ffffff" roughness={0.3} />
+            </mesh>
+          ))}
+        </group>
+      ))}
+
+      {/* Fresh Stem Bundle */}
       <mesh position={[0, 0.25, 0]} castShadow>
-        <cylinderGeometry args={[0.07, 0.05, 0.78, 16]} />
+        <cylinderGeometry args={[0.08, 0.055, 0.78, 16]} />
         <meshStandardMaterial color="#166534" roughness={0.6} />
       </mesh>
 
-      {/* Serrated Emerald Foliage Leaves */}
-      <mesh position={[-0.18, 0.42, 0.05]} rotation={[0.2, 0, Math.PI / 3.5]}>
-        <boxGeometry args={[0.24, 0.015, 0.1]} />
+      {/* Emerald Foliage Surrounding the Bouquet */}
+      <mesh position={[-0.22, 0.46, 0.08]} rotation={[0.2, 0, Math.PI / 3.2]}>
+        <boxGeometry args={[0.3, 0.015, 0.12]} />
         <meshStandardMaterial color="#15803d" roughness={0.45} />
       </mesh>
-      <mesh position={[0.18, 0.38, -0.05]} rotation={[-0.2, 0, -Math.PI / 3.5]}>
-        <boxGeometry args={[0.24, 0.015, 0.1]} />
+      <mesh position={[0.22, 0.42, -0.08]} rotation={[-0.2, 0, -Math.PI / 3.2]}>
+        <boxGeometry args={[0.3, 0.015, 0.12]} />
         <meshStandardMaterial color="#15803d" roughness={0.45} />
       </mesh>
 
-      {/* Luxury Frosted Presentation Paper Wrap & Gold Ribbon */}
-      <mesh position={[0, 0.22, 0]}>
-        <cylinderGeometry args={[0.28, 0.11, 0.48, 24, 1, true]} />
+      {/* Luxury Frosted Craft Wrapping Parchment */}
+      <mesh position={[0, 0.24, 0]}>
+        <cylinderGeometry args={[0.34, 0.11, 0.52, 28, 1, true]} />
         <meshPhysicalMaterial
           color="#fdf2f8"
-          roughness={0.3}
-          transmission={0.4}
-          thickness={0.2}
+          roughness={0.32}
+          transmission={0.42}
+          thickness={0.22}
           side={THREE.DoubleSide}
         />
       </mesh>
 
-      {/* Metallic Gold Edge Trim */}
-      <mesh position={[0, 0.45, 0]}>
-        <torusGeometry args={[0.28, 0.012, 16, 32]} />
-        <meshStandardMaterial color="#fbbf24" metalness={0.95} roughness={0.15} />
+      {/* Metallic Gold Edge Foil Trim on Wrap */}
+      <mesh position={[0, 0.49, 0]}>
+        <torusGeometry args={[0.34, 0.014, 16, 32]} />
+        <meshStandardMaterial color="#fbbf24" metalness={0.96} roughness={0.12} />
       </mesh>
 
-      {/* Rich Crimson Satin Tie Ribbon Bow */}
-      <group position={[0, 0.18, 0.14]}>
+      {/* Rich Crimson Silk Ribbon Tie & Bow */}
+      <group position={[0, 0.2, 0.16]}>
         <mesh rotation={[0, 0, Math.PI / 4]}>
-          <torusGeometry args={[0.08, 0.025, 16, 24]} />
-          <meshStandardMaterial color="#e11d48" metalness={0.4} roughness={0.2} />
+          <torusGeometry args={[0.095, 0.028, 16, 24]} />
+          <meshStandardMaterial color="#e11d48" metalness={0.45} roughness={0.2} />
         </mesh>
         <mesh rotation={[0, 0, -Math.PI / 4]}>
-          <torusGeometry args={[0.08, 0.025, 16, 24]} />
-          <meshStandardMaterial color="#e11d48" metalness={0.4} roughness={0.2} />
+          <torusGeometry args={[0.095, 0.028, 16, 24]} />
+          <meshStandardMaterial color="#e11d48" metalness={0.45} roughness={0.2} />
         </mesh>
-        <mesh position={[0, 0, 0.01]}>
-          <sphereGeometry args={[0.038, 12, 12]} />
+        <mesh position={[0, 0, 0.012]}>
+          <sphereGeometry args={[0.042, 14, 14]} />
+          <meshStandardMaterial color="#be123c" roughness={0.3} />
+        </mesh>
+        {/* Draping Ribbon Tails */}
+        <mesh position={[-0.06, -0.16, 0.01]} rotation={[0, 0, 0.2]}>
+          <boxGeometry args={[0.045, 0.26, 0.008]} />
+          <meshStandardMaterial color="#be123c" roughness={0.3} />
+        </mesh>
+        <mesh position={[0.06, -0.16, 0.01]} rotation={[0, 0, -0.2]}>
+          <boxGeometry args={[0.045, 0.26, 0.008]} />
           <meshStandardMaterial color="#be123c" roughness={0.3} />
         </mesh>
       </group>
 
-      {/* Swirling Velvet Rose Petals Orbiting Around */}
-      <group ref={petalsRef} position={[0, 0.65, 0]}>
+      {/* Swirling Velvet Rose Petals Orbiting Around Bouquet */}
+      <group ref={petalsRef} position={[0, 0.72, 0]}>
         {[0, 1, 2, 3, 4, 5, 6, 7].map((idx) => {
           const angle = (idx / 8) * Math.PI * 2;
-          const radius = 0.54 + (idx % 2) * 0.14;
-          const py = Math.sin(idx * 1.5) * 0.22;
+          const radius = 0.58 + (idx % 2) * 0.16;
+          const py = Math.sin(idx * 1.5) * 0.24;
           return (
             <mesh
               key={idx}
               position={[Math.cos(angle) * radius, py, Math.sin(angle) * radius]}
               rotation={[0.4, angle, 0.3]}
             >
-              <sphereGeometry args={[0.048, 10, 10]} />
+              <sphereGeometry args={[0.052, 12, 12]} />
               <meshPhysicalMaterial
                 color="#e11d48"
-                roughness={0.28}
+                roughness={0.3}
                 sheen={1.0}
                 sheenColor="#fda4af"
               />
@@ -756,7 +905,7 @@ function DiamondHeart3D({
 }
 
 // ==========================================
-// 4. PHOTOREALISTIC BELGIAN CHOCOLATES 3D
+// 4. PHOTOREALISTIC BELGIAN CHOCOLATE BAR & TRUFFLES 3D
 // ==========================================
 function Chocolates3D({
   position,
@@ -774,13 +923,17 @@ function Chocolates3D({
   useFrame(({ clock }) => {
     if (!chocoRef.current) return;
     const t = clock.getElapsedTime();
-    chocoRef.current.position.y = position[1] + Math.sin(t * 1.9 + 2) * 0.06;
+    chocoRef.current.position.y = position[1] + Math.sin(t * 1.8 + 2) * 0.05;
     if (isSolo) {
-      chocoRef.current.rotation.y = t * 0.8;
+      chocoRef.current.rotation.y = t * 0.7;
     } else {
-      chocoRef.current.rotation.y = Math.sin(t * 1.4) * 0.2;
+      chocoRef.current.rotation.y = Math.sin(t * 1.2) * 0.25;
     }
   });
+
+  // 4 columns x 3 rows grid of chocolate blocks
+  const cols = [-0.36, -0.12, 0.12, 0.36];
+  const rows = [-0.24, 0, 0.24];
 
   return (
     <group
@@ -794,98 +947,184 @@ function Chocolates3D({
         }
       }}
     >
-      {/* Confectionery Presentation Box Base in Warm Gold Foil */}
-      <mesh position={[0, 0.2, 0]} castShadow>
-        <cylinderGeometry args={[0.56, 0.56, 0.22, 32]} />
-        <meshStandardMaterial color="#d97706" metalness={0.88} roughness={0.16} />
-      </mesh>
-
-      {/* Crimson Quilted Velvet Interior Cushion */}
-      <mesh position={[0, 0.32, 0]}>
-        <cylinderGeometry args={[0.59, 0.59, 0.045, 32]} />
-        <meshStandardMaterial color="#881337" roughness={0.8} />
-      </mesh>
-
-      {/* Gold Trim Rim Around Box Interior */}
-      <mesh position={[0, 0.34, 0]}>
-        <torusGeometry args={[0.585, 0.015, 16, 32]} />
-        <meshStandardMaterial color="#fbbf24" metalness={0.95} roughness={0.15} />
-      </mesh>
-
-      {/* Pleated Baking Paper Cup Liners for each Truffle */}
-      {[
-        [-0.2, 0.34, -0.1],
-        [0.2, 0.34, -0.1],
-        [-0.15, 0.34, 0.17],
-        [0.15, 0.34, 0.17],
-        [0, 0.34, 0.03],
-      ].map((cupPos, i) => (
-        <mesh key={`cup_${i}`} position={cupPos as [number, number, number]}>
-          <cylinderGeometry args={[0.13, 0.09, 0.04, 18, 1, true]} />
-          <meshStandardMaterial color="#3b1d11" roughness={0.7} side={THREE.DoubleSide} />
-        </mesh>
-      ))}
-
-      {/* Truffle 1: Dark Grand Cru Chocolate with Real 24K Edible Gold Leaf */}
-      <group position={[-0.2, 0.4, -0.1]}>
-        <mesh>
-          <sphereGeometry args={[0.105, 18, 18]} />
+      {/* Group tilted at dynamic presentation angle */}
+      <group rotation={[0.42, -0.22, 0.1]}>
+        {/* ========================================================= */}
+        {/* A. ARTISAN SEGMENTED CHOCOLATE BAR (Rich 72% Dark Cocoa) */}
+        {/* ========================================================= */}
+        {/* Base chocolate slab */}
+        <mesh position={[0, 0.04, 0]} castShadow>
+          <boxGeometry args={[1.08, 0.075, 0.74]} />
           <meshPhysicalMaterial
-            color="#1c0d06"
-            roughness={0.14}
-            clearcoat={0.92}
-            clearcoatRoughness={0.08}
+            color="#2a1206"
+            roughness={0.22}
+            clearcoat={0.75}
+            clearcoatRoughness={0.12}
           />
         </mesh>
-        {/* Jagged 24K Gold Leaf Flakes on Top */}
-        <mesh position={[0, 0.095, 0]} rotation={[0.2, 0.4, 0]}>
-          <boxGeometry args={[0.065, 0.012, 0.055]} />
-          <meshStandardMaterial color="#fbbf24" metalness={0.98} roughness={0.12} />
+
+        {/* 12 Segmented Chocolate Squares (4x3 Grid) with Beveled Tops & Snap Grooves */}
+        {cols.map((cx, ci) =>
+          rows.map((rz, ri) => (
+            <group key={`choc_blk_${ci}_${ri}`} position={[cx, 0.09, rz]}>
+              {/* Beveled Chocolate Square */}
+              <mesh castShadow>
+                <boxGeometry args={[0.21, 0.045, 0.205]} />
+                <meshPhysicalMaterial
+                  color="#301507"
+                  roughness={0.18}
+                  clearcoat={0.88}
+                  clearcoatRoughness={0.1}
+                />
+              </mesh>
+              {/* Embossed Crown / Cocoa Seal on top of each square */}
+              <mesh position={[0, 0.024, 0]} scale={[1, 0.22, 1]}>
+                <sphereGeometry args={[0.048, 12, 12]} />
+                <meshPhysicalMaterial
+                  color="#261005"
+                  roughness={0.16}
+                  clearcoat={0.9}
+                  clearcoatRoughness={0.08}
+                />
+              </mesh>
+            </group>
+          ))
+        )}
+
+        {/* Snap Grooves: Longitudinal & Transverse insets */}
+        <mesh position={[0, 0.08, 0.12]}>
+          <boxGeometry args={[1.04, 0.02, 0.018]} />
+          <meshStandardMaterial color="#190a04" roughness={0.4} />
+        </mesh>
+        <mesh position={[0, 0.08, -0.12]}>
+          <boxGeometry args={[1.04, 0.02, 0.018]} />
+          <meshStandardMaterial color="#190a04" roughness={0.4} />
+        </mesh>
+        {[-0.24, 0, 0.24].map((divX, di) => (
+          <mesh key={`snap_${di}`} position={[divX, 0.08, 0]}>
+            <boxGeometry args={[0.018, 0.02, 0.70]} />
+            <meshStandardMaterial color="#190a04" roughness={0.4} />
+          </mesh>
+        ))}
+
+        {/* ========================================================= */}
+        {/* B. PEELED METALLIC GOLD FOIL WRAPPER                      */}
+        {/* ========================================================= */}
+        {/* Lower body gold foil enveloping the lower half of the slab */}
+        <mesh position={[-0.14, 0.042, 0]}>
+          <boxGeometry args={[0.82, 0.086, 0.76]} />
+          <meshStandardMaterial
+            color="#fbbf24"
+            metalness={0.96}
+            roughness={0.22}
+          />
+        </mesh>
+        {/* Crinkled jagged peeled foil flaps folded backwards */}
+        <mesh position={[0.28, 0.088, 0.22]} rotation={[0.2, 0.15, 0.35]}>
+          <boxGeometry args={[0.08, 0.012, 0.28]} />
+          <meshStandardMaterial color="#fcd34d" metalness={0.97} roughness={0.25} />
+        </mesh>
+        <mesh position={[0.28, 0.088, -0.2]} rotation={[-0.25, 0.1, 0.38]}>
+          <boxGeometry args={[0.08, 0.012, 0.26]} />
+          <meshStandardMaterial color="#fcd34d" metalness={0.97} roughness={0.25} />
+        </mesh>
+
+        {/* ========================================================= */}
+        {/* C. PREMIUM ROYAL BURGUNDY CARDSTOCK SLEEVE BAND           */}
+        {/* ========================================================= */}
+        <mesh position={[-0.24, 0.044, 0]}>
+          <boxGeometry args={[0.54, 0.092, 0.77]} />
+          <meshStandardMaterial color="#4c0519" roughness={0.45} />
+        </mesh>
+        {/* 24K Gold Foil Accent Ribbon Band */}
+        <mesh position={[-0.01, 0.046, 0]}>
+          <boxGeometry args={[0.04, 0.096, 0.776]} />
+          <meshStandardMaterial color="#fbbf24" metalness={0.96} roughness={0.15} />
         </mesh>
       </group>
 
-      {/* Truffle 2: Roasted Hazelnut Praline with White Chocolate Zigzag Drizzle */}
-      <group position={[0.2, 0.4, -0.1]}>
-        <mesh>
+      {/* ========================================================= */}
+      {/* D. SNAPPED CHOCOLATE CHUNKS ON THE SIDE                   */}
+      {/* ========================================================= */}
+      {/* Broken chocolate square resting at an angle on the front right */}
+      <group position={[0.52, -0.06, 0.28]} rotation={[0.18, 0.45, -0.32]}>
+        <mesh castShadow>
+          <boxGeometry args={[0.23, 0.045, 0.22]} />
+          <meshPhysicalMaterial
+            color="#301507"
+            roughness={0.2}
+            clearcoat={0.85}
+            clearcoatRoughness={0.12}
+          />
+        </mesh>
+        {/* Snapped rough chocolate edge exposing rich ganache */}
+        <mesh position={[-0.11, 0, 0]}>
+          <boxGeometry args={[0.02, 0.042, 0.21]} />
+          <meshStandardMaterial color="#200d04" roughness={0.88} />
+        </mesh>
+      </group>
+
+      {/* ========================================================= */}
+      {/* E. FERRERO ROCHER STYLE HAZELNUT PRALINES & TRUFFLES      */}
+      {/* ========================================================= */}
+      {/* Truffle 1: Ferrero Golden Crinkle Ball in pleated cup */}
+      <group position={[-0.48, -0.05, 0.42]}>
+        {/* Fluted brown baking paper cup */}
+        <mesh position={[0, -0.04, 0]}>
+          <cylinderGeometry args={[0.13, 0.09, 0.06, 20, 1, true]} />
+          <meshStandardMaterial color="#3e1a0d" roughness={0.85} side={THREE.DoubleSide} />
+        </mesh>
+        {/* Golden Foil Wrapped Praline Sphere */}
+        <mesh position={[0, 0.03, 0]} castShadow>
+          <icosahedronGeometry args={[0.105, 2]} />
+          <meshStandardMaterial
+            color="#fbbf24"
+            metalness={0.96}
+            roughness={0.28}
+          />
+        </mesh>
+      </group>
+
+      {/* Truffle 2: Roasted Hazelnut Dark Truffle with Cream Drizzle */}
+      <group position={[0.48, -0.05, -0.38]}>
+        {/* Fluted brown paper cup */}
+        <mesh position={[0, -0.04, 0]}>
+          <cylinderGeometry args={[0.13, 0.09, 0.06, 20, 1, true]} />
+          <meshStandardMaterial color="#3e1a0d" roughness={0.85} side={THREE.DoubleSide} />
+        </mesh>
+        {/* Dark Cocoa Ganache Sphere */}
+        <mesh position={[0, 0.03, 0]} castShadow>
           <sphereGeometry args={[0.105, 18, 18]} />
-          <meshPhysicalMaterial color="#4a2810" roughness={0.25} clearcoat={0.4} />
+          <meshPhysicalMaterial
+            color="#1f0e06"
+            roughness={0.18}
+            clearcoat={0.8}
+            clearcoatRoughness={0.15}
+          />
         </mesh>
-        {/* White Chocolate Drizzle */}
-        <mesh position={[0, 0.085, 0]} rotation={[0, 0.3, 0]}>
-          <boxGeometry args={[0.13, 0.015, 0.03]} />
-          <meshStandardMaterial color="#fef9c3" roughness={0.2} />
-        </mesh>
-        {/* Whole Roasted Hazelnut Crown */}
-        <mesh position={[0, 0.11, 0]}>
-          <sphereGeometry args={[0.035, 12, 12]} />
-          <meshStandardMaterial color="#78350f" roughness={0.5} />
+        {/* White Chocolate Swirl Drizzle */}
+        <mesh position={[0, 0.11, 0]} rotation={[0, 0.4, 0]}>
+          <torusGeometry args={[0.06, 0.012, 8, 24, Math.PI * 1.5]} />
+          <meshStandardMaterial color="#fef08a" roughness={0.25} />
         </mesh>
       </group>
 
-      {/* Truffle 3: Ruby Rose & Wild Berry Ganache Sphere */}
-      <mesh position={[-0.15, 0.4, 0.17]}>
-        <sphereGeometry args={[0.095, 18, 18]} />
-        <meshPhysicalMaterial
-          color="#e11d48"
-          roughness={0.22}
-          clearcoat={0.7}
-          clearcoatRoughness={0.15}
-          sheen={0.8}
-          sheenColor="#fda4af"
-        />
-      </mesh>
+      {/* Truffle 3: Artisan Glossy Raspberry Heart Bonbon */}
+      <group position={[-0.52, -0.06, -0.34]} rotation={[-0.2, 0.3, 0.1]}>
+        <mesh castShadow>
+          <octahedronGeometry args={[0.1, 0]} />
+          <meshPhysicalMaterial
+            color="#881337"
+            roughness={0.15}
+            clearcoat={0.95}
+            clearcoatRoughness={0.08}
+            sheen={0.8}
+            sheenColor="#fda4af"
+          />
+        </mesh>
+      </group>
 
-      {/* Truffle 4: 24K Gold Wrapped Artisan Heart Bonbon */}
-      <mesh position={[0.15, 0.4, 0.17]} rotation={[-Math.PI / 4, 0, 0]}>
-        <octahedronGeometry args={[0.095, 0]} />
-        <meshStandardMaterial color="#fbbf24" metalness={0.95} roughness={0.16} />
-      </mesh>
-
-      {/* Truffle 5: Center French Cocoa-Dusted Noir Ganache (Matte Velvet Finish) */}
-      <mesh position={[0, 0.41, 0.03]}>
-        <sphereGeometry args={[0.115, 20, 20]} />
-        <meshStandardMaterial color="#1f140e" roughness={0.95} metalness={0.0} />
-      </mesh>
+      <pointLight color="#fbbf24" intensity={2.2} distance={3.0} />
     </group>
   );
 }
