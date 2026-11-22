@@ -11,23 +11,23 @@ export function LoadingScreen({ onComplete }: Props) {
   const [fadeOut, setFadeOut] = useState(false);
   const [isAssetReady, setIsAssetReady] = useState(false);
 
-  // Love Gate Security Checkpoints
+  // Checkpoint 1: Voice or Text "I Love You"
   const [loveText, setLoveText] = useState('');
   const [loveVerified, setLoveVerified] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [speechError, setSpeechError] = useState<string | null>(null);
 
-  // Checkpoint 2: Two Options (Option A: 2311, Option B: 198143_)
+  // Checkpoint 2: Birthday OTP (2311)
   const [otpDigits, setOtpDigits] = useState(['', '', '', '']);
-  const [cypherDigit, setCypherDigit] = useState('');
   const [otpVerified, setOtpVerified] = useState(false);
   const [otpError, setOtpError] = useState(false);
-  const [cypherError, setCypherError] = useState(false);
-  const [verifiedMethod, setVerifiedMethod] = useState<'birthday' | 'cypher' | null>(null);
+  const [showHint2, setShowHint2] = useState(false);
 
-  // Hidden Hints by Default (Shown only when Hint Button is clicked!)
-  const [showHintA, setShowHintA] = useState(false);
-  const [showHintB, setShowHintB] = useState(false);
+  // Checkpoint 3: Love Cypher (198143_)
+  const [cypherDigit, setCypherDigit] = useState('');
+  const [cypherVerified, setCypherVerified] = useState(false);
+  const [cypherError, setCypherError] = useState(false);
+  const [showHint3, setShowHint3] = useState(false);
 
   const otpInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -54,7 +54,7 @@ export function LoadingScreen({ onComplete }: Props) {
     setTimeout(onComplete, 350);
   }, [onComplete]);
 
-  // 2. Love Speech Recognition Handler
+  // 2. Love Speech Recognition Handler (Step 1)
   const handleStartSpeech = () => {
     soundManager.initCtx();
     const SpeechRec = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -99,7 +99,7 @@ export function LoadingScreen({ onComplete }: Props) {
     }
   };
 
-  // 3. Text Love Input Handler
+  // 3. Text Love Input Handler (Step 1)
   const handleVerifyLoveText = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     soundManager.initCtx();
@@ -113,7 +113,7 @@ export function LoadingScreen({ onComplete }: Props) {
     }
   };
 
-  // 4. Option A: Birthday OTP Digit Changes (2311)
+  // 4. Step 2: Birthday OTP Digit Changes (2311)
   const handleOtpChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
     const newOtp = [...otpDigits];
@@ -130,7 +130,6 @@ export function LoadingScreen({ onComplete }: Props) {
     if (fullCode.length === 4) {
       if (fullCode === '2311') {
         setOtpVerified(true);
-        setVerifiedMethod('birthday');
         setOtpError(false);
         soundManager.playPopperCannonSound();
       } else {
@@ -146,15 +145,14 @@ export function LoadingScreen({ onComplete }: Props) {
     }
   };
 
-  // 5. Option B: Cypher Guess Change (Missing digit in 198143_ -> 2)
+  // 5. Step 3: Cypher Guess Change (Missing digit in 198143_ -> 2)
   const handleCypherChange = (value: string) => {
     setCypherDigit(value);
     setCypherError(false);
 
     const clean = value.trim();
     if (clean === '2' || clean === '1981432') {
-      setOtpVerified(true);
-      setVerifiedMethod('cypher');
+      setCypherVerified(true);
       setCypherError(false);
       soundManager.playPopperCannonSound();
     } else if (clean.length > 0) {
@@ -163,7 +161,7 @@ export function LoadingScreen({ onComplete }: Props) {
     }
   };
 
-  const isGateUnlocked = loveVerified && otpVerified;
+  const isGateUnlocked = loveVerified && otpVerified && cypherVerified;
 
   return (
     <div
@@ -257,7 +255,7 @@ export function LoadingScreen({ onComplete }: Props) {
                 ? '2px solid rgba(52, 211, 153, 0.8)'
                 : '1.5px solid rgba(251, 191, 36, 0.55)',
               borderRadius: '28px',
-              padding: '22px 18px',
+              padding: '20px 18px',
               boxShadow: isGateUnlocked
                 ? '0 0 35px rgba(52, 211, 153, 0.45)'
                 : '0 16px 45px rgba(0, 0, 0, 0.75), 0 0 25px rgba(244, 63, 94, 0.3)',
@@ -279,7 +277,7 @@ export function LoadingScreen({ onComplete }: Props) {
                 fontSize: '0.78rem',
                 fontWeight: 700,
                 color: '#fef08a',
-                marginBottom: '8px',
+                marginBottom: '6px',
               }}
             >
               <span>🔐 Harshit's Heart Security Gate</span>
@@ -287,7 +285,7 @@ export function LoadingScreen({ onComplete }: Props) {
 
             <h2
               style={{
-                fontSize: '1.38rem',
+                fontSize: '1.35rem',
                 fontWeight: 800,
                 margin: '0 0 4px 0',
                 background: 'linear-gradient(135deg, #fff, #ffd1dc, #fbbf24)',
@@ -297,8 +295,8 @@ export function LoadingScreen({ onComplete }: Props) {
             >
               Sameeksha Baby ki Entry! 💖
             </h2>
-            <p style={{ fontSize: '0.82rem', color: '#fda4af', margin: '0 0 16px 0' }}>
-              Harshit ki universe me enter karne ke liye 2 pyare se checkpoints:
+            <p style={{ fontSize: '0.82rem', color: '#fda4af', margin: '0 0 14px 0' }}>
+              Harshit ki universe me enter karne ke liye 3 pyare se checkpoints:
             </p>
 
             {/* CHECKPOINT 1: VOICE / TEXT LOVE DECLARATION */}
@@ -310,14 +308,14 @@ export function LoadingScreen({ onComplete }: Props) {
                 border: loveVerified
                   ? '1.5px solid rgba(52, 211, 153, 0.6)'
                   : '1px solid rgba(255, 255, 255, 0.15)',
-                borderRadius: '18px',
+                borderRadius: '16px',
                 padding: '12px 14px',
-                marginBottom: '14px',
+                marginBottom: '12px',
                 textAlign: 'left',
                 transition: 'all 0.3s ease',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <span style={{ fontSize: '0.84rem', fontWeight: 700, color: loveVerified ? '#34d399' : '#fef08a' }}>
                   Step 1: Say or Type "I Love You" ❤️
                 </span>
@@ -344,7 +342,7 @@ export function LoadingScreen({ onComplete }: Props) {
                         border: 'none',
                         color: '#fff',
                         borderRadius: '14px',
-                        padding: '9px 12px',
+                        padding: '8px 12px',
                         fontSize: '0.8rem',
                         fontWeight: 700,
                         cursor: 'pointer',
@@ -407,7 +405,7 @@ export function LoadingScreen({ onComplete }: Props) {
               )}
             </div>
 
-            {/* CHECKPOINT 2: SECRET KEY (OPTION A or OPTION B) */}
+            {/* CHECKPOINT 2: 4-DIGIT BIRTHDAY OTP */}
             <div
               style={{
                 background: otpVerified
@@ -415,256 +413,256 @@ export function LoadingScreen({ onComplete }: Props) {
                   : 'rgba(255, 255, 255, 0.05)',
                 border: otpVerified
                   ? '1.5px solid rgba(52, 211, 153, 0.6)'
-                  : (otpError || cypherError)
+                  : otpError
                   ? '1.5px solid #ef4444'
                   : '1px solid rgba(255, 255, 255, 0.15)',
-                borderRadius: '18px',
-                padding: '14px',
+                borderRadius: '16px',
+                padding: '12px 14px',
+                marginBottom: '12px',
+                textAlign: 'left',
+                transition: 'all 0.3s ease',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <span style={{ fontSize: '0.84rem', fontWeight: 700, color: otpVerified ? '#34d399' : '#fef08a' }}>
+                  Step 2: Enter 4-Digit Birthday OTP 🎂
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {!otpVerified && (
+                    <button
+                      type="button"
+                      onClick={() => setShowHint2((prev) => !prev)}
+                      style={{
+                        background: showHint2 ? 'rgba(251, 191, 36, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(251, 191, 36, 0.5)',
+                        borderRadius: '12px',
+                        padding: '2px 8px',
+                        color: '#fef08a',
+                        fontSize: '0.7rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      💡 {showHint2 ? 'Hide Hint' : 'Hint'}
+                    </button>
+                  )}
+                  {otpVerified && (
+                    <span style={{ fontSize: '0.78rem', color: '#34d399', fontWeight: 700 }}>
+                      ✅ Verified!
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Hint 2 (Visible ONLY after clicking hint button) */}
+              {showHint2 && !otpVerified && (
+                <div
+                  style={{
+                    background: 'rgba(251, 191, 36, 0.15)',
+                    border: '1px solid rgba(251, 191, 36, 0.4)',
+                    borderRadius: '10px',
+                    padding: '6px 10px',
+                    fontSize: '0.72rem',
+                    color: '#fef08a',
+                    marginBottom: '8px',
+                    lineHeight: 1.4,
+                  }}
+                >
+                  <strong>💡 Hint:</strong> Harshit ke liye sabse special din jo har saal aata hai... Sameeksha Baby ka Birthday! 🎂✨ (Format: <strong>DDMM</strong>)
+                </div>
+              )}
+
+              {!otpVerified ? (
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', margin: '4px 0' }}>
+                    {otpDigits.map((digit, idx) => (
+                      <input
+                        key={idx}
+                        ref={(el) => {
+                          otpInputRefs.current[idx] = el;
+                        }}
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={1}
+                        value={digit}
+                        onChange={(e) => handleOtpChange(idx, e.target.value)}
+                        onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                        placeholder="•"
+                        style={{
+                          width: '40px',
+                          height: '44px',
+                          textAlign: 'center',
+                          fontSize: '1.25rem',
+                          fontWeight: 800,
+                          color: '#fef08a',
+                          background: 'rgba(0, 0, 0, 0.5)',
+                          border: otpError
+                            ? '1.5px solid #ef4444'
+                            : digit
+                            ? '1.5px solid rgba(251, 191, 36, 0.8)'
+                            : '1px solid rgba(255, 255, 255, 0.2)',
+                          borderRadius: '12px',
+                          outline: 'none',
+                        }}
+                      />
+                    ))}
+                  </div>
+
+                  {otpError && (
+                    <div style={{ color: '#fda4af', fontSize: '0.72rem', textAlign: 'center', marginTop: '4px' }}>
+                      Oops! Special din socho... 23 November (2311)! 😉❤️
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div style={{ fontSize: '0.82rem', color: '#a7f3d0', fontWeight: 600 }}>
+                  2311 Accepted! Sameeksha's Birthday Key Unlocked! 🎉🎂
+                </div>
+              )}
+            </div>
+
+            {/* CHECKPOINT 3: SECRET LOVE CYPHER (198143_) */}
+            <div
+              style={{
+                background: cypherVerified
+                  ? 'rgba(52, 211, 153, 0.12)'
+                  : 'rgba(255, 255, 255, 0.05)',
+                border: cypherVerified
+                  ? '1.5px solid rgba(52, 211, 153, 0.6)'
+                  : cypherError
+                  ? '1.5px solid #ef4444'
+                  : '1px solid rgba(255, 255, 255, 0.15)',
+                borderRadius: '16px',
+                padding: '12px 14px',
                 marginBottom: '18px',
                 textAlign: 'left',
                 transition: 'all 0.3s ease',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ fontSize: '0.84rem', fontWeight: 700, color: otpVerified ? '#34d399' : '#fef08a' }}>
-                  Step 2: Enter Secret Key (Kisi Ek Se Unlock Karein) 🔐
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <span style={{ fontSize: '0.84rem', fontWeight: 700, color: cypherVerified ? '#34d399' : '#fef08a' }}>
+                  Step 3: Secret Love Cypher 💖
                 </span>
-                {otpVerified && (
-                  <span style={{ fontSize: '0.78rem', color: '#34d399', fontWeight: 700 }}>
-                    ✅ Key Matched!
-                  </span>
-                )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {!cypherVerified && (
+                    <button
+                      type="button"
+                      onClick={() => setShowHint3((prev) => !prev)}
+                      style={{
+                        background: showHint3 ? 'rgba(244, 63, 94, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(244, 63, 94, 0.5)',
+                        borderRadius: '12px',
+                        padding: '2px 8px',
+                        color: '#fda4af',
+                        fontSize: '0.7rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      💡 {showHint3 ? 'Hide Hint' : 'Hint'}
+                    </button>
+                  )}
+                  {cypherVerified && (
+                    <span style={{ fontSize: '0.78rem', color: '#34d399', fontWeight: 700 }}>
+                      ✅ Verified!
+                    </span>
+                  )}
+                </div>
               </div>
 
-              {!otpVerified ? (
+              {/* Hint 3 (Visible ONLY after clicking hint button) */}
+              {showHint3 && !cypherVerified && (
+                <div
+                  style={{
+                    background: 'rgba(244, 63, 94, 0.15)',
+                    border: '1px solid rgba(244, 63, 94, 0.4)',
+                    borderRadius: '10px',
+                    padding: '6px 10px',
+                    fontSize: '0.72rem',
+                    color: '#fef08a',
+                    marginBottom: '8px',
+                    lineHeight: 1.4,
+                  }}
+                >
+                  <strong>💡 Hint:</strong> Reply of "I love you" ❤️ (I love you _____?)
+                </div>
+              )}
+
+              {!cypherVerified ? (
                 <div>
-                  {/* OPTION A: 4-Digit Birthday OTP */}
-                  <div
-                    style={{
-                      background: 'rgba(0, 0, 0, 0.28)',
-                      border: '1px solid rgba(251, 191, 36, 0.25)',
-                      borderRadius: '16px',
-                      padding: '10px 12px',
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                      <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#fef08a' }}>
-                        🎂 Option A: 4-Digit Birthday OTP
-                      </span>
-                      {/* Hint Button for Option A */}
-                      <button
-                        type="button"
-                        onClick={() => setShowHintA((prev) => !prev)}
-                        style={{
-                          background: showHintA ? 'rgba(251, 191, 36, 0.3)' : 'rgba(255, 255, 255, 0.1)',
-                          border: '1px solid rgba(251, 191, 36, 0.5)',
-                          borderRadius: '12px',
-                          padding: '2px 8px',
-                          color: '#fef08a',
-                          fontSize: '0.7rem',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        💡 {showHintA ? 'Hide Hint' : 'Hint'}
-                      </button>
-                    </div>
-
-                    {/* Hint A (Visible ONLY after clicking hint button) */}
-                    {showHintA && (
+                  {/* Cypher Box displaying 198143_ */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', margin: '6px 0' }}>
+                    {['1', '9', '8', '1', '4', '3'].map((num, i) => (
                       <div
+                        key={i}
                         style={{
-                          background: 'rgba(251, 191, 36, 0.15)',
-                          border: '1px solid rgba(251, 191, 36, 0.4)',
-                          borderRadius: '10px',
-                          padding: '6px 10px',
-                          fontSize: '0.72rem',
-                          color: '#fef08a',
-                          marginBottom: '8px',
-                          lineHeight: 1.4,
-                        }}
-                      >
-                        <strong>💡 Hint:</strong> Harshit ke liye sabse special din jo har saal aata hai... Sameeksha Baby ka Birthday! 🎂✨ (Format: <strong>DDMM</strong>)
-                      </div>
-                    )}
-
-                    {/* 4 Digit Boxes */}
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', margin: '4px 0' }}>
-                      {otpDigits.map((digit, idx) => (
-                        <input
-                          key={idx}
-                          ref={(el) => {
-                            otpInputRefs.current[idx] = el;
-                          }}
-                          type="text"
-                          inputMode="numeric"
-                          maxLength={1}
-                          value={digit}
-                          onChange={(e) => handleOtpChange(idx, e.target.value)}
-                          onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                          placeholder="•"
-                          style={{
-                            width: '40px',
-                            height: '44px',
-                            textAlign: 'center',
-                            fontSize: '1.25rem',
-                            fontWeight: 800,
-                            color: '#fef08a',
-                            background: 'rgba(0, 0, 0, 0.5)',
-                            border: otpError
-                              ? '1.5px solid #ef4444'
-                              : digit
-                              ? '1.5px solid rgba(251, 191, 36, 0.8)'
-                              : '1px solid rgba(255, 255, 255, 0.2)',
-                            borderRadius: '12px',
-                            outline: 'none',
-                          }}
-                        />
-                      ))}
-                    </div>
-
-                    {otpError && (
-                      <div style={{ color: '#fda4af', fontSize: '0.72rem', textAlign: 'center', marginTop: '4px' }}>
-                        Oops! Special din socho... 23 November (2311)! 😉❤️
-                      </div>
-                    )}
-                  </div>
-
-                  {/* OR SEPARATOR */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '10px 0' }}>
-                    <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.18)' }} />
-                    <span style={{ fontSize: '0.72rem', color: '#fda4af', fontWeight: 800, letterSpacing: '1px' }}>
-                      — YA PHIR / OR —
-                    </span>
-                    <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.18)' }} />
-                  </div>
-
-                  {/* OPTION B: LOVE CYPHER 198143_ */}
-                  <div
-                    style={{
-                      background: 'rgba(0, 0, 0, 0.28)',
-                      border: '1px solid rgba(244, 63, 94, 0.3)',
-                      borderRadius: '16px',
-                      padding: '10px 12px',
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                      <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#fef08a' }}>
-                        💖 Option B: Secret Love Code
-                      </span>
-                      {/* Hint Button for Option B */}
-                      <button
-                        type="button"
-                        onClick={() => setShowHintB((prev) => !prev)}
-                        style={{
-                          background: showHintB ? 'rgba(244, 63, 94, 0.3)' : 'rgba(255, 255, 255, 0.1)',
-                          border: '1px solid rgba(244, 63, 94, 0.5)',
-                          borderRadius: '12px',
-                          padding: '2px 8px',
-                          color: '#fda4af',
-                          fontSize: '0.7rem',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        💡 {showHintB ? 'Hide Hint' : 'Hint'}
-                      </button>
-                    </div>
-
-                    {/* Hint B (Visible ONLY after clicking hint button) */}
-                    {showHintB && (
-                      <div
-                        style={{
-                          background: 'rgba(244, 63, 94, 0.15)',
-                          border: '1px solid rgba(244, 63, 94, 0.4)',
-                          borderRadius: '10px',
-                          padding: '6px 10px',
-                          fontSize: '0.72rem',
-                          color: '#fef08a',
-                          marginBottom: '8px',
-                          lineHeight: 1.4,
-                        }}
-                      >
-                        <strong>💡 Hint:</strong> Reply of "I love you" ❤️ (I love you _____?)
-                      </div>
-                    )}
-
-                    {/* Box showing 198143_ */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', margin: '6px 0' }}>
-                      {['1', '9', '8', '1', '4', '3'].map((num, i) => (
-                        <div
-                          key={i}
-                          style={{
-                            width: '30px',
-                            height: '38px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '1.1rem',
-                            fontWeight: 800,
-                            color: '#fef08a',
-                            background: 'rgba(255, 255, 255, 0.08)',
-                            border: '1px solid rgba(251, 191, 36, 0.35)',
-                            borderRadius: '10px',
-                          }}
-                        >
-                          {num}
-                        </div>
-                      ))}
-
-                      {/* The Missing Digit "_" Input */}
-                      <input
-                        type="text"
-                        maxLength={1}
-                        value={cypherDigit}
-                        onChange={(e) => handleCypherChange(e.target.value)}
-                        placeholder="_"
-                        style={{
-                          width: '34px',
+                          width: '30px',
                           height: '38px',
-                          textAlign: 'center',
-                          fontSize: '1.25rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '1.1rem',
                           fontWeight: 800,
-                          color: '#fff',
-                          background: 'rgba(244, 63, 94, 0.35)',
-                          border: cypherError
-                            ? '2px solid #ef4444'
-                            : cypherDigit
-                            ? '2px solid #34d399'
-                            : '2px dashed #f43f5e',
+                          color: '#fef08a',
+                          background: 'rgba(255, 255, 255, 0.08)',
+                          border: '1px solid rgba(251, 191, 36, 0.35)',
                           borderRadius: '10px',
-                          outline: 'none',
-                          boxShadow: '0 0 10px rgba(244, 63, 94, 0.4)',
                         }}
-                      />
-                    </div>
-
-                    {/* Heart Underneath as requested */}
-                    <div style={{ textAlign: 'center', marginTop: '2px' }}>
-                      <motion.span
-                        animate={{ scale: [1, 1.25, 1] }}
-                        transition={{ repeat: Infinity, duration: 1.3, ease: 'easeInOut' }}
-                        style={{ display: 'inline-block', fontSize: '1.45rem' }}
                       >
-                        ❤️
-                      </motion.span>
-                      <div style={{ fontSize: '0.7rem', color: '#fda4af' }}>
-                        Guess the missing number in <strong>" _ "</strong>!
+                        {num}
                       </div>
-                    </div>
+                    ))}
 
-                    {cypherError && (
-                      <div style={{ color: '#fda4af', fontSize: '0.72rem', textAlign: 'center', marginTop: '4px' }}>
-                        Think: Reply of "I love you" is "I love you ___" 😉❤️ (Hint: 2)
-                      </div>
-                    )}
+                    {/* The Missing Digit "_" Input */}
+                    <input
+                      type="text"
+                      maxLength={1}
+                      value={cypherDigit}
+                      onChange={(e) => handleCypherChange(e.target.value)}
+                      placeholder="_"
+                      style={{
+                        width: '34px',
+                        height: '38px',
+                        textAlign: 'center',
+                        fontSize: '1.25rem',
+                        fontWeight: 800,
+                        color: '#fff',
+                        background: 'rgba(244, 63, 94, 0.35)',
+                        border: cypherError
+                          ? '2px solid #ef4444'
+                          : cypherDigit
+                          ? '2px solid #34d399'
+                          : '2px dashed #f43f5e',
+                        borderRadius: '10px',
+                        outline: 'none',
+                        boxShadow: '0 0 10px rgba(244, 63, 94, 0.4)',
+                      }}
+                    />
                   </div>
+
+                  {/* Heart Underneath as requested */}
+                  <div style={{ textAlign: 'center', marginTop: '2px' }}>
+                    <motion.span
+                      animate={{ scale: [1, 1.25, 1] }}
+                      transition={{ repeat: Infinity, duration: 1.3, ease: 'easeInOut' }}
+                      style={{ display: 'inline-block', fontSize: '1.45rem' }}
+                    >
+                      ❤️
+                    </motion.span>
+                    <div style={{ fontSize: '0.7rem', color: '#fda4af' }}>
+                      Guess the missing number in <strong>" _ "</strong>!
+                    </div>
+                  </div>
+
+                  {cypherError && (
+                    <div style={{ color: '#fda4af', fontSize: '0.72rem', textAlign: 'center', marginTop: '4px' }}>
+                      Think: Reply of "I love you" is "I love you ___" 😉❤️ (Hint: 2)
+                    </div>
+                  )}
                 </div>
               ) : (
-                <div style={{ fontSize: '0.84rem', color: '#a7f3d0', fontWeight: 600 }}>
-                  {verifiedMethod === 'cypher'
-                    ? '1981432 Accepted! "I Love You Too" ❤️ Harshit\'s Heart Unlocked! 🎉'
-                    : '2311 Accepted! Sameeksha\'s Birthday Key Unlocked! 🎉🎂'}
+                <div style={{ fontSize: '0.82rem', color: '#a7f3d0', fontWeight: 600 }}>
+                  1981432 Accepted! "I Love You Too" ❤️ Harshit's Heart Unlocked! 🎉
                 </div>
               )}
             </div>
@@ -701,7 +699,7 @@ export function LoadingScreen({ onComplete }: Props) {
               }}
             >
               <span>{isGateUnlocked ? '✨' : '🔒'}</span>
-              <span>{isGateUnlocked ? 'Enter Harshit\'s Universe 💖' : 'Unlock Both Steps Above'}</span>
+              <span>{isGateUnlocked ? 'Enter Harshit\'s Universe 💖' : 'Unlock All 3 Steps Above'}</span>
               <span>{isGateUnlocked ? '✨' : ''}</span>
             </motion.button>
           </motion.div>
